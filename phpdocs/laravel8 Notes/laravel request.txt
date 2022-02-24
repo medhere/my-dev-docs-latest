@@ -1,0 +1,123 @@
+request
+	Illuminate\Http\Request
+	Illuminate\Support\Facades\Request
+	
+	use in controller or routes
+		public function store(Request $request){
+			$name = $request->input('name');
+		}
+		
+		Route::get('/', function (Request $request) { });
+		Route::get('/user/{id}', function (Request $request, $id) { });
+	
+	Route Parameters
+		class UserController extends Controller
+		public function update(Request $request, $id){
+		}
+			get id as $id
+			Route::put('/user/{id}', [UserController::class, 'update']);
+			
+	Request Path & Method
+		Retrieving The Request Path
+			http://example.com/foo/bar, the path method will return foo/bar:
+			$uri = $request->path();
+		
+		Inspecting The Request Path / Route
+			if ($request->is('admin/*')) {}		// matches pattern
+			if ($request->routeIs('admin.*')) {}	//matches route
+		
+		Retrieving The Request URL
+			$url = $request->url();
+			$urlWithQueryString = $request->fullUrl();	//with query string
+			$request->fullUrlWithQuery(['type' => 'phone']);  //append query to uri
+
+		Retrieving The Request Method
+			$method = $request->method();
+			if ($request->isMethod('post')) {}	//verify http method
+	
+	Request Headers
+		$value = $request->header('X-Header-Name');
+		$value = $request->header('X-Header-Name', 'default');	//set as default str if empty
+		if ($request->hasHeader('X-Header-Name')) {}		//has header
+		$token = $request->bearerToken();		// use instead of Authorization header	
+
+	Retrieving Input/Query
+		$input = $request->all();  // as array
+		$input = $request->collect();  // get a laravel collection
+		$request->collect('users')->each(function ($user) {});	//retrieve a subset of the incoming request input as a collection:
+		$input = $request->input('name');
+		$input = $request->input('name', 'Sally');	//default if not present
+		$input = $request->input('products.0.name');	//access array value of an input
+		$inputs = $request->input('products.*.name');
+		$input = $request->input();	//associative array:
+		
+		Query Only
+		$name = $request->query('name');
+		$name = $request->query('name', 'Helen');
+		$query = $request->query();	//associative array:
+		
+		JSON values
+		$name = $request->input('user.name');
+		$checkbox = $request->boolean('checkbox');
+		
+		Access name filed directly
+		$name = $request->name;
+		
+		Subset
+		$input = $request->only(['username', 'password']);
+		$input = $request->only('username', 'password');
+		$input = $request->except(['credit_card']);
+		$input = $request->except('credit_card');
+	
+		IF input (returns true or false)		
+			if ($request->has('name')) { }
+			if ($request->has(['name', 'email'])) { }
+			if ($request->hasAny(['name', 'email'])) { }
+
+			$request->whenHas('name', function ($input) { });
+			$request->whenHas('name', function ($input) {
+				// The "name" value is present...
+			}, function () {
+				// The "name" value is not present...
+			});
+
+			if ($request->filled('name')) { }			
+			$request->whenFilled('name', function ($input) { });
+			$request->whenFilled('name', function ($input) {
+				// The "name" value is filled...
+			}, function () {
+				// The "name" value is not filled...
+			});
+
+			if ($request->missing('name')) { }
+		
+		Flashing/saving input to session
+			flash the current input to the session, available during next request to the application:
+			$request->flash();
+			$request->flashOnly(['username', 'email']);
+			$request->flashExcept('password');
+
+			flash and redirect
+			return redirect('form')->withInput();
+			return redirect()->route('user.create')->withInput();
+			return redirect('form')->withInput(	$request->except('password') );
+			
+			retrieve old input
+			$username = $request->old('username');
+			<input type="text" name="username" value="{{ old('username') }}">	//blade
+		
+		Cookies
+			$value = $request->cookie('name');
+		
+		Files
+		$file = $request->file('photo');
+		$file = $request->photo;
+		if ($request->hasFile('photo')) { }
+		if ($request->file('photo')->isValid()) { }
+		$path = $request->photo->path();
+		$extension = $request->photo->extension();
+			more methods https://api.symfony.com/master/Symfony/Component/HttpFoundation/File/UploadedFile.html
+
+		$path = $request->photo->storeAs('images', 'filename.jpg');
+		$path = $request->photo->storeAs('images', 'filename.jpg', 'local');	//accepts the path, filename, and disk name
+			

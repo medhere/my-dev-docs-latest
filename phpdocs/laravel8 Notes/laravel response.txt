@@ -1,0 +1,85 @@
+Response
+	//not needed for response() except in function(Response $response)
+	Illuminate\Http\Response
+	Illuminate\Support\Facades\Response	
+	
+	string and arrays
+		return 'Hello World';
+		return [1, 2, 3];
+		return response('Hello World', 200);
+
+	Models
+		use App\Models\User;
+		Route::get('/user/{user}', function (User $user) {
+			return $user;
+		});
+		
+	Headers
+		return response($content)
+            ->header('Content-Type', $type)
+            ->header('X-Header-One', 'Header Value');
+		return response($content)
+            ->withHeaders([
+                'Content-Type' => $type,
+                'X-Header-One' => 'Header Value',
+            ]);
+
+	Cookies
+		Set
+			return response('Hello World')->cookie( 'name', 'value', $minutes);
+			return response('Hello World')->cookie(	'name', 'value', $minutes, $path, $domain, $secure, $httpOnly);
+		OR
+			$cookie = cookie('name', 'value', $minutes);
+			return response('Hello World')->cookie($cookie);
+		OR
+			use Illuminate\Support\Facades\Cookie;
+			Cookie::queue('name', 'value', $minutes);
+		
+		Expire
+			return response('Hello World')->withoutCookie('name');
+		
+		use Illuminate\Support\Facades\Cookie;
+			Cookie::expire('name');
+		
+		Disable Encryption
+			$except property of the app/Http/Middleware/EncryptCookies.php directory:
+			protected $except = [
+				'cookie_name',
+			];
+	
+	Redirect
+		return redirect('home/dashboard');
+		return back()->withInput();	//if form data stored in session
+		return redirect()->route('login');	//to named route
+		return redirect()->route('profile', ['id' => 1]);	// /profile/{id}
+		
+		use App\Http\Controllers\Nameofcontroller;
+		return redirect()->action([Nameofcontroller::class, 'index']);
+		return redirect()->action([Nameofcontroller::class, 'profile'], ['id' => 1]);	//with route parameters
+		
+		return redirect()->away('https://www.google.com');	//outside domain
+		return redirect('dashboard')->with('status', 'Profile updated!');	//flash session data
+			display flashed data in blade
+				@if (session('status'))
+					<div class="alert alert-success">
+						{{ session('status') }}
+					</div>
+				@endif
+
+	Views
+		return response()->view('hello', $data, 200)
+	
+	JSON
+		return response()->json([ 'name' => 'Abigail' , 'state' => 'CA']);
+		
+	Files
+		download
+			return response()->download($pathToFile);
+			return response()->download($pathToFile, $name, $headers);
+		
+		reponse/no download
+			return response()->file($pathToFile);
+			return response()->file($pathToFile, $headers);
+
+
+

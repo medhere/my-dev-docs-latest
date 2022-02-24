@@ -1,0 +1,65 @@
+Filesystem
+	Config
+		config/filesystems.php
+		use Illuminate\Support\Facades\Storage;
+	
+	The Local Driver
+		stroes at storage/app directory. Therefore, the following method would write to storage/app/example.txt:
+			Storage::disk('local')->put('example.txt', 'Contents');
+			Storage::put('avatars/1', $content);		// store to default disk
+	
+	On-Demand Disks
+		create disk and use
+		$disk = Storage::build([
+			'driver' => 'local',
+			'root' => '/path/to/root',
+		]);
+
+		$disk->put('image.jpg', $content);
+
+	File Operations
+		$contents = Storage::get('file.jpg');
+		if (Storage::disk('s3')->exists('file.jpg')) {}
+		if (Storage::disk('s3')->missing('file.jpg')) {}
+		return Storage::download('file.jpg');
+		return Storage::download('file.jpg', $name, $headers);
+		$url = Storage::url('file.jpg');
+		$size = Storage::size('file.jpg');
+		$time = Storage::lastModified('file.jpg');
+		$path = Storage::path('file.jpg');
+		Storage::put('file.jpg', $contents);
+		Storage::put('file.jpg', $resource);
+		Storage::prepend('file.log', 'Prepended Text');
+		Storage::append('file.log', 'Appended Text');
+		Storage::copy('old/file.jpg', 'new/file.jpg');
+		Storage::move('old/file.jpg', 'new/file.jpg');
+		Storage::delete('file.jpg');
+		Storage::delete(['file.jpg', 'file2.jpg']);
+		Storage::disk('s3')->delete('path/file.jpg');		
+		$files = Storage::files($directory);	//single dir
+		$files = Storage::allFiles($directory);	//sub-dirs
+		$directories = Storage::directories($directory);
+		$directories = Storage::allDirectories($directory);
+		Storage::makeDirectory($directory);
+		Storage::deleteDirectory($directory);		//remove a directory and all of its files
+
+		use Illuminate\Http\File;
+		$path = Storage::putFile('photos', new File('/path/to/photo'));	// Automatically generate a unique ID for filename...
+		$path = Storage::putFileAs('photos', new File('/path/to/photo'), 'photo.jpg');	// Manually specify a filename...	
+
+
+	File Uploads
+        $path = $request->file('avatar')->store('avatars');	//uuid for name
+		$path = Storage::putFile('avatars', $request->file('avatar'));	//uuid for name
+
+		$path = $request->file('avatar')->storeAs('avatars', 'photo.jpg');	//use a name
+		$path = Storage::putFileAs('avatars', $request->file('avatar'), 'photo.jpg');	//use a name
+		
+		$path = $request->file('avatar')->store('avatars/photo.jpg', 'local');	//select disk
+		$path = $request->file('avatar')->storeAs('avatars', 'photo.jpg', 'local');	//select disk
+		
+		$file = $request->file('avatar');
+		$name = $file->getClientOriginalName();		//not safe
+		$name = $file->hashName(); // safe
+		$extension = $file->getClientOriginalExtension();	//not safe
+		$extension = $file->extension(); // safe

@@ -1,0 +1,47 @@
+learn multipart and file handling on express
+MULTER
+	const multer  = require('multer'({opts})
+			opts
+			dest: './uploads/' OR storage: storage
+			limits:
+				fileSize		For multipart forms, the max file size (in bytes)	Infinity	1*1024*1024
+				files			For multipart forms, the max number of file fields	Infinity	10
+		    preservePath: true
+			
+
+		const storage = multer.diskStorage({
+		  destination: function (req, file, cb) { cb(null, './uploads')},
+		  filename: function (req, file, cb) {cb(null, file.fieldname + '-' + Math.round(Math.random() * 1E9))}
+		})
+
+	multer.fields([{name:'',maxCount:2}])
+	multer.any()
+
+	req.file,req.files
+	req.files['name'][0] -> File
+    req.files['name'] -> Array
+	req.files.name -> Array
+		.originalname
+		.size
+		.destination
+		.filename
+
+		file handling
+	// var {originalname,destination,filename,size}=req.files.file,
+    // filepath=destination+filename,
+    // [name,ext]=originalname.split('.')
+
+    if(req.files?.file){
+        var files=req.files.file
+        if(Array.isArray(files)){
+            files.map((file,index)=>{
+                var {originalname,destination,filename,size}=file,
+                path=destination+'/'+filename, [name,ext]=originalname.split('.')
+			})    
+        }else{
+            var {originalname,destination,filename,size}=files,
+            path=destination+'/'+filename, [name,ext]=originalname.split('.')
+        }
+    }else{
+        console.log('no file')
+    }		

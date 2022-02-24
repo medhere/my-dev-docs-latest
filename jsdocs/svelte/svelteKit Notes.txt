@@ -1,0 +1,331 @@
+svelteKit
+
+	ROUTING
+		routing from pages/endpoint in src/routes.
+		Pages typically generate content to display to the user
+		Endpoints run only on the server 
+
+		Pages
+			src/routes/index.svelte is the root of your site:
+
+			<!-- src/routes/index.svelte -->
+			<svelte:head>
+				<title>Welcome</title>
+			</svelte:head>
+			<h1>Hello and welcome to my site!</h1>
+
+			A file called either src/routes/about.svelte or src/routes/about/index.svelte would correspond to the /about route:
+			<!-- src/routes/about.svelte -->
+			<svelte:head>
+				<title>About</title>
+			</svelte:head>
+			<h1>About this site</h1>
+			<p>TODO...</p>
+
+			Dynamic parameters are encoded using [brackets].
+			src/routes/blog/[slug].svelte.
+			[id]-[category].svelte. 
+
+		Endpoints
+			written in .js
+			request data from /blog/cool-article.json, which could be represented by a src/routes/blog/[slug].json.js endpoint:
+
+			export function get({ params }) {
+				// the `slug` parameter is available because this file
+				// is called [slug].json.js
+				const { slug } = params;
+				
+				return {
+					status:{ 200 },
+					body: {	slug },
+					headers: {	'set-cookie': [cookie1, cookie2] }
+				};
+			}
+
+			export function post(request) {
+				request.body
+				The body property of the request object will be provided in the case of POST requests:
+			}
+
+		Private modules	_module.svelte
+			src/routes/foo/_Private.svelte
+			src/routes/bar/_utils/cool-util.js, is hidden from the router, but can be imported by files that are not.
+		
+		Rest PArams
+			src/routes/[category]-[item].svelte
+			e.g
+			src/routes/[org]/[repo]/tree/[category]-[item]/[branch]/[...file].svelte
+			/sveltejs/kit/tree/master/1-new/documentation/docs/01-routing.md
+				{
+					org: 'sveltejs',
+					repo: 'kit',
+					branch: 'master',
+					category: 1,
+					item: 'new',
+					file: 'documentation/docs/01-routing.md'
+				}
+		
+	LAYOUTS
+		src/routes/__layout.svelte. 
+
+		<!-- src/routes/__layout.svelte -->
+		<nav>
+			<a href="/">Home</a>
+			<a href="/about">About</a>
+			<a href="/settings">Settings</a>
+		</nav>
+		<slot></slot>
+		
+		<!-- src/routes/index.svelte -->
+		<!-- src/routes/about.svelte -->
+		<!-- src/routes/settings.svelte -->
+			will all inherit __layout.svelte
+			
+		Nested layouts
+			We can create a layout that only applies to pages below /settings (while inheriting the root layout src/routes/__layout.svelte)
+			<!-- src/routes/settings/__layout.svelte -->
+			<h1>Settings</h1>
+			<div class="submenu">
+				<a href="/settings/profile">Profile</a>
+				<a href="/settings/notifications">Notifications</a>
+			</div>
+			<slot></slot>
+		
+		Resets
+			if you want your /admin/* pages to not inherit the root layout, create a file called src/routes/admin/__layout.reset.svelte.
+
+		Error pages
+			a page fail will render an error page. 
+			create __error.svelte components alongside your layout and page components.
+
+			For example, if src/routes/settings/notifications/index.svelte failed to load, SvelteKit would render src/routes/settings/notifications/__error.svelte in the same layout, if it existed. If not, it would render src/routes/settings/__error.svelte in the parent layout, or src/routes/__error.svelte in the root layout.
+
+			load function for error
+			<script context="module">
+				export function load({ error, status }) {
+					return {
+						props: {
+							title: `${status}: ${error.message}`
+						}
+					};
+				}
+			</script>
+			<script>
+				export let title;
+			</script>
+			<h1>{title}</h1>
+
+	LOADING
+		export load function before page load
+		
+		<script context="module">
+			export async function load({ page, fetch, session, stuff }) {
+				const url = `/blog/${page.params.slug}.json`;
+				const res = await fetch(url);
+
+				if (res.ok) {
+					return {
+						props: {
+							article: await res.json()
+						}
+					};
+				}
+
+				return {
+					status: res.status,
+					error: new Error(`Could not load ${url}`)
+				};
+			}
+		</script>
+		
+		Load Inputs
+			page
+				So if the example above was src/routes/blog/[slug].svelte and the URL was https://example.com/blog/some-post?foo=bar&baz&bizz=a&bizz=b
+				page.host === 'example.com'
+				page.path === '/blog/some-post'
+				page.params.slug === 'some-post'
+				page.query.get('foo') === 'bar'
+				page.query.has('baz')
+				page.query.getAll('bizz') === ['a', 'b']				
+			fetch
+				fetch is equivalent to the native fetch web API, and can make credentialed requests. It can be used across both client and server contexts.
+			session
+				session can be used to pass data from the server related to the current request, e.g. the current user. By default it is undefined. See getSession to learn how to use it.
+			stuff
+				stuff is passed from layout components to child layouts and page components and can be filled with anything else you need to make available. For the root __layout.svelte component, it is equal to {}, but if that component's load function returns an object with a stuff property, it will be available to subsequent load functions.
+
+		Load Outputs (return{})
+		status
+			The HTTP status code for the page.
+		error
+			If something goes wrong during load, return an Error object or a string with 4xx - 5xx status code
+		redirect
+			return a string containing the location to which they should be redirected alongside a 3xx status code.
+		maxage
+			To cause pages to be cached, return a number describing the page's max age in seconds.
+			This only applies to page components, not layout components.
+		props
+			If the load function returns a props object, the props will be passed to the component when it is rendered.
+		stuff
+			This will be merged with any existing stuff and passed to the load functions of subsequent layout and page components.
+			This only applies to layout components, not page components.
+		
+	MODULES
+		$app/env
+		import { amp, browser, dev, mode, prerendering } from '$app/env';
+			amp is true or false depending on the corresponding value in your project configuration
+			browser is true or false depending on whether the app is running in the browser or on the server
+			dev is true in development mode, false in production
+			mode is the Vite mode, which is development in dev mode or production during build unless configured otherwise in config.kit.vite.mode.
+			prerendering is true when prerendering, false otherwise
+		
+		app/navigation
+		import { goto, invalidate, prefetch, prefetchRoutes } from '$app/navigation';
+			goto(href, { replaceState, noscroll, keepfocus, state }) returns a Promise
+				replaceState (boolean, default false) If true, will replace the current history entry rather than creating a new one with pushState
+				noscroll (boolean, default false) If true, the browser will maintain its scroll position rather than scrolling to the top of the page after navigation
+				keepfocus (boolean, default false) If true, the currently focused element will retain focus after navigation. Otherwise, focus will be reset to the body
+				state (object, default {}) The state of the new/updated history entry
+			invalidate(href) returns a Promise that resolves when the page is subsequently updated.
+			prefetch(href) programmatically prefetches the given page (like an <a> element with sveltekit:prefetch). Returns a Promise that resolves when the prefetch is complete.
+			prefetchRoutes(routes) — programmatically prefetches the code for routes that haven't yet been fetched. Returns a Promise that resolves when the routes have been prefetched.
+		
+		$app/paths
+		import { base, assets } from '$app/paths';
+			base — a root-relative (i.e. begins with a /) string that matches config.kit.paths.base, or the empty string if unspecified
+			assets — an absolute URL that matches config.kit.paths.assets, if specified, otherwise equal to base
+		
+		$app/stores
+		import { getStores, navigating, page, session } from '$app/stores';
+			getStores returns { navigating, page, session }. This needs to be called at the top-level
+				Use $-prefix. Use getStores to safely .subscribe asynchronously instead.
+
+			navigating is a readable store. its value is { from, to }
+			page is a readable store — it contains host, path, params and query.
+			session is a writable store whose initial value is whatever was returned from getSession. It can be written to, but does not persist on the server
+		
+		$lib
+			This is a simple alias to src/lib, or whatever directory is specified as [config.kit.files.lib]. It allows you to access common components and utility modules without ../../../../ nonsense.
+			e.g import db from '$lib/database';  ... src/lib/database.js
+		
+	ANCHOR OPTIONS <a>
+		sveltekit:prefetch
+			For dynamic routes, such as our src/routes/blog/[slug].svelte with data or any other route
+			<a sveltekit:prefetch href="blog/what-is-sveltekit">What is SvelteKit?</a>
+		
+		sveltekit:noscroll
+			dsable change the scroll position to 0,0 (top left of the page)
+			<a href="path" sveltekit:noscroll>Path</a>		
+			
+		rel=external
+			<a rel="external" href="path">Path</a>
+	
+	ADAPTERS
+		Supported environments
+			Node.js
+				If ssr, To create a simple Node server, install the @sveltejs/adapter-node@next package and update your svelte.config.js:
+
+				// svelte.config.js
+				-import adapter from '@sveltejs/adapter-auto';
+				+import adapter from '@sveltejs/adapter-node';
+				With this, svelte-kit build will generate a self-contained Node app inside the build directory. You can pass options to adapters, such as customising the output directory:
+
+				// svelte.config.js
+				import adapter from '@sveltejs/adapter-node';
+				export default {
+					kit: {
+				-		adapter: adapter()
+				+		adapter: adapter({ out: 'my-output-directory' })
+					}
+				};
+
+			Static sites
+				if pre-rendering, @sveltejs/adapter-static@next to generate static HTML for all your pages.
+
+				// svelte.config.js
+				-import adapter from '@sveltejs/adapter-auto';
+				+import adapter from '@sveltejs/adapter-static';
+				You can also use adapter-static to generate single-page apps (SPAs) by specifying a fallback page.
+			
+			Community adapters
+				Additional community-provided adapters (https://sveltesociety.dev/components#adapters) exist for other platforms. After installing the relevant adapter with your package manager, update your svelte.config.js:
+
+				// svelte.config.js
+				-import adapter from '@sveltejs/adapter-auto';
+				+import adapter from 'svelte-adapter-[x]';
+			
+	SSR AND JAVASCRIPT
+		ssr (convert to SPA)
+			You can disable SSR app-wide with the ssr config option, or a page-level ssr export:
+			<script context="module">
+				export const ssr = false;
+			</script>
+		router
+			disable client-side routing with the app-wide router config option or the page-level router export:
+			<script context="module">
+				export const router = false;
+			</script>
+		pre-rendering
+			enable prerender specific pages in your app. You'll need to annotate these pages:
+			<script context="module">
+				export const prerender = true;
+			</script>
+				
+	CONFIGURATION
+	svelte.config.js
+	The complete list of options, with defaults,
+
+	const config = {
+		compilerOptions: null,
+		extensions: ['.svelte'],
+		kit: {
+			adapter: null,
+			amp: false,
+			appDir: '_app',
+			files: {
+				assets: 'static',
+				hooks: 'src/hooks',
+				lib: 'src/lib',
+				routes: 'src/routes',
+				serviceWorker: 'src/service-worker',
+				template: 'src/app.html'
+			},
+			floc: false,
+			host: null,
+			hostHeader: null,
+			hydrate: true,
+			package: {
+				dir: 'package',
+				emitTypes: true,
+				// excludes all .d.ts and files starting with _ as the name
+				exports: (filepath) => !/^_|\/_|\.d\.ts$/.test(filepath),
+				files: () => true
+			},
+			paths: {
+				assets: '',
+				base: ''
+			},
+			prerender: {
+				crawl: true,
+				enabled: true,
+				entries: ['*'],
+				onError: 'fail'
+			},
+			router: true,
+			serviceWorker: {
+				files: (filepath) => !/\.DS_STORE/.test(filepath)
+			},
+			ssr: true,
+			target: null,
+			trailingSlash: 'never',
+			vite: () => ({})
+		},
+		
+		preprocess: null
+	};
+
+	export default config;
+	
+	Set as SPA appwide
+		prerender enabled false
+		ssr false

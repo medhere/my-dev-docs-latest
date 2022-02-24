@@ -1,0 +1,68 @@
+express-react-views
+	npm install express-react-views react react-dom		
+		var app = express();
+		 
+		app.set('views', __dirname + '/views');
+		app.set('view engine', 'jsx');
+		app.engine('jsx', require('express-react-views').createEngine(options));
+
+	Options
+		option			values	default
+		doctype			any string that can be used as a doctype, this will be prepended to your document		"<!DOCTYPE html>"
+		beautify		beautify markup before outputting (note, this can affect rendering due to additional whitespace)		false
+		transformViews	use babel to apply JSX, ESNext transforms to views.	Note: if already using babel-register in your project, you should set this to false		true
+		babel			any object containing valid Babel options		{presets: ['@babel/preset-react', [ '@babel/preset-env', {'targets': {'node': 'current'}}]]}
+
+
+	Views
+		app.set('views', __dirname + '/views') will be compiled.
+
+		//views/index.jsx:
+		var React = require('react');
+		function HelloMessage(props) {
+		  return <div>Hello {props.name}</div>;
+		}
+		module.exports = HelloMessage;
+
+
+	Routes
+		// app.js 
+		app.get('/', require('./routes').index);
+
+		// routes/index.js 
+		exports.index = function(req, res){
+		  res.render('index', { name: 'John' });
+		};
+
+	Layouts
+	Simply pass the relevant props to a layout component.
+
+		//views/layouts/default.jsx:
+		var React = require('react');
+		function DefaultLayout(props) {
+		  return (
+			<html>
+			  <head><title>{props.title}</title></head>
+			  <body>{props.children}</body>
+			</html>
+		  );
+		} 
+		module.exports = DefaultLayout;
+
+		//views/index.jsx:
+		var React = require('react');
+		var DefaultLayout = require('./layouts/default');
+		function HelloMessage(props) {
+		  return (
+			<DefaultLayout title={props.title}>
+			  <div>Hello {props.name}</div>
+			</DefaultLayout>
+		  );
+		}
+		module.exports = HelloMessage;
+		
+	React & JSX have their own rendering caveats. For example, inline <script>s and <style>s will need to use dangerouslySetInnerHTML={{__html: 'script content'}}. You can take advantage of ES6 template strings here.
+	<script dangerouslySetInnerHTML={{__html: `
+	  // Google Analytics
+	  // is a common use
+	`}} />

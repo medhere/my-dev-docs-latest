@@ -1,0 +1,163 @@
+
+				
+			
+				
+	
+	//use embedded images
+		html: 'Embedded image: <img src="cid:embedimage"/>',
+		attachments: [{ filename: 'image.png', path: '/path/to/file',cid: 'embedimage' }]
+		
+	
+	
+	//dkim
+		dkim-private.pem
+		-----BEGIN RSA PRIVATE KEY-----
+		MIIBywIBAAJhANCx7ncKUfQ8wBUYmMqq6ky8rBB0NL8knBf3+uA7q/CSxpX6sQ8N
+		dFNtEeEd7gu7BWEM7+PkO1P0M78eZOvVmput8BP9R44ARpgHY4V0qSCdUt4rD32n
+		wfjlGbh8p5ua5wIDAQABAmAm+uUQpQPTu7kg95wqVqw2sxLsa9giT6M8MtxQH7Uo
+		1TF0eAO0TQ4KOxgY1S9OT5sGPVKnag258m3qX7o5imawcuyStb68DQgAUg6xv7Af
+		AqAEDfYN5HW6xK+X81jfOUECMQDr7XAS4PERATvgb1B3vRu5UEbuXcenHDYgdoyT
+		3qJFViTbep4qeaflF0uF9eFveMcCMQDic10rJ8fopGD7/a45O4VJb0+lRXVdqZxJ
+		QzAp+zVKWqDqPfX7L93SQLzOGhdd7OECMQDeQyD7WBkjSQNMy/GF7I1qxrscIxNN
+		VqGTcbu8Lti285Hjhx/sqhHHHGwU9vB7oM8CMQDKTS3Kw/s/xrot5O+kiZwFgr+w
+		cmDrj/7jJHb+ykFNb7GaEkiSYqzUjKkfpweBDYECMFJUyzuuFJAjq3BXmGJlyykQ
+		TweUw+zMVdSXjO+FCPcYNi6CP1t1KoESzGKBVoqA/g==
+		-----END RSA PRIVATE KEY-----
+
+	
+	NODEMAILER
+		const nodemailer = require("nodemailer");
+		
+		Quick Setup
+		const nodemailer=require('nodemailer').createTransport({ sendmail: true, path: 'C:/laragon/bin/sendmail/sendmail.exe' });
+			nodemailer.sendMail({
+				from: 'sender@example.com',
+				to: 'recipient@example.com',
+				subject: 'Message',
+				text: 'I hope this message gets delivered!'
+			}, (err, info) => {
+				console.log(info);
+			});
+		
+		
+		let testAccount = await nodemailer.createTestAccount();
+		  // create reusable transporter object using the default SMTP transport
+		  let transporter = nodemailer.createTransport({
+			host: "smtp.ethereal.email",
+			port: 587,
+			secure: false, // true for 465, false for other ports
+			auth: {
+			  user: testAccount.user, // generated ethereal user
+			  pass: testAccount.pass, // generated ethereal password
+			},
+		  });
+
+			var message = {
+				from - The e-mail address of the sender. All e-mail addresses can be plain 'sender@server.com' or formatted 'Sender Name <sender@server.com>', see here for details
+				sender - An e-mail address that will appear on the Sender: field
+				to - Comma separated list or an array of recipients e-mail addresses that will appear on the To: field
+				cc - Comma separated list or an array of recipients e-mail addresses that will appear on the Cc: field
+				bcc - Comma separated list or an array of recipients e-mail addresses that will appear on the Bcc: field, see here on how to compile with BCC shown
+				replyTo - An e-mail address that will appear on the Reply-To: field
+				inReplyTo - The message-id this message is replying
+				references - Message-id list (an array or space separated string)
+				subject - The subject of the e-mail
+				text - The plaintext version of the message as an Unicode string, Buffer, Stream or an object {path: ‘…'}
+				html - The HTML version of the message as an Unicode string, Buffer, Stream or an object {path: ‘…'}
+				headers - An object or array of additional header fields (e.g. {“X-Key-Name”: “key value”} or [{key: “X-Key-Name”, value: “val1”}, {key: “X-Key-Name”, value: “val2”}])
+				attachments - An array of attachment objects (see below for details) attachments from nodemailer mailcompose
+					filename - filename to be reported as the name of the attached file, use of unicode is allowed.
+					cid - optional content id for using inline images in HTML message source. use it only if you actually want to use this attachment as an embedded image
+					content - String, Buffer or a Stream contents for the attachment
+					encoding - values: base64, hex, binary 
+					path - path to a file or an URL (data uris are allowed as well)
+					contentType - optional content type for the attachment, if not set will be derived from the filename property
+					contentTransferEncoding - optional transfer encoding for the attachment, if not set it will be derived from the contentType property. Example values: quoted-printable, base64
+					contentDisposition - optional content disposition type for the attachment, defaults to ‘attachment’
+					headers is an object of additional headers, similar to message.headers option {'X-My-Header': 'value'}
+				icalEvent- an object to define calendar event
+					method – optional method, case insensitive, defaults to ‘publish’. others ‘request’, ‘reply’, ‘cancel’. This should match the METHOD: value in calendar event file.
+					filename – optional filename, defaults to ‘invite.ics’
+					content – is the event file, it can be a string, a buffer, a stream
+					path – is an alternative for content to load the calendar data from a file
+					href – is an alternative for content to load the calendar data from an URL
+					encoding – defines optional content encoding, eg. ‘base64’ or ‘hex’. This only applies if the content is a string. By default an unicode string is assumed.
+						You can use modules like ical-generator to generate the actual calendar file content
+						{ filename: 'invitation.ics', method: 'request', content: content} OR {method: 'PUBLISH',path: '/path/to/file'}
+				priority - ‘high’, ‘normal’ (default) or ‘low’.
+			};
+
+			//attachments
+		  attachments: [
+			{   // utf-8 string as an attachment
+			  filename: 'text1.txt',  content: 'hello world!'
+			},
+			{   // binary buffer as an attachment
+			  filename: 'text2.txt', content: new Buffer('hello world!', 'utf-8')
+			},
+			{   // file on disk as an attachment
+			     filename: 'text3.txt',  path: '/path/to/file.txt' // stream this file
+			},
+			{   // filename and content type is derived from path
+			     path: '/path/to/file.txt'
+			},
+			{   // define custom content type for the attachment
+			  filename: 'text.bin',  content: 'hello world!', contentType: 'text/plain'
+			},
+			{   // use URL as an attachment
+			  filename: 'license.txt',  path: 'https://raw.github.com/guileen/node-sendmail/master/LICENSE'
+			},
+			{   // encoded string as an attachment
+			  filename: 'text1.txt',  content: 'aGVsbG8gd29ybGQh',  encoding: 'base64'
+			},
+			{   // data uri as an attachment
+			  path: 'data:text/plain;base64,aGVsbG8gd29ybGQ='
+			}
+		  ]
+
+			
+			//embed image in message
+				html: 'Embedded image: <img src="cid:embedimage"/>',
+				attachments: [{	filename: 'image.png',	path: '/path/to/file', cid: 'embedimage' }]
+		  
+		  let info = await transporter.sendMail(message,(err,info)=>{
+			info.messageId 		most transports should return the final Message-Id value used with this property
+			info.envelope 		includes the envelope object for the message
+			info.accepted 		is an array returned by SMTP transports (includes recipient addresses that were accepted by the server)
+			info.rejected 		is an array returned by SMTP transports (includes recipient addresses that were rejected by the server)
+			info.pending 		is an array returned by Direct SMTP transport. Includes recipient addresses that were temporarily rejected together with the server response
+			response 			is a string returned by SMTP transports and includes the last SMTP response from the server
+		  });
+		  console.log("Message sent: %s", info.messageId);
+		  console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+		}
+
+		SENDMAIL TRANSPORT
+			Sendmail transport is the same thing like what the mail() function in PHP does.
+
+			path - path to the sendmail command (defaults to ‘sendmail’)
+			newline - either ‘windows’ or ‘unix’ (default). 
+			args - an optional array of command line options to pass to the sendmail command (ie. ["-f", "foo@example.com"])
+				The command to be spawned by default looks like this: sendmail -i -f from_addr to_addr[]
+				If args property was provided then the command looks like this:  sendmail -i args[] to_addr[]
+
+			Not Able to send Mail using sendmail transport ?
+			If createTransport function is not taking up the path which by default is ‘/usr/bin/sendmail’, make sure you have sendmail configured in your system.
+
+			let transporter = nodemailer.createTransport({
+				sendmail: true,
+				//newline: 'unix',
+				//path: '/usr/sbin/sendmail'    //unix
+				path: 'C:/laragon/bin/sendmail/sendmail.exe'
+			});
+			transporter.sendMail({
+				from: 'sender@example.com',
+				to: 'recipient@example.com',
+				subject: 'Message',
+				text: 'I hope this message gets delivered!'
+			}, (err, info) => {
+				console.log(info.envelope);
+				console.log(info.messageId);
+			});
+			
+		

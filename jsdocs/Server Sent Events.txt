@@ -1,0 +1,31 @@
+Server Side Events
+
+if(typeof(EventSource) !== "undefined") {
+  // Yes! Server-sent events support!
+} else {
+  // Sorry! No server-sent events support..
+}
+
+
+var source = new EventSource("demo_sse.php");
+source.onmessage = function(event) {
+  document.getElementById("result").innerHTML += event.data + "<br>";
+};
+
+source.onopen = function() {
+  document.getElementById("myH1").innerHTML = "Getting server updates";
+};
+
+source.onerror = function() {
+  // Do something to handle error
+};
+
+<?php
+header('Content-Type: text/event-stream');
+header('Cache-Control: no-cache');
+
+$time = date('r');
+echo "data: The server time is: {$time}\n\n";
+flush();
+?>
+

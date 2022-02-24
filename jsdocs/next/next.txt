@@ -1,0 +1,415 @@
+Next
+npm i create-next-app
+create-next-app .
+npm run dev
+
+	
+	Routing
+			pages/blog/[slug].js → /blog/:slug (/blog/hello-world)
+			pages/[username]/settings.js → /:username/settings (/foo/settings)
+			pages/post/[...all].js → /post/* (/post/2020/id/title)
+			pages/post/[[...all]].js optional
+			pages/api	- for PI routes
+			
+		pages/index.js
+		create a react js component
+		export default function FirstPost() {
+		  return <h1>First Post</h1>
+		}
+		
+		Link
+		import Link from 'next/link'
+		<h1 className="title">
+		  <Link href="/posts/first-post">
+			<a>this page!</a>
+		  </Link>
+		  
+		  <Link
+            href={{
+              pathname: '/blog/[slug]',
+              query: { slug: post.slug },
+            }}
+          >
+            <a>{post.title}</a>
+          </Link>
+		</h1>	
+			Link accepts the following props:
+			href - The path or URL to navigate to. This is the only required prop
+			as - Optional decorator for the path that will be shown in the browser URL bar. 
+			passHref - Forces Link to send the href property to its child. Defaults to false
+			prefetch - Prefetch the page in the background. Defaults to true. 
+			replace - Replace the current history state instead of adding a new url into the stack. Defaults to false
+			scroll - Scroll to the top of the page after a navigation. Defaults to true
+			shallow - Update the path of the current page without rerunning getStaticProps, getServerSideProps or getInitialProps. Defaults to false
+				
+		Dynamic Routes
+		pages/posts/[id].js
+		next-routes-extended
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		useRouter
+			import { useRouter } from 'next/router'
+			const router = useRouter()
+			The following is the definition of the router object returned by both useRouter and withRouter:
+			pathname: String - Current route.
+			query: Object - The query string parsed to an object.
+			asPath: String - The path (including the query) shown in the browser
+			isFallback: boolean - Whether the current page is in fallback mode.
+			basePath: String - The active basePath (if enabled).
+			isPreview: boolean - Whether the application is currently in preview mode.
+
+			router.push
+			Handles client-side transitions, this method is useful for cases where next/link is not enough.
+			router.push(url, as, options)
+			url: UrlObject | String - The URL to navigate to (see Node.JS URL module documentation for UrlObject properties).
+			as: UrlObject | String - Optional decorator for the path that will be shown in the browser URL bar. 
+			options: Optional object with the following configuration options:
+			scroll - Optional boolean, controls scrolling to the top of the page after navigation. Defaults to true
+			shallow - Update the path of the current page without rerunning getStaticProps, getServerSideProps or getInitialProps. Defaults to false
+			You don't need to use router.push for external URLs. window.location is better suited for those cases.
+
+			router.replace
+			Similar to the replace prop in next/link, router.replace will prevent adding a new URL entry
+			router.replace(url, as, options)
+
+			router.prefetch
+			Prefetch pages for faster client-side transitions. This method is only useful for navigations without next/link, as next/link takes care of prefetching pages automatically.
+			router.prefetch(url, as)
+
+			router.back()
+
+			router.reload()
+
+			router.events.on|off('evt', func)
+			You can listen to different events happening inside the Next.js Router. Here's a list of supported events:
+			routeChangeStart(url, { shallow }) - Fires when a route starts to change
+			routeChangeComplete(url, { shallow }) - Fires when a route changed completely
+			routeChangeError(err, url, { shallow }) - Fires when there's an error when changing routes, or a route load is cancelled
+			err.cancelled - Indicates if the navigation was cancelled
+			beforeHistoryChange(url, { shallow }) - Fires before changing the browser's history
+			hashChangeStart(url, { shallow }) - Fires when the hash will change but not the page
+			hashChangeComplete(url, { shallow }) - Fires when the hash has changed but not the page
+
+			 useEffect(() => {
+				const handleStart = (url) => { console.log(`Loading: ${url}`) NProgress.start() }
+				const handleStop = () => { NProgress.done() }
+
+				router.events.on('routeChangeStart', handleStart)
+				router.events.on('routeChangeComplete', handleStop)
+				router.events.on('routeChangeError', handleStop)
+
+				return () => {
+				  router.events.off('routeChangeStart', handleStart)
+				  router.events.off('routeChangeComplete', handleStop)
+				  router.events.off('routeChangeError', handleStop)
+				}
+			  }, [router])
+
+		API Route
+		pages/api/new.js
+			export default function handler(req, res) {
+			  if (req.method === 'POST') {
+				// Process a POST request
+			  } else {
+				// Handle any other HTTP method
+			  }
+			}
+
+		pages/api/post/[pid].js
+		export default function handler(req, res) {
+		  const { pid } = req.query
+		  res.end(`Post: ${pid}`)
+		}
+		
+		req.cookies - An object containing the cookies sent by the request. Defaults to {}
+		req.query - An object containing the query string. Defaults to {}
+		req.body - An object containing the body parsed by content-type, or null if no body was sent
+		res.status(code) - A function to set the status code. code must be a valid HTTP status code
+		res.json(body) - Sends a JSON response. body must be a serializable object
+		res.send(body) - Sends the HTTP response. body can be a string, an object or a Buffer
+		res.redirect([status,] path) - Redirects to a specified path or URL.
+		
+	Layout
+		import Script from 'next/script'
+		export default function Home() {
+		  return (
+			<>
+			  <Script 
+			  src="https://www.google-analytics.com/analytics.js" 
+			  strategy="beforeInteractive | afterInteractive | lazyOnload"
+			  />
+			  
+			  <Script id="show-banner" strategy="lazyOnload">
+				  {`document.getElementById('banner').classList.remove('hidden')`}
+			  </Script>
+				
+			  <Script
+				id="stripe-js"
+				src="https://js.stripe.com/v3/"
+				onLoad={() => {
+				  setStripe({ stripe: window.Stripe('pk_test_12345') })
+				}}
+			   />
+			   
+			</>
+		  )
+		}
+		
+		Image
+		import Image from 'next/image'
+		const YourComponent = () => (
+		  <Image
+			src="/images/profile.jpg" // Route of the image file
+			height={144} // Desired size with correct aspect ratio
+			width={144} // Desired size with correct aspect ratio
+			alt="Your Name"
+			layout="fill | responsive"
+		  />
+		)
+		
+		Head
+		import Head from 'next/head'
+		export default function FirstPost() {
+		  return (
+			<>
+			  <Head>
+				<title>First Post</title>
+			  </Head>
+			  <h1>First Post</h1>
+			  <h2>
+				<Link href="/">
+				  <a>Back to home</a>
+				</Link>
+			  </h2>
+			</>
+		  )
+		}
+		
+		Layout Component
+		export default function Layout({ children }) {
+		  return <div>{children}</div>
+		}
+
+		import Layout from '../../components/layout'
+		export default function FirstPost() {
+		  return (
+			<Layout>
+			  <Head>
+				<title>First Post</title>
+			  </Head>
+			  <h1>First Post</h1>
+			  <h2>
+				<Link href="/">
+				  <a>Back to home</a>
+				</Link>
+			  </h2>
+			</Layout>
+		  )
+		}
+
+		CSS Modules
+		components/layout.module.css with the following content:
+
+		.container {
+		  max-width: 36rem;
+		  padding: 0 1rem;
+		  margin: 3rem auto 6rem;
+		}
+			Use styles.container as the className
+			import styles from './layout.module.css'
+			export default function Layout({ children }) {
+			  return <div className={styles.container}>{children}</div>
+			}
+
+		Global Files
+		To load global CSS files, create a file called pages/_app.js with the following content:
+		NB: _app.js can be used to keep state across pages
+
+		import '../styles/global.css'
+		export default function App({ Component, pageProps }) {
+		  return <Component {...pageProps} />
+		}
+
+		import Layout from '../components/layout'
+		export default function MyApp({ Component, pageProps }) {
+		  return (
+			<Layout>
+			  <Component {...pageProps} />
+			</Layout>
+		  )
+		}
+
+		Per-Page Layouts
+			// pages/index.js
+			import Layout from '../components/layout'
+			import NestedLayout from '../components/nested-layout'
+			export default function Page() {
+			  return {
+				/** Your content */
+			  }
+			}
+
+			Page.getLayout = function getLayout(page) {
+			  return (
+				<Layout>
+				  <NestedLayout>{page}</NestedLayout>
+				</Layout>
+			  )
+			}
+
+			// pages/_app.js
+			export default function MyApp({ Component, pageProps }) {
+			  // Use the layout defined at the page level, if available
+			  const getLayout = Component.getLayout || ((page) => page)
+			  return getLayout(<Component {...pageProps} />)
+			}
+
+			When navigating between pages, we want to persist page state (input values, scroll position, etc) for a Single-Page Application (SPA) experience.
+
+		Dynamic Import
+		import dynamic from "next/dynamic";
+
+		const DynamicComponent = dynamic(() => import('../components/hello'))	//default export
+		<DynamicComponent />
+
+		const DynamicComponent = dynamic(() => import('../components/hello').then((mod) => mod.Hello))	//named export
+
+		const DynamicComponentWithCustomLoading = dynamic(		//custom loading component
+		  () => import('../components/hello'),
+		  { loading: () => <p>...</p> }
+		)
+
+		const DynamicComponentWithNoSSR = dynamic(		//no ssr
+		  () => import('../components/hello3'),
+		  { ssr: false }
+		)
+		
+		const DynamicLazyComponent = dynamic(() => import('../components/hello4'), {	//with suspense
+		  suspense: true,
+		})
+
+	Prerendering and Data Fetching
+		CSR - useEffect()/SWR
+		
+		SSG - getStaticProps
+		
+			export default function Home({ getData }) { ... }
+
+			export async function getStaticProps() {
+			  // Get external data from the file system, API, DB, etc.
+			  const data = ...
+
+			  // The value of the `props` key will be
+			  //  passed to the `Home` component
+			  return {
+				props: {
+					getData
+				}
+			  }
+			}
+		
+		SSR - getServerSideProps(context)	
+			export async function getServerSideProps(context) {
+			  return {
+				props: {}, // will be passed to the page component as props
+			  }
+			}
+			context parameter is an object containing the following keys:
+				params: [id].js , then params will look like { id: ... }
+				req: The HTTP IncomingMessage object, plus additional built-in parsing helpers.
+				res: The HTTP response object.
+				query: An object representing the query string.
+				preview: preview is true if the page is in the preview mode and false otherwise. See the Preview Mode documentation.
+				previewData: The preview data set by setPreviewData. See the Preview Mode documentation.
+				resolvedUrl: A normalized version of the request URL that strips the _next/data prefix for client transitions and includes original query values.
+
+			getServerSideProps should return an object with:
+				props - 	return { props: {}, }// will be passed to the page component as props
+				notFound - true|false	return { notFound: true,}
+				redirect - return {  redirect: { destination: '/', permanent: false } }  }
+
+
+	Custom Error Page
+		404 Page
+			// pages/404.js
+			export default function Custom404() {
+			  return <h1>404 - Page Not Found</h1>
+			}
+
+		500 Page
+			// pages/500.js
+			export default function Custom500() {
+			  return <h1>500 - Server-side error occurred</h1>
+			}
+
+		More Advanced Error Page Customizing
+			// pages/_error.js
+			function Error({ statusCode }) {
+			  return (
+				<p> {statusCode ? `An error ${statusCode} occurred on server` : 'An error occurred on client'} </p>
+			  )
+			}
+			Error.getInitialProps = ({ res, err }) => {
+			  const statusCode = res ? res.statusCode : err ? err.statusCode : 404
+			  return { statusCode }
+			}
+			export default Error
+
+			Usage
+			import Error from 'next/error'
+
+			export async function getServerSideProps() {
+			  const res = await fetch('https://api.github.com/repos/vercel/next.js')
+			  const errorCode = res.ok ? false : res.statusCode
+			  const json = await res.json()
+			  return {   props: { errorCode, stars: json.stargazers_count } }
+			}
+			export default function Page({ errorCode, stars }) {
+			  if (errorCode) { return <Error statusCode={errorCode} title=''/> }
+			  return <div>Next stars: {stars}</div>
+			}
+	
+	Loading Environment Variables
+		An example .env.local:
+
+		DB_HOST=localhost
+		DB_USER=myuser
+		DB_PASS=mypassword
+			host: process.env.DB_HOST,
+			username: process.env.DB_USER,
+			password: process.env.DB_PASS,
+
+		Exposing Environment Variables to the Browser
+		By default environment variables are only available in the Node.js environment, meaning they won't be exposed to the browser.
+
+		In order to expose a variable to the browser you have to prefix the variable with NEXT_PUBLIC_. For example:
+
+		NEXT_PUBLIC_ANALYTICS_ID=abcdefghijk
+		setupAnalyticsService(process.env.NEXT_PUBLIC_ANALYTICS_ID)
+	
+	Static HTML Export
+		export your Next.js application to static HTML
+		Update your build script in package.json to use next export:
+
+		"scripts": {
+		  "build": "next build && next export"
+		}
+	
+	
+	
+	
+	
+	
+	

@@ -1,0 +1,22 @@
+Paths
+
+	app dir
+	$path = app_path('Http/Controllers/Controller.php');
+
+	root dir
+	$path = base_path('vendor/bin');
+
+	config dir
+	$path = config_path();
+
+	db dir
+	$path = database_path('factories/UserFactory.php');
+
+	public dir
+	$path = public_path('css/app.css');
+
+	resources dir
+	$path = resource_path('sass/app.scss');
+
+	storage dir
+	$path = storage_path('app/file.txt');

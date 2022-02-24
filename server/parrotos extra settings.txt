@@ -1,0 +1,5 @@
+disable 3d
+reduce core count to 1  #increased back to 2
+enable hyper-v on boot
+	# not included, but acceleration-> paravirtualization interface hyper-v
+check vtx in guest settings

@@ -1,0 +1,413 @@
+blade
+	resources/views/*.blade.php
+	resources/views/folder/*.blade.php
+		
+	
+	display data
+		Hello, {{ $name }}.		// display content of name variable from view()
+		The current UNIX timestamp is {{ time() }}.	// use php directly
+		Hello, {!! $name !!}.	// no htmpchar escape		
+		Hello, @{{ name }}.		// not rendered as blade, as js
+		@if()	// no blade directives triggered
+		@verbatim	//multiline no blade statements	
+			<div class="container">
+				Hello, {{ name }}.
+			</div>
+		@endverbatim
+		{{-- This comment will not be present in the rendered HTML --}}		//comments
+		
+		Rendering JSON to JS
+			var app = <?php echo json_encode($array); ?>;
+			var app = {{ Illuminate\Support\Js::from($array) }};
+			var app = {{ Js::from($array) }};
+		
+	Blade Directives
+		If Statements
+			@if (count($records) === 1)
+				I have one record!
+			@elseif (count($records) > 1)
+				I have multiple records!
+			@else
+				I don't have any records!
+			@endif
+
+		@unless directive
+			@unless (Auth::check())
+				You are not signed in.
+			@endunless
+
+		@isset and @empty directives
+			@isset($records)
+				// $records is defined and is not null...
+			@endisset
+
+			@empty($records)
+				// $records is "empty"...
+			@endempty
+	
+		Authentication Directives
+			@auth
+				// The user is authenticated...
+			@endauth
+
+			@guest
+				// The user is not authenticated...
+			@endguest
+
+			@auth('admin')
+				// The user is authenticated...
+			@endauth
+
+			@guest('admin')
+				// The user is not authenticated...
+			@endguest
+		
+		Environment Directives
+			@production
+				// Production specific content...
+			@endproduction
+
+			@env('staging')
+				// The application is running in "staging"...
+			@endenv
+
+			@env(['staging', 'production'])
+				// The application is running in "staging" or "production"...
+			@endenv
+
+		Section Directives
+
+			@hasSection('navigation')
+				<div class="pull-right">
+					@yield('navigation')
+				</div>
+
+				<div class="clearfix"></div>
+			@endif
+
+			@sectionMissing('navigation')
+				<div class="pull-right">
+					@include('default-navigation')
+				</div>
+			@endif
+			
+		Switch Statements
+			@switch($i)
+				@case(1)
+					First case...
+					@break
+
+				@case(2)
+					Second case...
+					@break
+
+				@default
+					Default case...
+			@endswitch
+
+		Loops
+			@for ($i = 0; $i < 10; $i++)
+				The current value is {{ $i }}
+			@endfor
+
+			@foreach ($users as $user)
+				<p>This is user {{ $user->id }}</p>
+			@endforeach
+
+			@forelse ($users as $user)
+				<li>{{ $user->name }}</li>
+			@empty
+				<p>No users</p>
+			@endforelse
+
+			@while (true)
+				<p>I'm looping forever.</p>
+			@endwhile	
+	
+			@foreach ($users as $user)
+			@if ($user->type == 1)
+				@continue
+			@endif
+
+			<li>{{ $user->name }}</li>
+
+			@if ($user->number == 5)
+				@break
+			@endif
+			@endforeach
+
+			@foreach ($users as $user)
+				@continue($user->type == 1)
+
+				<li>{{ $user->name }}</li>
+
+				@break($user->number == 5)
+			@endforeach
+
+		The Loop Variable	$loop 
+			@foreach ($users as $user)
+				@if ($loop->first)
+					This is the first iteration.
+				@endif
+
+				@if ($loop->last)
+					This is the last iteration.
+				@endif
+
+				<p>This is user {{ $user->id }}</p>
+			@endforeach
+
+			@foreach ($users as $user)		//for nested loop with loop parent prop
+				@foreach ($user->posts as $post)
+					@if ($loop->parent->first)
+						This is the first iteration of the parent loop.
+					@endif
+				@endforeach
+			@endforeach
+	
+			Property			Description
+			$loop->index		The index of the current loop iteration (starts at 0).
+			$loop->iteration	The current loop iteration (starts at 1).
+			$loop->remaining	The iterations remaining in the loop.
+			$loop->count		The total number of items in the array being iterated.
+			$loop->first		Whether this is the first iteration through the loop.
+			$loop->last			Whether this is the last iteration through the loop.
+			$loop->even			Whether this is an even iteration through the loop.
+			$loop->odd			Whether this is an odd iteration through the loop.
+			$loop->depth		The nesting level of the current loop.
+			$loop->parent		When in a nested loop, the parent's loop variable.
+			
+	Conditional Classes
+		@php
+			$isActive = false;
+			$hasError = true;
+		@endphp
+
+		<span @class([
+			'p-4',
+			'font-bold' => $isActive,
+			'text-gray-500' => ! $isActive,
+			'bg-red' => $hasError,
+		])></span>
+		usage
+		<span class="p-4 text-gray-500 bg-red"></span>
+	
+	Including Subviews
+		//Blade componentscare are better
+		<div>@include('shared.errors')</div>
+		@include('view.name', ['status' => 'complete'])	//pass data to included view
+		@includeIf('view.name', ['status' => 'complete'])
+		@includeWhen($boolean, 'view.name', ['status' => 'complete'])
+		@includeUnless($boolean, 'view.name', ['status' => 'complete'])
+		@each('view.name', $jobs, 'job', 'view.empty')	// (view, array or collection, var name, (optional)view if array empty), use the @foreach and @include to inherit parent var
+		
+	Once directive
+		@once		//rendered once
+			@push('scripts')
+				<script></script>
+			@endpush
+		@endonce
+		
+	Raw php
+		@php
+			$counter = 1;
+		@endphp
+	
+	Components
+		Class-based components
+		php artisan make:component nameofcomponent
+		php artisan make:component folder/nameofcomponent
+			app/View/Components/nameofcomponent.php
+			resources/views/components/nameofcomponent.blade.php
+
+			resources/views/components/nameofcomponent.blade.php
+				<span class="alert-title">{{ $title }}</span>
+				<div {{ $attributes }} class="alert-{{ $type }}">
+					{{ $slot }}
+					{{ $message }}
+				</div>
+				
+					using $attributes	//All of the attributes that are not part of the component's constructor 
+						{{ $attributes->merge(['type' => 'button']) }}	//for default, will be replaced
+						{{ $attributes->merge(['class' => 'green']) }}	//for class, will merge
+						@if ($attributes->has('class'))
+							<div>Class attribute is present</div>
+						@endif
+						{{ $attributes->get('class') }}	//retrieve					
+				
+			app/View/Components/nameofcomponent.php		//use camelCase
+				public function __construct($type, $message){
+					$this->type = $type;
+					$this->message = $message;
+				}
+			
+			usage in blase	//use kebab-case
+				<x-|folder.|nameofcomponent type="1" :message="$message" class="classname"/>	//all other attributes rending in attributes
+				OR
+				<x-nameofcomponent user-id="1" :message="$message" class="classname">
+					<x-slot name="title"> Server Error </x-slot>	//goes to {{title}}
+					<strong>Whoops!</strong> Something went wrong!	//will fit into {{$slot}}
+				</x-nameofcomponent>
+				
+				PHP expressions and variables use the : character as a prefix					
+
+		Anonymous components
+			resources/views/components/nameofcomponent.blade.php
+				@props(['type',''message'])
+				@props(['type' => 'info', 'message'])	//type default to info			
+				<div {{ $attributes }}>
+					{{ $slot }}					
+					{{ type }} : {{ $message }}
+				</div>
+				
+					using $attributes
+						{{ $attributes->merge(['type' => 'button']) }}	//for default, will be replaced
+						{{ $attributes->merge(['class' => 'green']) }}	//for class, will merge
+						@if ($attributes->has('class'))
+							<div>Class attribute is present</div>
+						@endif
+						{{ $attributes->get('class') }}	//retrieve
+				
+				usage in blade
+					<x-folder.nameofcomponent/>
+					<x-nameofcomponent type="1" :message="$message" class="classname"/>	//all other attributes rending in attributes
+						//can also render as layout component			
+				
+			grouping
+			/resources/views/components/accordion/index.blade.php
+				@prop(['prop' => 'propdefault'])
+				<ul {{ $attributes->merge(['class' => 'bg-'.$prop.'-200']) }}>
+					{{ $slot }}
+				</ul>
+				
+			/resources/views/components/accordion/item.blade.php					
+				@aware(['prop' => 'propdefault'])	//access parent $prop with @aware
+				<li {{ $attributes->merge(['class' => 'text-'.$color.'-800']) }}>
+					{{ $slot }}
+				</li>
+
+				usage in blade
+				<x-accordion>	//from index.blade.php
+					<x-accordion.item>	//from item.blade/php
+					</x-accordion.item>
+				</x-accordion>	
+			
+		Dynamic Components
+			render the component based on a runtime value or variable:
+			<x-dynamic-component :component="$componentName" class="mt-4" />
+	
+	
+	Building Layouts
+		Using Components
+			Defining The Layout Component
+			<!-- resources/views/components/layout.blade.php -->
+			<html>
+				<head>
+					<title>{{ $title ?? 'Todo Manager' }}</title>
+				</head>
+				<body>
+					<h1>Todos</h1>
+					{{ $slot }}
+				</body>
+			</html>
+
+			Applying The Layout Component
+			<!-- resources/views/tasks.blade.php -->
+			<x-layout>
+				<x-slot name="title">
+					Custom Title
+				</x-slot>
+				<h4>{{ $name }}, this is default slot</h4>
+			</x-layout>
+			
+			Route
+			Route::get('/tasks', function () {
+				return view('tasks', ['name' => 'hello']);
+			});
+
+		Using Template Inheritance
+			Defining A Layout
+			<!-- resources/views/layouts/app.blade.php -->
+
+			<html>
+				<head>
+					<title>App Name - @yield('title')</title>
+				</head>
+				<body>
+					@section('sidebar')
+						This is the master sidebar.
+					@show
+
+					<div class="container">
+						@yield('content', 'Default content')
+					</div>
+				</body>
+			</html>
+
+			Extending A Layout
+			@extends Blade specifies which layout the child view should "inherit".
+			inject content into the layout's sections using @section
+			the contents of these sections will be displayed in the layout using @yield:
+
+			<!-- resources/views/child.blade.php -->
+			@extends('layouts.app')
+			@section('title', 'Page Title')
+			@section('sidebar')
+				@parent
+				<p>This is appended to the master sidebar.</p>
+			@endsection
+
+			@section('content')
+				<p>This is my body content.</p>
+			@endsection
+
+			Directives
+			@section defines a section of content
+			@yield directive displays the contents of a given section.
+			@endsection directive will only define a section
+			@show will define a section and immediately yield the section.			
+			@parent directive to append (rather than overwriting) content to the layout's sidebar. 
+			
+	
+	Forms
+		CSRF Field
+			<form method="POST" action="/profile">
+				@csrf
+			</form>
+
+		Method Field
+			PUT, PATCH, or DELETE added to a hidden _method field
+			<form action="/foo/bar" method="POST">
+				@method('PUT')
+			</form>
+
+		Validation Errors
+			The @error checks if validation error messages exist
+			echo the $message variable to display the error message
+			use the @else directive to render content when there is not an error for an attribute
+				/resources/views/post/create.blade.php
+					<label for="title">Post Title</label>
+					<input id="title" type="text" class="@error('title') is-invalid @else is-valid @enderror">
+					@error('title')
+						<div class="alert alert-danger">{{ $message }}</div>
+					@enderror
+			
+	Stacks		// read more on stacks
+		@push('scripts')
+			<script src="/example.js"></script>
+		@endpush
+
+		@stack('scripts')
+
+		@push('scripts')
+			This will be second...
+		@endpush
+		@prepend('scripts')
+			This will be first...
+		@endprepend
+	
+	Service Injection
+		@inject('metrics', 'App\Services\MetricsService')
+		<div>
+			Monthly Revenue: {{ $metrics->monthlyRevenue() }}.
+		</div>

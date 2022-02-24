@@ -1,0 +1,341 @@
+//DOM Set Multiple atribs
+
+	var elem = document.createElement("img");
+    
+	function setAttributes(el, attrs) {Object.keys(attrs).forEach(key => el.setAttribute(key, attrs[key])) }
+    setAttributes(elem, { src: 'http://example.com/something.jpeg', height: '100%' });
+    document.body.appendChild(elem)
+
+    function setAttributes(el, attrs) { for(var key in attrs) {el.setAttribute(key, attrs[key])} }
+    setAttributes(elem, {"src": "http://example.com/something.jpeg", "height": "100%", ...});
+	
+
+DOM 
+document.
+	addEventListener('click', func)
+	body.domElems
+	close()
+	createElement('a')
+	createTextNode('h1')
+	fullscreenElement
+	fullscreenEnabled()
+	hasFocus()
+	querySelector()
+	querySelectorAll()[i]
+	readyState
+		uninitialized - Has not started loading yet
+		loading - Is loading
+		loaded - Has been loaded
+		interactive - Has loaded enough and the user can interact with it
+		complete - Fully loaded
+	referrer
+	removeEventListener('click',func)
+	
+
+DOM Elements
+elem=doc.querySelector('.name').
+	Events and Children Selector
+		addEventListener('click',func)
+		removeEventListener('click',func)
+		querySelector()
+		querySelectorAll()[i]
+	
+	Insertion/Removal
+		appendChild(createElem)
+		insertAdjacentElement("afterbegin"|"afterend"|"beforebegin"|"beforeend", createElem)
+		insertAdjacentHTML("afterbegin"|"afterend"|"beforebegin"|"beforeend", "<span>My span</span>")
+		insertAdjacentText("afterbegin"|"afterend"|"beforebegin"|"beforeend", "My text")
+		insertBefore(newItem, elem.childNodes[1])
+		replaceChild(textnode, elem.childNodes[i])
+		remove()
+	
+	Navigation
+		children[i]
+		parentNode
+		childNodes[i]
+		children[i]
+		firstChild
+		lastChild
+		nextSibling
+		previousSibling
+		parentElement
+		firstElementChild
+		lastElementChild
+		nextElementSibling
+		previousElementSibling
+		childElementCount
+		closest('.name')
+		contains(div)
+		
+	Interaction
+		contentEditable=
+		exitFullscreen()
+		click()	
+		blur()	
+		focus()
+		isContentEditable
+		requestFullscreen()
+	
+	Elem Dimensions
+		scrollHeight=
+		scrollIntoView()
+		scrollLeft=
+		scrollTop=
+		scrollWidth=
+		clientHeight=
+		clientLeft=
+		clientTop=
+		clientWidth=
+		offsetHeight=
+		offsetWidth=
+		offsetLeft=
+		offsetParent=
+		offsetTop=
+
+	HTML
+		outerHTML=
+		outerText=
+		innerHTML=
+		innerText=
+		textContent=
+		nameattr=
+		getAttribute("class")
+		hasAttribute("class")
+		id=
+		
+	CSS
+		style
+			.color=
+			.backgroundColor=
+		classList
+			.add(class1, class2, ...)
+			.remove(class1, class2, ...)
+			.toggle(class, true|false)
+			.contains(class)
+
+
+DOM Event Objects	<elem onevent=func> elem.onevent=func addeventlistner('event',func)
+	
+	Clipboard <body> <input> textelem
+		.oncopy
+		.oncut
+		.onpaste
+			return e.clipboardData
+
+	Focus	<input>
+		.onblur
+		.onfocus
+		.onfocusin
+		.onfocusout
+			return e.relatedTarget.tagName|id|classList
+
+	Keyboard <doc,input>
+		.onkeydown
+		.onkeypress
+		.onkeyup
+			returns
+			e.altKey
+			e.charCode
+			e.code
+			e.ctrlKey
+			e.getModifierState()
+			e.isComposing
+			e.key
+			e.keyCode
+			e.location
+			e.metaKey
+			e.repeat
+			e.shiftKey
+			e.which
+
+	Event Listeners
+		Document
+			.visibilitychange
+			.readystatechange
+			.DOMContentLoaded
+			
+		Screen
+			.fullscreenchange
+			.fullscreenerror
+
+		Body
+			.onafterprint
+			.onbeforeprint
+			.onbeforeunload
+			.onload
+			.onoffline
+			.ononline
+			.onpagehide
+			.onpageshow
+			.onunload
+
+		Elem
+			.onblur
+
+		Form
+			.onchange
+			.oninput
+			.oninvalid
+			.onselect
+			.onsubmit
+			.onreset
+			.oncancel
+			.onformdata
+
+		SSE
+			.onopen
+			.onmessage
+			.onerror
+
+		UI
+			.onresize
+			.onscroll
+			returns
+				e.bubbles
+				e.cancelBubble
+				e.cancelable
+				e.composed
+				e.createEvent()
+				e.composedPath()
+				e.currentTarget
+				e.defaultPrevented
+				e.eventPhase
+				e.isTrusted
+				e.preventDefault()
+				e.stopImmediatePropagation()
+				e.stopPropagation()
+				e.target
+				e.timeStamp
+				e.type
+
+	Mouse
+		.onclick
+		.ondblclick
+		.onmousedown
+		.onmouseenter
+		.onmouseleave
+		.onmousemove
+		.onmouseout
+		.onmouseover
+		.onmouseup
+			returns
+				e.altKey
+				e.button
+				e.buttons
+				e.clientX
+				e.clientY
+				e.ctrlKey
+				e.getModifierState()
+				e.metaKey
+				e.movementX
+				e.movementY
+				e.offsetX
+				e.offsetY
+				e.pageX
+				e.pageY
+				e.region
+				e.relatedTarget
+				e.screenX
+				e.screenY
+				e.shiftKey
+				e.which
+
+	Page Transition
+		.pagehide
+		.pageshow
+			return e.persisted
+		
+	Storage
+		.storage
+			returns
+				e.key
+				e.newValue
+				e.oldValue
+				e.storageArea
+				e.url
+
+	Touch
+		.ontouchcancel
+		.ontouchend
+		.ontouchmove
+		.ontouchstart
+			returns
+				e.altKey
+				e.changedTouches
+				e.ctrlKey
+				e.metaKey
+				e.shiftKey
+				e.targetTouches
+				e.touches
+
+
+Window Object
+window.
+	closed
+	console
+		.log
+		.info
+		.warn
+		.clear
+		.error
+	history
+		.length
+		.back()
+		.forward()
+		.go(-1)
+	innerHeight
+	innerWidth
+	localStorage|sessionStorage
+		.setItem("key", "value");
+		.getItem("key");
+		.removeItem("key");
+	location
+		.hash=
+		.host=
+		.hostname=
+		.href=
+		.origin
+		.pathname=
+		.port=
+		.protocol=
+		.search=
+		.assign()
+		.reload()
+		.replace()
+	navigator
+		.appCodeName
+		.appName
+		.appVersion
+		.cookieEnabled
+		.geolocation
+		.onLine
+		.platform
+		.userAgent
+	outerHeight
+	outerWidth
+	screenX
+	screenY
+	scrollX
+	scrollY
+	.alert('')
+	.atob()
+	.blur()
+	.btoa()
+	.clearInterval()
+	.clearTimeout()
+	.close()
+	.confirm('')
+	.focus()
+	.getSelection()
+	.moveBy()
+	.moveTo()
+	.open(URL, name, specs, replace)
+	.print()
+	.prompt('')
+	.resizeBy(x,y)
+	.resizeTo(x,y)
+	.scrollBy(hor,vert)
+	.scrollTo(hor,vert)
+	.setInterval()
+	.setTimeout()
+	.stop()

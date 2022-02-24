@@ -1,0 +1,59 @@
+HTTP requests
+	use Illuminate\Support\Facades\Http;
+
+	$response = Http::get('http://example.com');	//as get	
+	$response = Http::get('http://example.com/users', ['name' => 'Taylor' , 'page' => 1]);	//as get with params	
+		$response->body() : string;
+		$response->json() : array|mixed;
+		$response->object() : object;
+		$response->collect() : Illuminate\Support\Collection;
+		$response->status() : int;
+		$response->ok() : bool;
+		$response->successful() : bool;
+		$response->failed() : bool;
+		$response->serverError() : bool;
+		$response->clientError() : bool;
+		$response->header($header) : string;
+		$response->headers() : array;
+	$response = Http::post('http://example.com/users', ['name' => 'Steve' , 'role' => 'Network Administrator']);	//as post
+	$response = Http::asForm()->post('http://example.com/users', ['name' => 'Sara' , 'role' => 'Privacy Consultant',]);	//as a form
+	$response = Http::attach('attachment', file_get_contents('photo.jpg'), 'photo.jpg')->post('http://example.com/attachments');	//with attachments
+	$response = Http::withHeaders(['X-First' => 'foo','X-Second' => 'bar'])->post('http://example.com/users', ['name' => 'Taylor']);	//with headers
+	$response = Http::accept('application/json')->get('http://example.com/users');	//specify type of response
+	$response = Http::withToken('token')->post(...);	//using bearer token
+	$response = Http::timeout(3)->get(...);		//timeout
+	$response = Http::retry(numner, millisecs)->post(...);		//retry
+	
+	Errors
+		$response->successful();
+		$response->failed();
+		$response->clientError();
+		$response->serverError();
+		return Http::post(...)->throw()->json();
+		return Http::post(...)->throw(function ($response, $e) {})->json();
+	
+	Faking Responses
+		Http::fake();
+		$response = Http::post(...);
+
+		Http::fake([
+			'github.com/*' => Http::response(['foo' => 'bar'], 200, $headers),
+			'google.com/*' => Http::response('Hello World', 200, $headers),
+		]);
+
+		Http::fake([
+			'github.com/*' => Http::response(['foo' => 'bar'], 200, ['Headers']),
+			'*' => Http::response('Hello World', 200, ['Headers']),
+		]);
+
+		Http::fake([
+			'github.com/*' => Http::sequence()->push('Hello World', 200)->push(['foo' => 'bar'], 200)->pushStatus(404),
+		]);
+
+		Http::fake([
+			'github.com/*' => Http::sequence()->push('Hello World', 200)->push(['foo' => 'bar'], 200)->whenEmpty(Http::response()),
+		]);
+
+		Http::fakeSequence()->push('Hello World', 200)->whenEmpty(Http::response());
+	
+	

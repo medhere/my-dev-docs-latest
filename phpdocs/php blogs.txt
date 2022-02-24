@@ -1,0 +1,66 @@
+htmly
+
+	location / {
+		try_files $uri $uri/ /index.php?$args;
+	}
+	
+remove htmly image at login
+remove test (c) Your name. Powered by HTMLy Design by 3rd Wave Media at home page
+remove big green icon at home page
+goto config and manually add github, instagram, find way to add to home page
+change favicon
+remove logo from dashboard
+remove Proudly powered by HTMLy and Admin panel style based on AdminLTE
+pre-add themes
+
+
+  
+bludit
+	location / {
+        try_files $uri $uri/ /index.php?$args;
+    }
+
+    location ^~ /bl-content/databases/ { deny all; }
+    location ^~ /bl-content/workspaces/ { deny all; }
+    location ^~ /bl-content/pages/ { deny all; }
+    location ^~ /bl-kernel/*.php { deny all; } 
+
+look for favicon.ico
+	bl-kernel/img/favicon.png
+remove POWERED BYBLUDIT from home page
+	got bl-themes/themname/php/footer.php
+remove Documentation, Forum support, Chat support from dashboard page	
+	\bl-kernel\admin\views\dashboard.php
+change favicon
+	\bl-kernel\img\logo.svg
+	\bl-themes\alternative\img\favicon.png 32x32
+change BLUDIT
+	\bl-kernel\admin\themes\booty\html\sidebar.php echo (defined('BLUDIT_PRO'))?'BLUDIT PRO':'BLUDIT'
+	\bl-kernel\admin\views\login.php style="color: #555;">BLUDIT</h1>';
+notifications
+	\bl-kernel\boot\variables.php  define('NOTIFICATIONS_AMOUNT', 5);
+pre-add themes
+	/bl-themes/
+	Go to the Admin panel, and on the left sidebar go to Settings > Themes.
+plugins
+	remove 
+		about
+		hitcounter
+		Staticpages
+		easymde
+		twittercards
+		opengraph
+		remote content
+		version
+		blogx and alternative
+		
+	check custom fields parser
+	test cke editor, then disable mce
+	work on upload OGFileManager-master
+		var preLoadDocs = [];
+		var PATH_OGFM = "/bludit-3-13-1/bl-plugins/OGFileManager\";
+		var OGFM_PATH_DOCUMENTS_ABS = "C:\laragon\www\bludit-3-13-1\bl-content\uploads\documents\";
+	rework on add2any
+	work on kolika theme to work with reactions
+	work on background image of massively theme
+	change travelopedia and its frontpage

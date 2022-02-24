@@ -1,0 +1,100 @@
+Routing
+	php artisan route:list
+
+	use Illuminate\Support\Facades\Route;
+	Route::get($uri, $callback);
+	Route::post($uri, $callback);
+	Route::put($uri, $callback);
+	Route::patch($uri, $callback);
+	Route::delete($uri, $callback);
+	Route::options($uri, $callback);
+	Route::match(['get', 'post'], $uri, $callback);
+	Route::any($uri, $callback);
+	Route::redirect('/here', '/there');
+	Route::permanentRedirect('/here', '/there');
+	
+	Views
+		Route::view('/welcome', 'welcome');
+		Route::view('/welcome', 'welcome', ['name' => 'Taylor']);
+
+	Parameters
+		Route::get('/user/{id}', function ($id) {
+			return 'User '.$id;
+		})->where('id', '[0-9]+'); //where is optional
+		Route::get('/posts/{post}/comments/{comment?}', function ($postId, $commentId = '1') {
+			//
+		})->where(['post' => '[0-9]+', 'comment' => '[a-z]+']);
+			->whereNumber('id')->whereAlpha('name')->whereAlphaNumeric('name');
+
+	for default pattern
+		the boot method of your app/Providers/RouteServiceProvider.php
+		public function boot()
+		{		Route::pattern('id', '[0-9]+');		}
+		
+	Named Routes
+		Route::get($uri, $callback)->name('profile');
+			later, $url = route('profile');
+		Route::get('/user/{id}/profile', $callback)->name('profile');
+			later, $url = route('profile', ['id' => 1]);
+					// /user/1/profile
+					$url = route('profile', ['id' => 1, 'photos' => 'yes']);
+					// /user/1/profile?photos=yes	
+
+	for middleware
+		Route::middleware(['first', 'second'])->group(function () {
+			Route::get($uri, $callback);
+			Route::get($uri, $callback);
+				// both uses first & second middleware...
+		});
+	
+	for subdomain
+		Route::domain('{account}.example.com')->group(function () {
+			Route::get('user/{id}', function ($account, $id) {
+				//
+			});
+		});
+
+	for prefixed routes
+		Route::prefix('admin')->group(function () {
+			Route::get($uri, $callback);
+				// "/admin/$uri"
+		});	
+
+	Missing Model or view
+		Facades\Request
+		Facades\Redirect
+		Route::get($uri, $callback)->missing(function (Request $request) {
+            return Redirect::route('locations.index');
+        });;
+		
+	Fallback/Default 404 route
+		Route::fallback($callback);
+
+	Route Model Binding...  read more on it for eloquent db model
+	
+
+
+for webview
+	save in routes/web.php for webview
+
+	use Illuminate\Support\Facades\Route;
+	Route::get('/greeting', function () {
+		return 'Hello World';
+	});
+
+	use App\Http\Controllers\UserController;
+	Route::get('/user', [UserController::class, 'index']);
+
+	
+for api
+	save in routes/api.php for api at /api
+
+	use Illuminate\Support\Facades\Route;
+	use Illuminate\Support\Facades\Request;
+	Route::get('/', function (Request $request) {
+		return 'test api';
+	});
+
+
+Cross-Origin Resource Sharing (CORS)
+	Laravel can automatically respond to CORS OPTIONS HTTP requests with values that you configure. All CORS settings may be configured in your application's config/cors.php

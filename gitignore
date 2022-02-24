@@ -1,0 +1,68 @@
+.gitignore
+
+	# Compiled source #
+	###################
+	*.com
+	*.class
+	*.dll
+	*.exe
+	*.o
+	*.so
+
+	# Temporary files #
+	###################
+	*.swp
+	*.swo
+	*~
+
+	# Packages #
+	############
+	*.7z
+	*.dmg
+	*.gz
+	*.iso
+	*.jar
+	*.rar
+	*.tar
+	*.zip
+
+	# Logs #
+	######################
+	*.log
+
+	# OS generated files #
+	######################
+	.DS_Store*
+	ehthumbs.db
+	Icon?
+	Thumbs.db
+
+	# Editor files #
+	################
+	.vscode
+	@xparta
+
+	# ignore ALL .log files
+	*.log
+
+	# ignore ALL files in ANY directory named temp
+	temp/
+
+	name			All name files, name folders, and files and folders in any name folder
+	name/			Ending with / specifies the pattern is for a folder. Matches all files and folders in any name folder
+	name.file		All files with the name.file
+	/name.file		Starting with / specifies the pattern matches only files in the root folder
+	lib/name.file	Patterns specifiing files in specific folders are always realative to root (even if you do not start with / )
+	**/lib/name.file	Starting with ** before / specifies that it matches any folder in the repository. Not just on root.
+	**/name			All name folders, and files and folders in any name folder
+	/lib/**/name	All name folders, and files and folders in any name folder within the lib folder.
+	*.file			All files withe .file extention
+	*name/			All folders ending with name
+	name?.file		? matches a single non-specific character
+	name[a-z].file		[range] matches a single character in the specified range (in this case a character in the range of a-z, and also be numberic.)
+	name[abc].file		[set] matches a single character in the specified set of characters (in this case either a, b, or c)
+	name[!abc].file		[!set] matches a single character, except the ones spesified in the set of characters (in this case a, b, or c)
+	name/!name/secret.log	! specifies a negation or exception. Matches all files and folders in any name folder, except name/secret.log
+	*.file!name.file		! specifies a negation or exception. All files withe .file extention, except name.file
+	*.file!name/*.filejunk.*	Adding new patterns after a negation will re-ignore a previous negated file. All files withe .file extention, except the ones in name folder. Unless the file name is junk
+

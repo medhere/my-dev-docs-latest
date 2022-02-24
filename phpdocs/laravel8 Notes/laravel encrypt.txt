@@ -1,0 +1,19 @@
+Encryption
+	Configuration
+	key configuration in config/app.php set APP_KEY
+	use php artisan key:generate
+
+	Encrypt
+	use Illuminate\Support\Facades\Crypt;
+	use Illuminate\Contracts\Encryption\DecryptException;
+		$request->user()->fill([
+			'token' => Crypt::encryptString($request->token),
+		])->save();
+
+	Decrypting A Value
+
+	try {
+		$decrypted = Crypt::decryptString($encryptedValue);
+	} catch (DecryptException $e) {
+		//
+	}

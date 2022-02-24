@@ -1,0 +1,86 @@
+learn mongo, knex and mysql2
+
+	MONGO
+		const mongoose= require('mongoose');
+		mongoose.connect('mongodb://localhost:27017/userdb',{useNewUrlParser:true,useUnifiedTopology:true,useCreateIndex:true});
+
+		const userSchema= new mongoose.Schema({
+			name: {type: String,required: [true,'Enter Name']},
+			pass: {type: String,required: [true,'Enter Pass']}, 
+			datetime:{required:[false]}
+		});
+
+		const users=mongoose.model('user',userSchema);
+
+			var newuser= new users({
+				name:'michael',
+				pass:'password',
+				datetime: new Date()
+			});
+			
+			newuser.save((err)=>{
+				console.log(err);
+				var newerr= (err) ? 'saved':'error';
+				res.send(newerr);
+			});
+		
+			users.find((err,data)=>{
+				console.log(data);
+			});
+		
+
+
+	KNEX
+		const knex = require('knex')({
+		  client: 'mysql',
+		  connection: {
+			host : '127.0.0.1',
+			port : 3306,
+			user : 'your_database_user',
+			password : 'your_database_password',
+			database : 'myapp_test'
+		  }
+		});
+		knex.raw('select * from "books" where "author" = ?', 'Test')
+		knex.raw('select * from ?? where "author" = ?', 'books','Test')
+		knex.raw('select * from users where id = ?', [1]).then(function(resp) { ... });
+	
+	MYSQL2
+		const mysql = require('mysql2');
+		const connection = mysql.createConnection({host: 'localhost', port:'', user: 'root', password:'', database:'test'});
+
+		connection.query(
+		  'SELECT * FROM `table` WHERE `name` = "Page" AND `age` > 45',
+		  function(err, results, fields) {
+			console.log(results); // results contains rows returned by server
+			console.log(fields); // fields contains extra meta data about results, if available
+		  }
+		);
+		
+		connection.query({ sql: 'select 1 as foo, 2 as foo', rowsAsArray: true }, function(err, results, fields) {
+		  console.log(results) // will be an array of arrays rather than an array of objects
+		  console.log(fields) // these are unchanged
+		});
+
+		connection.query(
+		  'SELECT * FROM `table` WHERE `name` = ? AND `age` > ?', ['Page', 45],
+		  function(err, results) {
+			console.log(results);
+		  }
+		);
+
+		connection.execute(
+		  'SELECT * FROM `table` WHERE `name` = ? AND `age` > ?', ['Rick C-137', 53],
+		  function(err, results, fields) {
+			console.log(results); // results contains rows returned by server
+			console.log(fields); // fields contains extra meta data about results, if available
+		  }
+		);
+	
+	connection.changeUser({user|password|database : 'john'}, function(err) {
+	  if (err) throw err;
+	});
+	
+	const mysql = require('mysql2/promise');
+	const connection = await mysql.createConnection({host:'localhost', user: 'root', database: 'test'});
+	const [rows, fields] = await connection.execute('SELECT * FROM `table` WHERE `name` = ? AND `age` > ?', ['Morty', 14]);

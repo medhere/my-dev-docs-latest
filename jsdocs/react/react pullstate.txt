@@ -1,0 +1,87 @@
+learn pullstatejs
+
+	create store
+		import { Store } from "pullstate";
+		export var appstore = new Store({
+			myInput1:'123',
+			multipleInputs:{fname:'fname',lname:'lname',loc:{state:'delta',lga:'isoko'}}
+		});
+	import store
+		import { appstore} from "../store";
+	user state
+		appstore.useState(s=>s.multipleInputs.fname)
+	use multiple states with assignment
+		var {myInput1, multipleInputs}= appstore.useState(s=>s) //outputs all state data
+		var {myInput1, lname}=appstore.useState(s => ({myInput1:s.myInput1,lname:s.multipleInputs.lname})); //output specific state data as obj
+		var [myInput, lname]=appstore.useState(s => ([s.myInput1,s.multipleInputs.lname])); //output specific state data as arr
+	update 1 state
+		appstore.update(s => {s.multipleInputs.fname = 'lol'});		
+	update multiple states
+		appstore.update([s=>{s.myInput1="test me"}, s=>{s.multipleInputs.lname="lol"}]);
+	update multiple in object, can add new object
+		function changeInput(e){
+			var {id, value} = e.target;
+			appstore.update(s => {s.multipleInputs = {...s.multipleInputs,[id]:value}});
+		}
+
+	Use a sub-state of a store, dynamically
+		export function useGetState([state]){return appstore.useState(s=>s[state])}
+	
+	Reading
+	Subscribing and trigger effect when store changes
+	  var unsubscribe=myStore.subscribe((s) => s.state,
+			(newValue, allState, prevValue) => { //do things }
+	  );
+	  unsubscribe()
+	  
+	Updating
+	Reactions and trigger effect when store changes
+		var stopReationg=StoreName.createReaction((s) => s.state,
+			(newValue, draftStore, originalStore, prevValue) => { //do things }
+		);
+		stopReaction();
+
+	pullstate persist
+		  try {
+			  const value = await localStorage.getItem('userData');
+			  if (value !== null) {
+				let saved = JSON.parse(value);
+				//UserStore.replace(saved);
+				UserStore.update((s) => {
+				  for (let key in saved) {
+					s[key] = saved[key];
+				  }
+				});
+			  }
+			} catch (e) {
+			  console.log('error reading stored value');
+			}
+		  };
+
+		async function getSavedStore(storeName, stateName="all"){
+			if (stateName=="all"){
+				const value = await localStorage.getItem(storeName-stateName);
+				if(value!==null){
+					let saved = JSON.parse(value);
+					//UserStore.replace(saved);
+					[storeName].update((s) => {
+					  for (let key in saved) {
+						s[key] = saved[key];
+					  }
+					});
+					return true;
+				}
+			  }
+			elseif(stateName=="all"){
+				const value = await localStorage.getItem(storeName-stateName);
+				if(value!==null){ [storeName].update((s) => s.[stateName]=value); return true; }
+			  }
+			else{
+			return false;
+			  }
+		}
+
+		Auto-add state to localStorage
+		  store.subscribe((s) => s,
+			(fullstore) => { localStorage.setItem('fullStore', JSON.stringify(fullstore)) }
+		  );

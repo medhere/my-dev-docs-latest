@@ -1,0 +1,113 @@
+Mail
+	config/mail.php
+
+	<?php
+	return [
+		'default' => env('MAIL_MAILER', 'sendmail'),
+		'mailers' => [
+			'smtp' => [
+				'transport' => 'smtp',
+				'host' => env('MAIL_HOST', 'smtp.mailgun.org'),
+				'port' => env('MAIL_PORT', 587),
+				'encryption' => env('MAIL_ENCRYPTION', 'tls'),
+				'username' => env('MAIL_USERNAME'),
+				'password' => env('MAIL_PASSWORD'),
+				'timeout' => null,
+				'auth_mode' => null,
+			],
+			'sendmail' => [
+				'transport' => 'sendmail',
+				'path' => 'C:\laragon\bin\sendmail\sendmail.exe -bs',
+				// 'path' => '/usr/sbin/sendmail -bs',
+			],
+		],
+	];
+
+
+	New Mail
+	php artisan make:mail Orders
+	php artisan make:mail Orders --markdown=emails.orders
+	app/Mail
+	create resources/views/emails
+
+		app/Mail/Orders.php
+			use Queueable, SerializesModels;
+			public $order;
+
+			public function __construct(Order $order){
+					$this->order = $order;
+			}
+
+			public function build(){
+				return $this->from('example@example.com', 'Example')
+							->replyTo($address, $name)
+							->subject(string $subject)
+							->priority(int $level)
+							->view('emails.orders')->with([
+								  'orderPrice' => $this->order->price,
+								])
+								OR
+							->markdown('emails.orders.shipped', [
+								'orderPrice' => $this->->order->price,
+							]);
+							->attach('/path/to/file','name.ext')
+							->attachFromStorage('/path/to/file','name.ext')
+			}
+
+		email/orders.blade.php
+			<div>
+				<img src="{{ $message->embed($pathToImage) }}">
+				Price: {{ $orderPrice }}
+			</div>
+
+
+		Markdown Mailables
+			@component('mail::message')
+			# Order Shipped
+			Your order has been shipped!
+
+			@component('mail::panel')
+			This is the panel content.
+			@endcomponent
+
+			@component('mail::table')
+			| Laravel       | Table         | Example  |
+			| ------------- |:-------------:| --------:|
+			| Col 2 is      | Centered      | $10      |
+			| Col 3 is      | Right-Aligned | $20      |
+			@endcomponent
+
+			@component('mail::button', ['url' => $url, 'color' => 'success'])	//primary, success, and error
+			View Order
+			@endcomponent
+
+			Thanks,<br>
+			{{ $name  }}
+			@endcomponent
+
+		Theming
+		new theme for Laravel's Markdown components, new CSS file in html/themes directory. update the theme option of config/mail.php configuration
+
+
+	Sending Mail
+	use App\Mail\Orders;
+	use Illuminate\Support\Facades\Mail;
+		Mail::to(string|array $address, $name)
+				OR->addAddresses(string|array $address)
+			->cc($moreUsers)
+			->bcc($evenMoreUsers)
+			->send(new Orders($order));
+
+		foreach (['taylor@example.com', 'dries@example.com'] as $recipient) {
+			Mail::to($recipient)->send(new OrderShipped($order));
+		}
+		
+		Mail::mailer('postmark')->to($request->user())->send(new Orders($order));
+			
+    Illuminate\Support\Facades\Mail;
+        Mail::html($html)
+            ->sendMailable(Mailable $mailable)
+            ->failures()
+	
+
+		

@@ -1,0 +1,48 @@
+Middleware
+	php artisan make:middleware nameofmiddleware
+	app/HTTP/Middleware/nameofmiddleware.php
+	
+	//	use \Illuminate\Http\Request  $request
+	//    use \Illuminate\Http\Response  $response
+	//	use Closure $next;
+	
+	Response Handling
+		public function handle(Request $request,Response $response Closure $next)
+		{
+			// perform action before handling request
+			$response = $next($request);
+			// Perform action after handling request
+			return $response;
+
+		}
+		
+	Global Middleware
+		list the middleware class in the $middleware or $middlewareGroups property of your app/Http/Kernel.php class.
+			\App\Http\Middleware\Nameofmiddleware::class
+			
+	Assigning and Removing Middleware To Routes
+		list the middleware class in the $routeMiddleware property of your app/Http/Kernel.php class.
+			'test' => \App\Http\Middleware\Nameofmiddleware::class
+		OR
+		Route::get($uri,$callback)->middleware('nameofmiddleware');
+		Route::get($uri,$callback)->middleware(['first', 'second']);
+		OR
+		use App\Http\Middleware\Nameofmiddleware;
+		Route::get($uri,$callback)->middleware(Nameofmiddleware::class);
+		OR
+		Route::middleware(['first', 'second'])->group(function () {
+			Route::get($uri, $callback);
+			Route::get($uri, $callback);
+				// both uses first & second middleware...
+			Route::get($uri, $callback)->withoutMiddleware('first');
+				//omits first middleware
+		});
+
+		Route::withoutMiddleware([EnsureTokenIsValid::class])->group(function () {
+			Route::get($uri,$callback});
+		});
+		
+		Route::without+|middleware([Nameofmiddleware::class],...)->group(function () {
+			Route::get($uri, $callback);
+			Route::get($uri, $callback)->withoutMiddleware([Nameofmiddleware::class]);
+		});

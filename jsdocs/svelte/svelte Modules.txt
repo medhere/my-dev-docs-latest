@@ -1,0 +1,110 @@
+modules for svelte/sveltekit
+
+	adapter
+		Node
+		npm i -D @sveltejs/adapter-node@next,
+		// svelte.config.js
+		import adapter from '@sveltejs/adapter-node';
+		export default {
+			kit: {
+				adapter: adapter({
+					// default options are shown
+					out: 'build',
+					precompress: false,
+					env: {
+						host: 'HOST',
+						port: 'PORT'
+					}
+				})
+			}
+		};
+		
+		Static
+		npm i -D @sveltejs/adapter-static@next
+		// svelte.config.js
+		import adapter from '@sveltejs/adapter-static';
+		export default {
+			kit: {
+				adapter: adapter({
+					// default options are shown
+					pages: 'build',
+					assets: 'build',
+					fallback: null
+				})
+			}
+		};
+
+	materialize-css
+		material icons in index.html
+			<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+				Or
+			<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500|Material+Icons&display=swap" rel="stylesheet" />
+	
+		main.js
+			import '../node_modules/materialize-css/dist/css/materialize.css'
+			import '../node_modules/materialize-css/dist/js/materialize'
+			
+			init each component in onMount			
+	ionic
+		<!-- ionic -->
+		<script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
+		<script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css"/>
+		<script type="module" src="https://unpkg.com/ionicons@5.2.3/dist/ionicons/ionicons.esm.js"></script>
+		<script nomodule="" src="https://unpkg.com/ionicons@5.2.3/dist/ionicons/ionicons.js"></script>
+	
+		set md or ios (re-write)
+		const isMd = document.querySelector("html").className.includes("md");
+	
+	attractions
+		npm install --save-dev attractions svelte-preprocess sass postcss
+			webpack
+			
+			//for attractions
+			const sveltePreprocess = require('svelte-preprocess');
+				module: {
+					rules: [
+						{
+							test: /\.svelte$/,
+							use: {
+								loader: 'svelte-loader',
+								options: {
+									//for attractions
+									preprocess: [sveltePreprocess()],
+												
+			node_modules\attractions\_variables.scss
+			find -radius, set all to 0em
+
+	svelte-material-ui
+	
+	offline install
+			<!-- You can remove this is you don't want to make your PWA installable -->
+			<script type="module" src="https://cdn.jsdelivr.net/npm/@pwabuilder/pwainstall"></script>
+
+	s-offline
+		<script>
+		  import SOffline from 's-offline';
+			const handleNetworkChange = ({ detail }) => {
+				console.log('event details: ', detail);
+			}
+		</script>
+
+		<SOffline pingUrl="https://bitly.com" on:detectedCondition={handleNetworkChange}>
+				<span slot="online" class="online">
+					😊
+				</span>
+				<span slot="offline" class="offline">
+					🤕
+				</span>
+		</SOffline>
+
+	
+	
+	npm i axios axios-retry @macfja/svelte-persistent-store materialize-css	svelte-use-form svelte-forms-lib svelte-spa-router yup lodash jwt-decode cart-localstorage svelte-material-ui
+
+	npm i --save-dev attractions svelte-preprocess sass postcss @sveltejs/adapter-static@next @sveltejs/adapter-node@next
+	
+	others - ionic online dist
+	
+	find for svelte (react-webcam|@wmik/use-media-recorder)
+		

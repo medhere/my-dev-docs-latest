@@ -1,0 +1,43 @@
+Views
+	resources/views directory
+		used in routes or controllers
+	use Illuminate\Support\Facades\View;	//if not using view()
+
+		
+	<!-- View stored in resources/views/greeting.blade.php -->
+		<body>
+			<h1>Hello, {{ $name }}</h1>
+		</body>
+		OR
+		<?php echo $name; ?>
+		
+	usage
+		return view('greeting', ['name' => 'James']);
+		return view('greeting')
+            ->with('name', 'Victoria')
+            ->with('occupation', 'Astronaut');
+		return View::make('greeting', ['name' => 'James']);
+
+	
+	Nested View Directories
+		if your view is stored at resources/views/admin/profile.blade.php
+		return view('admin.profile', $data);
+	
+	View Exists
+		if (View::exists('emails.customer')) { }
+	
+	Sharing Data With All Views
+		App\Providers\AppServiceProvider class or generate a separate service provider to house them:
+
+		use Illuminate\Support\Facades\View;
+		class AppServiceProvider extends ServiceProvider{
+			public function boot()
+			{
+				View::share('key', 'value');
+			}
+		}
+		
+	Optimizing Views
+		php artisan view:cache	//cache views
+		php artisan view:clear	//clar cache
+	

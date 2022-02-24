@@ -1,0 +1,113 @@
+python
+	Quick start
+		//python -m venv --system-site-packages . OR python -m venv .
+		//.\Scripts\activate.bat
+		create .venv folder in project then / or continue with
+			pip shell
+		pipenv install module
+		pipenv uninstall module
+		pipenv run python file.py
+			pipenv run flask run, set in .env FLASK_APP=server.py if loaded with pipenv shell
+		
+		create pipfile.lock and reqs.txt
+		pipenv lock
+		pipenv lock -r > requirements.txt
+		
+		to install all
+		pipenv install  				(from pipfile or reqs.txt)
+		pipenv install --ignore-pipfile	(from only Pipfile.lock)
+		pipenv install -r requirements.txt
+		pipenv sync OR pipenv upgrade
+		
+		
+package registry for pip: pypi		
+		
+pip
+	install                     Install packages.
+		pip install Flask
+		pip install -r requirements.txt
+	uninstall                   Uninstall packages.
+	freeze                      Output installed packages in requirements format.
+		pip freeze --local --user > requirements.txt
+	list                        List installed packages.
+		pip list --local --user
+	show                        Show information about installed packages.
+	check                       Verify installed packages have compatible dependencies.
+	completion                  A helper command used for command completion.
+	help                        Show help for commands.
+	
+	  
+pipenv
+	Usage: pipenv [OPTIONS] COMMAND [ARGS]...
+	Options:
+	  pipenv --where                         Output project home information.
+	  pipenv --venv                          Output virtualenv information.
+	  pipenv --py                            Output Python interpreter information.
+	  pipenv --envs                          Output Environment Variable options.
+	  pipenv --man                           Display manpage.
+	  
+	Commands:
+	  clean      Uninstalls all packages not specified in Pipfile.lock.
+	  graph      Displays currently-installed dependency graph information.
+	  install    Installs provided packages and adds them to Pipfile, or (if no packages are given), installs all packages from Pipfile.
+	  lock       Generates Pipfile.lock.
+	  run        Spawns a command installed into the virtualenv.
+	  scripts    Lists scripts in current environment config.
+	  shell      Spawns a shell within the virtualenv.
+	  uninstall  Uninstalls a provided package and removes it from Pipfile.
+  	  sync       Installs all packages specified in Pipfile.lock.
+	  update     Runs lock, then sync.
+
+	initial use pipenv
+		pipenv shell		creates a new venv, if not exists
+			//use python -m venv . instead, then activate with ./Scripts/activate.bat
+		pipenv install Flask==0.12.1 
+		pipenv install Flask
+		pipenv install Flask --dev	([dev-packages] location in the Pipfile)
+		pipenv install -e git+https://github.com/requests/requests.git#egg=requests
+		pipenv uninstall Flask==0.12.1 
+		pipenv uninstall Flask
+		pipenv uninstall Flask --dev	([dev-packages] location in the Pipfile)
+		pipenv uninstall --all
+		pipenv uninstall --all-dev (to just remove dev packages)
+		pipenv lock				get pipfile.lock file
+		pipenv lock -r > requirements123.txt (for rename)
+		pipenv lock -r --dev > dev-requirements123.txt  (for rename)
+
+	install from pipfile and pipfile.lock
+		pipenv install  (can automatically detect if requirements.txt and convert it to a Pipfile)
+		pipenv install --dev 	(all + including dev)
+		pipenv install --ignore-pipfile	(from only Pipfile.lock)
+		pipenv install -r requirements.txt
+		pipenv install -r dev-requirements.txt --dev
+		pipenv install --system
+		pipenv install --system --deploy
+		
+	check for security issues
+		pipenv check
+		
+	Automatic Loading of .env
+		If a .env file is present in your project,
+		pipenv shell and pipenv run 
+		will automatically load it, for you:
+		
+	Create a new project using Python 3.7, specifically:
+		pipenv --python 3.7
+
+	Remove project virtualenv (inferred from current directory):
+		pipenv --rm
+
+	Install a local setup.py into your virtual environment/Pipfile:
+		pipenv install -e .
+
+	Use a lower-level pip command:
+		pipenv run pip freeze
+
+	You can run a command in the virtual environment without launching a shell:
+		pipenv run <insert command here>
+		pipenv run python file.py		//can autoload .env file
+
+
+To host on aapanel
+	copy projects without .venv
+	create python project, and follow through

@@ -1,0 +1,147 @@
+learn github	
+
+	prefrably run git without --global to set per folder
+
+	Init
+		git config --global core.editor "'C:/Program Files/Notepad++/notepad++.exe' -multiInst -notabbar -nosession -noPlugin"
+		git config --global user.name "medhere"
+		git config --global user.email "edhere.michael@gmail.com"  //remove --global if used on a folder
+		git config -l
+		git config -l --show-origin
+		git init
+	Staging
+		ls
+		git status
+		git add index.html
+		git add --all OR git add -A
+	Commit
+		git commit -m "First release of Hello World!"
+		git status --short
+			?? - Untracked files
+			A - Files added to stage
+			M - Modified files
+			D - Deleted files
+		git commit -a -m "Updated index.html with a new line"  // without -a, only A is added. with -a, all files are added
+		git log
+	Branch
+		git branch hello-world-images 	//to create from current branch
+		git branch 	//to check branches
+		git checkout hello-world-images 	//to switch branches
+		git checkout new-branch -b		// -b option will create a new branch, and move to it, if it does not exist (useful when creating a branch from another)
+		git checkout -b <new-branch-name> <from-branch-name>  //create new branch from a diff branch
+			then stage/commit
+		git branch -d hello-world-images	// -d to delete branch
+		git -m newname		//changes current branch name
+	Merge
+		git checkout master		//change to branch that needs to be merged to
+		git merge emergency-fix		//merge emergency-fix to master
+			if conflicts
+				fix in file			//check hot to fix changes, document
+				then stage/commit
+				or git merge --abort
+	Logs
+		git log --all --graph --decorate --oneline
+			to quit, q
+			
+	Add Github with PAT
+		create PAT with repo and delete_repo permissions
+		run git config if not run
+		for temp,	username: medhere
+					password: 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
+		for perm,
+			git config --global credential.helper cache/wincred/manager
+			git config --global credential.helperselector.selected cache/wincred/manager
+		to undo perm,
+			git config --global --unset credential.helper cache/wincred/manager
+			git config --global --unset credential.helperselector.selected cache/wincred/manager
+		optionally select wincred or manage-core for persistence
+		Enable wincred/manager for Multiple Credentials
+			open wincred, remove all github entries
+			git config --global credential.useHttpPath true
+			git config --global credential.github.com.useHttpPath true
+		
+	Push local to remote
+		git remote add origin URL
+		git push origin OR git push -u origin master
+	
+==============================================
+	Fetch
+	fetch gets all the change history of a tracked branch/repo to see what has changed on GitHub:
+		git fetch origin
+		git status
+		git log origin/master
+		git diff origin/master
+	
+	Merge
+	merge combines the current branch, with a specified branch.
+		git merge origin/master
+		git status
+	
+	Pull
+	pull is a combination of fetch and merge
+		git pull origin
+		
+	Create a New Branch on GitHub
+		On GitHub, access your repository and click the "master" branch button.
+		There you can create a new Branch. Type in a descriptive name (new-branch), and click Create branch
+		
+	Pulling a Branch from GitHub
+		git pull
+		git status
+		git branch
+		git branch -a OR git branch -r
+		git checkout new-branch
+		git pull
+		git branch
+		
+	Push a Branch to GitHub
+		git checkout -b update-readme
+		git status
+			stage/commit
+		git push origin update-readme
+		
+	Github Fork/Clone/Pull Request
+		Fork
+			open repo, then click Fork to add to yours
+
+		Clone
+			go to repo, and click the green "Code" button to get the URL to clone:
+			git clone https://github.com/w3schools-test/w3schools-test.github.io.git
+			ls
+			cd w3schools-test.github.io
+			git status
+			git log
+			git remote -v
+			git remote rename origin upstream
+			git remote -v
+			git remote add origin https://github.com/medhere/w3schools-test.github.io.git
+			git remote -v
+		
+		Push changes to Our GitHub Fork
+			stage/commit
+			git push origin
+			Go to GitHub, and we see that the repository has a new commit.
+
+		Pull request	
+			And we can send a Pull Request to the original repository: click pull request, add comments
+	
+	Revert
+		take a previous commit and add it as a new commit //check all revert options
+		git log --oneline
+		git revert HEAD --no-edit
+		git log --oneline
+			To revert to earlier commits, use 
+			git revert HEAD~x (x being a number. 1 going back one more, 2 going back two more)
+
+	Reset
+		git log --oneline
+		git reset commithash e.g 9a9add8
+		git log --oneline
+			undo reset
+			git reset lastcommithash
+	
+	Amend
+		git commit --amend -m "Added lines to README.md"
+		git log --oneline
+			Adding files with --amend works the same way as above.
+			Just add them to the staging environment before committing.

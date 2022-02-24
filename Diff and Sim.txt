@@ -1,0 +1,71 @@
+Differences and Similarities
+
+Routes
+	Python	@app.get('/')
+	Express	app.get('/',(req,res))
+	Laravel	Route::get('/}', function () {$request, $response}
+			
+
+Route Params/Response
+	Python	/home/
+			/home/<param>
+			def home(param=None):
+				{param}
+				return
+	Express	/home/:param?
+			req.param.param
+			req.send
+	Laravel	home/{param?}, function ($param=null)
+			$param;
+			return, $response->
+	Nextjs	pages/[param].js
+			pages/[...all].js
+			
+	SvelteKit
+			src/routes/[param].svelte.
+			src/routes/[...all].svelte.
+			<script>export async function load({ page }) {		
+				return {props: { myprop: page.params.param }};
+			}
+			<script>export let myprop;
+			<div>{myprop}
+
+String Literals
+	Python	"{var} {func()}" 
+	JS		"${var}"
+	Laravel	"$var {$func(var)}"
+
+
+Templating/Layouts/Props
+	Jinja(.html)
+			{{ var }} {% if name %}{% else %}{% endif %}
+			return render_template('index.html', name='value')
+				<div>{{ name }}
+	Ejs(.ejs)
+			<%- include ('partials/filename') -%> 
+			<%= key%>
+			<% array.forEach(el => {}) %>
+			req.render('index.ejs',{name:'value'})
+				<div><%= name%>
+	Blade(.blade.php)
+			@verbetim @php {{ $var }} @if () @elseif () @else @endif
+			<x-layout> 
+			{{ $slot }} <x-slot></x-slot>
+			{{ $title }}<x-slot name="title"></x-slot>
+			$response->view('hello', ['name' => 'value'], 200);
+			Route::view('/3', 'viewcomponent',['name' => 'value']);
+				<div>{{ $name }}
+	Svelte(.svelte,.html)	
+			{var} {#if user}{:else if}{:else}{/if}
+			<slot name="name"></slot> <span slot="name"></span>
+				<script>export let name="" <div>{name}
+				import Home from ''
+				<Home name=''></Home>
+			SvelteKit autoviews: src/routes
+	React(.jsx)
+			{var}
+			export default function Home({name, children, slot})	
+				<div>{name} {slot} {children}
+			import Home from ''  <Home slot={<Component/> name='name'} >children</Home>
+			Nextjs autoviews: pages/
+

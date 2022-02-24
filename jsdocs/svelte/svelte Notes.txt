@@ -1,0 +1,473 @@
+Svelte
+	Export/Import
+		export function funcname(){}
+		import {funcname} from '.js'
+		
+		Created Component.svelte
+		import Component from 'Component.svelte';
+
+	Output html
+		{@html varname}
+
+	Style
+		<style>
+		p {
+			/* this will only affect <p> elements in this component */
+			color: burlywood;
+		}
+	
+		To apply styles to a selector globally, use the :global(...) modifier.
+		:global(body) {
+			/* this will apply to <body> */
+			margin: 0;
+		}
+	
+	React on change (reruns the code block on event fired)
+		$: doubled = count * 2;
+		$: if()
+		
+	Values	(use stores to update values over components)
+		let text = 'yes';
+		{text} <button on:click={()=> text='no'}>Change</button>
+		
+	Props/Modules
+		export let answer,question='yes';
+		export let name,version;
+		
+			<component answer=''/>
+			
+			const pkg = {name: 'svelte',version: 3};
+			<component {...name}>
+	
+		 Module context / Sharing code	//re-read
+			<script context="module">	//shared across all component instances
+				let current;
+				export function stopAll() {}
+			</script>
+			<script>	//not shared except export
+				let user;
+			</script>
+			
+			import { stopAll } from 'Component.svelte';
+			
+				Makes a scoped var or func accessible in all reused components
+
+	Rendering Outside Script
+		{variablename}
+		{run small js assignments}
+
+		Conditions
+			{#if user}
+			{:else if}
+			{:else}
+			{/if}
+			
+			{#each cats as { id, name }, i} | {#each cats as cat} | {#each cats as cat, i}
+					{i + 1}: {name} | {cat.name}
+			{/each}
+			
+			let things = [ { id: 1, name: 'apple' }, { id: 2, name: 'banana' } ];
+			{#each things as thing (thing.id)}	//(KEY)
+				<Thing name={thing.name}/>
+			{/each}
+			
+			let menu = [ 'Cookies and cream', 'Mint choc chip', 'Raspberry ripple' ];
+			{#each menu as flavour}
+				<label>	<input type=checkbox name="flavours" value={flavour}> {flavour} </label>
+			{/each}
+
+			async/await or any other promise, save promise in var
+			{#await promise}
+				<p>...waiting</p>
+			{:then number}
+				<p>The number is {number}</p>
+			{:catch error}
+				<p style="color: red">{error.message}</p>
+			{/await}
+
+			var number=1;
+			{#key number}	//Key blocks destroy and recreate their contents when the value of an expression changes.
+				<span> {number} </span>
+			{/key}
+			<button on:click={() => { number += 1; }}> Increment </button>
+
+			
+	Events
+		on:click={}
+
+		<div on:eventname={}>
+			on:eventname|[modifier]|[modifier]
+				modifier
+					preventDefault — calls event.preventDefault()
+					stopPropagation — calls event.stopPropagation()
+					passive — improves scrolling performance on touch/wheel events
+					nonpassive — set passive: false
+					capture — fires the handler during the capture phase instead of the bubbling phase ()
+					once — remove the handler after the first time it runs
+					self — only trigger handler if event.target is the element itself
+					trusted — only trigger handler if event.isTrusted is true. I.e. if the event is triggered by a user action.
+
+		Component events
+			import { createEventDispatcher } from 'svelte';
+			const dispatch = createEventDispatcher();
+			function sayHello() { dispatch('myevent', { text: 'Hello!'}) }
+					or dispatch('submit');
+			
+			on:click={sayHello}
+			
+			use as
+				function handleEvent(e) {	alert(e.detail.text) }
+
+				on:myevent={handleEvent}
+
+			forward events from lower to upper component
+			on:myevents
+	Bind
+		bind:value=, bind:files=, bind:group=, bind:innerHTML, bind:this
+		binds to elems or components
+		
+		var name='';
+		<input bind:value={name}>
+		{name}
+		
+		let yes = false;
+		<input type=checkbox bind:checked={yes}>
+		{#if yes}	<p>Thank you.</p>
+		{:else}	<p>You must</p>
+		{/if}
+		
+		let scoops = 1;
+		let flavours = ['Mint choc chip'];
+		<input type=radio bind:group={scoops} name="scoops" value={1}>
+		<input type=checkbox bind:group={flavours} name="flavours" value={flavour}>
+		
+		<select bind:value={selected}>
+		
+		<div contenteditable="true"	bind:innerHTML={html}></div>
+		<div bind:clientWidth={w} bind:clientHeight={h}>
+		
+		let size = 42;
+		<span style="font-size: {size}px">Test</span>
+		
+		<text bind:this={textinput}>	//get an instance of text input
+		
+		for (const file of files) {}
+		<input bind:files type="file"/>
+		{#each Array.from(files) as file}
+		
+		export name;
+		bind:name={}	//bind to prop
+		
+		<input bind:value={$state}>	//bind to stored state, can update
+		
+	Lifecycle
+			import { onMount } from 'svelte';
+		onMount(func)
+		onDestroy(func)
+		beforeUpdate(func)	//checks before an update, also runs before component has mounted
+		afterUpdate(func)
+		await tick()	//resolves pending DOm changes immediately
+			  tick().then()
+			  
+	Stores (like states)
+		import { writable, get, readable, derived } from 'svelte/store';
+		
+		Writable
+			store.js
+			import { writable } from 'svelte/store';
+			export const state = writable(0);
+			
+			import { state } from './stores.js';
+			state.set(0);
+			state.update(prev => prev + 1);
+			<input bind:value={$state}>	//bind to stored state, cn update
+							
+		Subscription (using store value)
+			import { state } from './stores.js';
+			let state_value;
+			state.subscribe(value => { state_value = value });
+			
+			const unsubscribe = state.subscribe(value => { state_value = value });
+			onDestroy(unsubscribe);
+			
+		Auto-subscribe (imported at the top-level scope of a component)
+			import { state } from './stores.js';
+			let state_value = $state
+			<h1>The state is {$state}</h1>
+			
+		Readable
+			export const state = readable(value, function start(set) {
+				set(newvalue);
+				return function stop() {};
+			});
+			
+		Derived	
+			export const derivedstate = derived( state, $a => "this state: "+$a );
+										derived( [statea,stateb], ([$a,$b]) => "this state: "+($a + $b) );
+			
+										derived( statea, ($a, set) => { set($a) }, 'initvalue' );
+										derived( [statea,stateb], ([$a,$b], set) => { set($a + $b) }, 'initvalue' );
+										derived( [statea,stateb], ([$a,$b], set) => { 
+											set($a + $b); 
+											return () => {	};	//destroy	
+										}, 'initvalue' );
+
+			e.g
+			export const name = writable('world');
+			export const greeting = derived(
+				name, $name => "Hello ${$name}!`
+			);
+
+		Custom Store
+			function createState() {
+				const { subscribe, set, update } = writable(0);
+				return {
+					subscribe,
+					update: () => update(prev => prev + 1),
+					reset: () => set(0)
+				};
+			}
+			export const state = createState();
+
+			usage
+			import { count } from './stores.js';
+			<h1>The count is {$count}</h1>
+			<button on:click={count.update}>+</button>
+			<button on:click={count.reset}>reset</button>
+		
+		
+	Motion
+		Twinning,Spring (using set and update methods)
+			import { spring, tweened } from 'svelte/motion';
+			import { cubicOut } from 'svelte/easing';
+	
+			const progress = tweened(0);
+			const progress = tweened(0, { duration: 400,	easing: cubicOut, delay: 1000 });
+			
+			//let progress = spring(0);
+			//let progress = spring(0, {	stiffness: 0.1, damping: 0.25});
+			//bind:value={progress.stiffness})
+			//bind:value={{progress.damping})
+			
+			<progress value={$progress}></progress>
+			<button on:click="{() => progress.set(0.30)}"> 30% </button>
+			<button on:click="{() => progress.set(0.60)}"> 60% </button>
+			<button on:click="{() => progress.update(prev => prev + 0.10)}"> Add 10% </button>
+		
+		Easing
+			import { cubicOut } from 'svelte/easing';
+				ease	in			out			inOut
+				linear
+				back	backIn		backOut		backInOut
+				bounce	bounceIn	bounceOut	bounceInOut
+				circ	circIn		circOut		circInOut
+				cubic	cubicIn		cubicOut	cubicInOut
+				elastic	elasticIn	elasticOut	elasticInOut
+				expo	expoIn		expoOut		expoInOut
+				quad	quadIn		quadOut		quadInOut
+				quart	quartIn		quartOut	quartInOut
+				quint	quintIn		quintOut	quintInOut
+				sine	sineIn		sineOut		sineInOut
+		
+		Transitions
+			import { fade,blur,fly,slide,scale,draw } from 'svelte/transition';
+			let visible = true;
+
+			<input type="checkbox" bind:checked={visible}>visible
+			{#if visible} 
+			<p transition:fade> Fades in and out</p>
+			<p transition:fly="{{ y: 200, duration: 2000 }}">Flies in and out</p>
+			<p in:fly="{{ y: 200, duration: 2000 }}" out:fade>Flies in, fades out</p>
+			<div transition:slide|local>
+			{/if}
+			
+			{#key number}	//Key blocks destroy and recreate their contents when the value of an expression changes.
+				<span style="display: inline-block" in:fly={{ y: -20 }}> {number} </span>
+			{/key}
+
+				fade, slide
+				delay (number, default 0) — milliseconds before starting
+				duration (number, default 400) — milliseconds the transition lasts
+				easing (function
+
+				blur
+				delay (number, default 0) — milliseconds before starting
+				duration (number, default 400) — milliseconds the transition lasts
+				easing (function, default cubicInOut) — an 
+				opacity (number, default 0) - the opacity value to animate out to and in from
+				amount (number, default 5) - the size of the blur in pixels
+
+				fly
+				delay (number, default 0) — milliseconds before starting
+				duration (number, default 400) — milliseconds the transition lasts
+				easing (function, default cubicOut) — an 
+				x (number, default 0) - the x offset to animate out to and in from
+				y (number, default 0) - the y offset to animate out to and in from
+				opacity (number, default 0) - the opacity value to animate out to and in from
+
+				scale
+				delay (number, default 0) — milliseconds before starting
+				duration (number, default 400) — milliseconds the transition lasts
+				easing (function, default cubicOut) — an 
+				start (number, default 0) - the scale value to animate out to and in from
+				opacity (number, default 0) - the opacity value to animate out to and in from
+
+				draw
+				delay (number, default 0) — milliseconds before starting
+				speed (number, default undefined) - the speed of the animation, see below.
+				duration (number | function, default 800) — milliseconds the transition lasts
+				easing (function, default cubicInOut) — an 
+
+				crossfade
+				delay (number, default 0) — milliseconds before starting
+				duration (number | function, default 800) — milliseconds the transition lasts
+				easing (function, default cubicOut) — an 
+				fallback (function) — A fallback  to use for send when there is no matching element being received, and for receive when there is no element being sent.
+
+			In/Out
+				in:fn
+				in:fn={params}
+				in:fn|local
+				in:fn|local={params}
+				out:fn
+				out:fn={params}
+				out:fn|local
+				out:fn|local={params}
+
+				{#if visible}
+				<div in:fly out:fade>
+			
+			Events
+				<p
+					transition:fly="{{ y: 200, duration: 2000 }}"
+					on:introstart="{() => status = 'intro started'}"
+					on:outrostart="{() => status = 'outro started'}"
+					on:introend="{() => status = 'intro ended'}"
+					on:outroend="{() => status = 'outro ended'}"
+				>
+					Flies in and out
+				</p>
+			
+		Animations
+			import { flip } from 'svelte/animate';
+			<label animate:flip>
+			<label animate:flip="{{duration: 200,duration:5,easing:liner}}">
+
+
+
+	Class
+		let current = 'foo';
+		<button class="{current === 'foo' ? 'selected' : ''}" on:click="{() => current = 'foo'}"> foo </button>
+		<button	class="{current === 'baz' ? 'selected' : ''}" on:click="{() => current = 'baz'}"> baz </button>
+		.selected {
+			background-color: #ff3e00;
+			color: white;
+		}
+		
+	Slots
+		<slot>
+			Component.svelte
+			<div>
+				<slot></slot>
+			</div>
+			<Component>
+				<p>This is a box. It can contain anything.</p>
+			</Component>
+		
+		Fallback
+			<div>
+				<slot><em>no content was provided</em></slot>
+			</div>
+			<Component/>
+		
+		Named
+			<slot name="name"></slot>			
+			<Component>
+				<span slot="name"> P. Sherman </span>
+			<Component/>
+
+			$$slots returns true|false
+				{#if $$slots.comments}
+				  <slot name="comments">This is default</slot>
+				{/if}
+		
+		Slot Props
+			<slot prop={value}>
+			<Component let:prop={values}>
+				<div>{values.text}</div>
+			
+			<ul>
+				{#each items as item}
+					<li class="fancy"> <slot prop={item}></slot> </li>
+				{/each}
+			</ul>
+
+			<Component let:prop={items}>
+				<div>{items.text}</div>
+			</Component>
+
+	Special elements
+		Self elem
+			<svelte:self>
+
+		Component elem
+			import Title1 from './Title1.svelte'
+     	    import Title2 from './Title2.svelte'
+			let component = ''
+
+			<select bind:value={component}>
+			  <option value={Title1}>Title 1</option>
+			  <option value={Title2}>Title 2</option>
+			</select>
+
+			<svelte:component this={component} />
+		
+		DOM Window
+			<svelte:window/>
+			<svelte:window on:keydown={handleKeydown}/>
+			<svelte:window bind:scrollY={y}/>
+		
+		DOM Body
+			<svelte:body on:mouseenter={handleMouseenter}/>
+		
+		DOM Head
+			<svelte:head>
+				<link rel="stylesheet" href="tutorial/dark-theme.css">
+			</svelte:head>
+
+		Fragment	//stops from adding content without extra dom contaviner
+			<svelte:fragment slot="footer">
+				<p>All rights reserved.</p>
+			</svelte:fragment>		
+			
+	Debug //pauses and shows values
+	{@debug user}
+	{@debug user, account}
+		
+		
+	Other funcs
+		$set
+		component.$set(props)
+		Programmatically sets props on an instance. component.$set({ x: 1 }) is equivalent to x = 1 inside the component's <script> block.
+
+		Calling this method schedules an update for the next microtask — the DOM is not updated synchronously.
+
+		component.$set({ answer: 42 });
+		
+		$on
+		component.$on(event, callback)
+		Causes the callback function to be called whenever the component dispatches an event.
+
+		A function is returned that will remove the event listener when called.
+
+		const off = app.$on('selected', event => {
+			console.log(event.detail.selection);
+		});
+
+		off();
+	
+		$destroy
+		component.$destroy()
+		Removes a component from the DOM and triggers any onDestroy handlers.
+		
+		

@@ -1,0 +1,43 @@
+Svelte Persistent store
+	npm install @macfja/svelte-persistent-store
+
+	Storage
+		<script>
+			import { persist, localStorage, sessionStorage, cookieStorage } from "@macfja/svelte-persistent-store"
+			import { writable } from "svelte/store"
+			
+			const theme1 = persist(writable('light1'), localStorage(), 'myapp-theme1')
+			const theme2 = persist(writable('light2'), sessionStorage(), 'myapp-theme2')
+			const theme3 = persist(writable('light3'), cookieStorage(), 'myapp-theme3')
+
+		</script>
+				<select bind:value={$theme}>
+					<option value="light">Light colors</option>
+					<option value="dark">Dark colors</option>
+					<option value="amoled">Darker AMOLED colors</option>
+				</select>
+		
+
+	Context module
+		<!-- Component1.svelte -->
+		<script context="module">
+		  import { persist, localStorage } from "@macfja/svelte-persistent-store"
+		  import { writable } from "svelte/store"
+
+		  export let name = persist(writable("John"), localStorage(), "name")
+		</script>
+		<script>
+		  $name = "Jeanne Doe"
+		</script>
+		 
+
+		<!-- Component2.svelte -->
+		<script>
+		  import { name } from "Component1.svelte"
+
+		  name.subscribe(value => alert(value)) // the alert will open when the store is change in any component
+		</script>
+
+	External Changes
+		If the another Window from the (same) browser change the value of the localStorage (from a Svelte application or not), the store will be updated.
+		export let name = persist(writable("John"), localStorage(true), "name")

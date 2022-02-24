@@ -1,0 +1,259 @@
+Validation
+	use in routes and controllers
+	Logic
+		$validated = $request->validate([
+			'title' => 'required|unique:posts|max:255',
+			'body' => 'required',
+		]);
+
+		$validatedData = $request->validate([
+			'title' => ['required', 'unique:posts', 'max:255'],
+			'body' => ['required'],
+		]);
+
+		$validatedData = $request->validateWithBag('post', [	//store error msgs in named error bag
+			'title' => ['required', 'unique:posts', 'max:255'],
+			'body' => ['required'],
+		]);	
+
+		$request->validate([		//Stopping On First Validation Failure using bails
+			'title' => 'bail|required|unique:posts|max:255',
+			'body' => 'required',
+		]);
+
+	Nested Attributes/Array Inputs
+		If the incoming HTTP request contains "nested" field data, you may specify these fields in your validation rules using "dot" syntax:
+
+		$request->validate([
+			'title' => 'required|unique:posts|max:255',
+			'author.name' => 'required',
+			'author.description' => 'required',
+		]);
+		
+		$validator = Validator::make($request->all(), [	//validate each element of an array input
+			'person.*.email' => 'email|unique:users',
+			'person.*.first_name' => 'required_with:person.*.last_name',
+		]);
+
+	Usage on blade
+		/resources/views/post/create.blade.php
+		<h1>Create Post</h1>
+		@if ($errors->any())
+			<div class="alert alert-danger">
+				<ul>
+					@foreach ($errors->all() as $error)
+						<li>{{ $error }}</li>
+					@endforeach
+				</ul>
+			</div>
+		@endif
+		
+		The @error Directive
+		<!-- /resources/views/post/create.blade.php -->
+			<label for="title">Post Title</label>
+			<input id="title" type="text" name="title" class="@error('title') is-invalid @enderror">
+
+			@error('title')
+				<div class="alert alert-danger">{{ $message }}</div>
+			@enderror
+
+		using named error bags, you may pass the name of the error bag as the second argument to the @error directive:
+			<input ... class="@error('title', 'post') is-invalid @enderror">
+		
+		Repopulating Forms
+			$title = $request->old('title');
+			<input type="text" name="title" value="{{ old('title') }}">
+			
+		Optional Fields
+		mark your "optional" request fields as nullable if you do not want the validator to consider null values as invalid.
+			$request->validate([
+				'title' => 'required|unique:posts|max:255',
+				'body' => 'required',
+				'publish_at' => 'nullable|date',
+			]);
+					
+	Manually Creating Validators
+		use Illuminate\Support\Facades\Validator;
+		
+		//$validator = Validator::make($object, $rules);		
+        
+		$validator = Validator::make($request->all(), [
+            'title' => 'required|unique:posts|max:255',
+            'body' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect('post/create')->withErrors($validator)->withInput();
+        }
+
+        // Retrieve the validated input...
+        $validated = $validator->validated();
+		
+        // Retrieve a portion of the validated input...
+        $validated = $validator->safe()->only(['name', 'email']);
+        $validated = $validator->safe()->except(['name', 'email']);
+
+		Stopping On First Validation Failure
+			if ($validator->stopOnFirstFailure()->fails()) {}
+		
+		Automatic Redirection
+			Validator::make($request->all(), [
+				'title' => 'required|unique:posts|max:255',
+				'body' => 'required',
+			])->validate();
+
+			Validator::make($request->all(), [
+				'title' => 'required|unique:posts|max:255',
+				'body' => 'required',
+			])->validateWithBag('post');	//save to error bag
+			
+	Named Error Bags
+		If you have multiple forms on a single page
+
+		return redirect('register')->withErrors($validator, 'login');
+			usage in blade
+			{{ $errors->login->first('email') }}
+	
+	Get validated input as objects
+		$validated = $request->validated();
+		$validated = $validator->validated();
+		$validated = $request->safe()->only(['name', 'email']);
+		$validated = $request->safe()->except(['name', 'email']);
+		$validated = $request->safe()->all();
+		$validated = $request->safe()->merge(['name' => 'Taylor Otwell']);	// add extra data
+		
+	Get Errors
+		$errors = $validator->errors();
+		$errors->all();		//as array
+		$errors->get('email');	//as array
+		$errors->has('email')
+		
+	Rules list
+		use Illuminate\Support\Facades\Validator;
+		use Illuminate\Validation\Rule;
+		'required', Rule::dimensions()->maxWidth(1000)->maxHeight(500)->ratio(3 / 2),
+
+		accepted
+		accepted_if:anotherfield,value,...
+		active_url
+		after:date
+			'start_date' => 'required|date|after:tomorrow'
+			'finish_date' => 'required|date|after:start_date'	//used with after rule
+		after_or_equal:date
+		alpha
+		alpha_dash	//may have alpha-numeric characters, as well as dashes and underscores.
+		alpha_num
+		array
+			'user' => 'array',
+			'user' => 'array:username,locale',	//array with accepted keys
+		bail
+			triggers $validator->stopOnFirstFailure()->fails()
+		before:date
+		before_or_equal:date
+		between:min,max		//size between the given min and max. Strings, numerics, arrays, and files.
+		boolean
+		confirmed 	//must have a matching field of {field}_confirmation. password and password_confirmation
+		current_password
+		date
+		date_equals:date
+		date_format:format
+		declined
+		declined_if:anotherfield,value,...
+		different:field		//must have a different value than field.
+		digits:value		//must have exact length of value
+		digits_between:min,max
+		dimensions		//'avatar' => 'dimensions:min_width=100,min_height=200'		min_width, max_width, min_height, max_height, width, height, ratio(3/2,1.5)
+		Since this rule requires several arguments, you may use the Rule::dimensions method to fluently construct the rule:
+		distinct	//When validating arrays, the field under validation must not have any duplicate values:
+			'foo.*.id' => 'distinct'
+			'foo.*.id' => 'distinct:strict'
+			'foo.*.id' => 'distinct:ignore_case'
+		email
+			'email' => 'email:rfc,dns'
+				rfc: RFCValidation
+				strict: NoRFCWarningsValidation
+				dns: DNSCheckValidation		//require the PHP intl extension
+				spoof: SpoofCheckValidation	//require the PHP intl extension
+				filter: FilterEmailValidation
+		ends_with:foo,bar,...
+		exclude		//exclude field from the request data returned by the validate methods.
+		exclude_if:anotherfield,value
+		exclude_unless:anotherfield,value
+			exclude_unless:name,null	
+		exclude_without:anotherfield
+		file
+		filled
+		gt:field	//must be greater than the given field. The two fields must be of the same type. Strings, numerics, arrays, and files
+		gte:field	//must be greater than or equal to the given field.
+		image		//must be an image (jpg, jpeg, png, bmp, gif, svg, or webp).
+		in:foo,bar,...	must be included in the given list of values, often requires you to implode an array.
+				Rule::in(['first-zone', 'second-zone'])
+		in_array:anotherfield.*		//The field must exist in anotherfield's values.
+		integer
+		ip
+		ipv4
+		ipv6
+		json
+		lt:field	//less than the given field. The two fields must be of the same type. Strings, numerics, arrays
+		lte:field	//less than or equal to the given field.
+		max:value	//less than or equal to a maximum value. Strings, numerics, arrays, and files are evaluated in the same fashion as the size rule.
+		mimetypes:text/plain,...
+			'video' => 'mimetypes:video/avi,video/mpeg,video/quicktime'
+		mimes:foo,bar,...
+			'photo' => 'mimes:jpg,bmp,png'
+		min:value	//must have a minimum value. Strings, numerics, arrays, and files
+		multiple_of:value	//The field must be a multiple of value.
+		not_in:foo,bar,...	//must not be included in the given list of values, often requires you to implode an array
+				Rule::notIn(['sprinkles', 'cherries']),
+		not_regex:pattern
+			'email' => 'not_regex:/^.+$/i'.
+		nullable	//The field under validation may be null.
+		numeric
+		present		//The field must be present in the input data but can be empty.
+		prohibited	//The field must be empty or not present.
+		prohibited_if:anotherfield,value,...
+		prohibited_unless:anotherfield,value,...
+		prohibits:anotherfield,...	//if field is present, no fields in anotherfield can be present
+		regex:pattern
+			'email' => 'regex:/^.+@.+$/i'.
+		required	//present and not empty. 
+		required_if:anotherfield,value,...		//field must be present and not empty if the anotherfield field is equal to any value.
+		required_unless:anotherfield,value,...	//field must be present and not empty unless the anotherfield field is equal to any value.
+		required_with:foo,bar,...		//field must be present and not empty only if any of the other specified fields are present and not empty.
+		required_with_all:foo,bar,...	//field must be present and not empty only if all of the other specified fields are present and not empty.
+		required_without:foo,bar,...	//field must be present and not empty only when any of the other specified fields are empty or not present.
+		required_without_all:foo,bar,...	//field must be present and not empty only when all of the other specified fields are empty or not present.
+		same:field
+		size:value
+			'title' => 'size:12';
+			'seats' => 'integer|size:10';
+			'tags' => 'array|size:5';
+			'image' => 'file|size:512';
+		starts_with:foo,bar,...
+		string
+		timezone
+		url
+		uuid
+		sometimes	//validating field only when Present
+	
+	Validating Passwords
+		use Illuminate\Support\Facades\Validator;
+		use Illuminate\Validation\Rules\Password;
+
+		$validator = Validator::make($request->all(), [
+			'password' => ['required', 'confirmed', Password::min(8)],
+		]);
+	
+		Password::min(8)
+		Password::min(8)->letters()
+		Password::min(8)->mixedCase()
+		Password::min(8)->numbers()
+		Password::min(8)->symbols()
+		Password::min(8)->uncompromised()	//uses haveibeenpwned.com service
+		Password::min(8)->uncompromised(3);	// number of apearances
+		Password::min(8)
+			->letters()
+			->mixedCase()
+			->numbers()
+			->symbols()
+			->uncompromised()

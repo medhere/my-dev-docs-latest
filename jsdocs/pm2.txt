@@ -1,0 +1,82 @@
+learn pm2
+	# Fork mode
+	pm2 start app_name --name my-api # Name process
+	pm2 start app_name --name app --watch --ignore-list "" --port 0000 --env production|development --attach
+	pm2 start "npm run start"
+	pm2 start app_name -- arg1 arg2 #pm2 start nodemon -- app.js, pm2 start npm -- start
+
+	# Cluster mode
+	pm2 start app_name -i 0        # Will start maximum processes with LB depending on available CPUs
+	pm2 start app_name -i max      # Same as above, but deprecated.
+	pm2 scale app +3             # Scales `app` up by 3 workers
+	pm2 scale app 2              # Scales `app` up or down to 2 workers total
+	pm2 start app_name -i max (cluster mode)
+
+	# Listing
+	pm2 list               # Display all processes status
+	pm2 jlist              # Print process list in raw JSON
+	pm2 prettylist         # Print process list in beautified JSON
+	pm2 describe 0         # Display all informations about a specific process
+	pm2 monit              # Monitor all processes
+
+	# Logs
+	pm2 logs [--raw]       # Display all processes logs in streaming
+	pm2 flush              # Empty all log files
+	pm2 reloadLogs         # Reload all logs
+
+	# Actions
+	pm2 stop all           # Stop all processes
+	pm2 stop 0             # Stop specific process id
+	pm2 stop app_name
+	pm2 restart all        # Restart all processes
+	pm2 restart app_name
+	pm2 restart 0          # Restart specific process id
+	pm2 reload all         # Will 0s downtime reload (for NETWORKED apps)
+	pm2 reload app_name
+	pm2 delete 0           # Will remove process from pm2 list
+	pm2 delete all         # Will remove all processes from pm2 list
+	pm2 delete app_name
+
+	# Misc
+	pm2 reset <process>    # Reset meta data (restarted time...)
+	pm2 updatePM2          # Update in memory pm2
+	pm2 ping               # Ensure pm2 daemon has been launched
+	pm2 start app_name --no-daemon
+	pm2 start app_name --no-vizion
+	pm2 start app_name --no-autorestart
+	pm2 list|ls|status --sort name|id|pid|memory|cpu|status|uptime[:asc|desc]
+	pm2 monit
+	pm2 logs
+	pm2 show app_name
+	pm2 kill
+	
+	# Static server
+	pm2 serve <path> <port> --name app --watch --spa --basic-auth-username <username> --basic-auth-password <password>
+	
+	# create eco system/init file
+	pm2 ecosystem (then pm2 start|stop|reload|restart|delete ecosystem.config.js --only "appname,appname")
+	pm2 init simple(then pm2 start|stop|reload|restart|delete ecosystem.config.js)
+		ecosystem.config.js:
+		module.exports = {
+			apps : [{
+				name   : "limit worker",
+				script : "./worker.js",
+				args   : "limit"
+			  },{
+				name   : "rotate worker",
+				script : "./worker.js",
+				args   : "rotate"
+			  }]
+		}
+	
+		name				(string)	“my-api”		application name (default to script filename without extension)
+		script				(string)	”./api/app.js”	script path relative to pm2 start
+		cwd					(string)	“/var/www/”		the directory from which your app will be launched
+		args				(string)	“-a 13 -b 12”	string containing all arguments passed via CLI to script
+		instances			number		-1				number of app instance to be launched
+		exec_mode			string		“cluster”		mode to start your app, can be “cluster” or “fork”, default fork
+		watch				boolean		true			enable watch & restart feature, if a file change in the folder or subfolder, your app will get reloaded
+		ignore_watch		list		[”/file/*.js”, “node_modules”]	list of regex to ignore some file or folder names by the watch feature
+		max_memory_restart	string		“150M”			your app will be restarted if it exceeds the amount of memory specified. human-friendly format : it can be “10M”, “100K”, “2G”
+		env					object		{“NODE_ENV”: “development”, “ID”: “42”}	env variables which will appear in your app
+	

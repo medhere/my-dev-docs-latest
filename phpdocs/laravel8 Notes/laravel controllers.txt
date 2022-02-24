@@ -1,0 +1,112 @@
+controllers
+	controllers are stored in the app/Http/Controllers directory
+	php artisan make:controller nameofcontroller
+	php artisan make:controller nameofcontroller --invokable		//__invoke
+	php artisan make:controller nameofcontroller --resource
+	php artisan make:controller nameofcontroller --model=Modelname --resource --requests
+	php artisan make:controller nameofcontroller --api
+	
+	add new action
+		public function show()
+		{
+			return 'this is a statement';
+		}
+		//	Use Controller in route
+		Route::get('/user', [Nameofcontroller::class, 'show']);
+		
+	single action in controller
+		public function __invoke()
+		{
+			// ...
+		}
+		//	Use Controller in route
+		Route::get('/user', [Nameofcontroller::class]);
+		
+	add middleware
+		Route::get('profile', [UserController::class, 'show'])->middleware('auth');
+		OR
+		public function __construct()
+		{
+			$this->middleware('auth');
+			$this->middleware('log')->only('index');
+			$this->middleware('subscribed')->except('store');
+
+			//define inline middleware
+			$this->middleware(function ($request, $next) {
+				return $next($request);
+			});
+		}
+
+	CRUD using --resource
+	     * @param  int  $id
+		public function index()
+		public function create()
+		public function store(Request $request)
+		public function show($id)
+		public function edit($id)
+		public function update(Request $request, $id)
+		public function destroy($id)
+
+		// Use controller
+		Route::resource('users', Nameofcontroller::class);
+		Route::resources([
+			'users' => Nameofcontroller1::class,
+			'admins' => Nameofcontroller2::class,
+		])->missing(function (Request $request) {
+            return Redirect::route('photos.index');
+        });		//missing is optional
+		Route::resource('users', Nameofcontroller::class)->only([
+			'index', 'show'
+		]);
+		Route::resource('users', Nameofcontroller::class)->except([
+			'create', 'store', 'update', 'destroy'
+		]);
+		
+		//URLs	{id} = $id
+		Verb		URI					Action	Route Name
+		GET			/users				index	user.index
+		GET			/users/create		create	users.create
+		POST		/users				store	users.store
+		GET			/users/{id}			show	users.show
+		GET			/users/{id}/edit 	edit	users.edit
+		PUT/PATCH 	/users/{id}			update	users.update
+		DELETE		/users/{id}			destroy	users.destroy
+		
+	Generating Form Requests --model=Modelname --requests 
+		instructs Artisan to autogenerate form request classes for the controller's storage and update methods:
+		i.e php artisan make:request nameofcontroller
+		The generated form request class will be placed in the app/Http/Requests directory
+			StoreModelnameRequest.php
+			UpdateModelnameRequest.php
+	
+	For APIs --api
+	Route::apiResource('users', Nameofcontroller::class);
+		public function index()
+		public function store(Request $request)
+		public function show($id)
+		public function update(Request $request, $id)
+		public function destroy($id)
+
+
+	Naming Resource Route Parameters
+		Route::resource('users', AdminUserController::class)->parameters(['users' => 'admin_user']);
+			/users/{admin_user}
+	
+	Localizing Resource URIs
+		App\Providers\RouteServiceProvider
+		public function boot()
+		{
+			Route::resourceVerbs([
+				'create' => 'new',
+				'edit' => 'update'
+			]);
+		}
+			route chnages from /users/create -> /users/new for CRUD --resource
+			
+	Supplementing Resource Controllers
+		add additional routes to a resource controller beyond the default set of resource routes
+			define those routes before your call to the Route::resource method; 
+			
+		use App\Http\Controller\Nameofcontroller;  // with a extra public function popular
+		Route::get('/users/popular', [Nameofcontroller::class, 'popular']);
+		Route::resource('users', Nameofcontroller::class);

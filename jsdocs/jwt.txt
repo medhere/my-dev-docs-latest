@@ -1,0 +1,40 @@
+learn jwt
+	JSONWEBTOKEN
+	jwt.sign(payload, secretOrPrivateKey, {expiresIn:''})
+    
+	const verifyToken = (req, res, next) => {
+      const token = req.body.token || req.query.token || req.headers["authorization"].split(' ')[1] || req.cookies.token;
+	  if (!token) {return res.status(403).send("A token is required for authentication");}
+	  try {req.token = jwt.verify(token, config.TOKEN_KEY);} 
+	  catch (err) {return res.status(401).send("Invalid Token");}
+	  return next();
+	};
+	const token = req.body.token || req.query.token || req.headers["x-access-token"] || req.cookies.token;
+	jwt.verify(token, secretOrPublicKey)
+
+	REACT-JWT
+	import { decodeToken, isExpired, useJwt } from "react-jwt";
+	const { decodedToken, isExpired } = useJwt(token);
+	decodeToken(token)
+	isExpired(token)
+
+	JWT-DECODE
+	import jwt_decode from "jwt-decode";
+ 
+	var token = "eyJ0eXAiO.../// jwt token";
+	var decoded = jwt_decode(token);
+	 
+	console.log(decoded);	 
+	/* prints:
+	 * { foo: "bar",
+	 *   exp: 1393286893,
+	 *   iat: 1393268893  }
+	 */
+	 
+	var decodedHeader = jwt_decode(token, { header: true });
+	console.log(decodedHeader);
+	 
+	/* prints:
+	 * { typ: "JWT",
+	 *   alg: "HS256" }
+	 */

@@ -1,0 +1,16 @@
+gcp
+e2small 2cpu 2gbram 30gb USD 13.43 per 1 month
+e2micro 2cpu 1gbram 30gb USD 7.32 per 1 month (has always free)
+30gb network USD 2
+
+aws
+t4gsmall 2cpu 2gbram 30gb 10.67 USD
+t4gmicro 2cpu 1gbram 30gb 6.87 USD 
+t4gnano 2cpu 0.5gb 30gb 4.90 USD
+30gb network $2
+t2.micro 1cpu 1gbram 30gb 8.26 USD (has 12month free)
+t3.micro 2cpu 1gbram 30gb 7.75 USD (has 12month free)
+
+digitalocean
+basic droplets 2cpu 2gbram 60gb $15
+basic droplets 2cpu 1gbram 50gb $10

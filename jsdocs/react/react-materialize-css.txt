@@ -1,0 +1,15 @@
+Materialize-css
+	npm i materializecss react-materialize
+		import 'materialize-css';
+		import { Button, Card, Row, Col } from 'react-materialize';
+			http://react-materialize.github.io/react-materialize/
+			
+		or
+		App.js
+		import 'materialize-css/dist/css/materialize.min.css';
+		import M from 'materialize-css';
+		add ref to element
+		Init elem on useEffect() with ref
+
+
+		

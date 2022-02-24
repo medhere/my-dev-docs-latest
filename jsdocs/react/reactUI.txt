@@ -1,0 +1,10 @@
+best design libraries to use
+MUI(v5)
+Framework7
+Semantic UI
+ionic
+shoelace
+blueprintjs
+chakraUI
+evergreenjs
+photon for electron apps

@@ -1,0 +1,260 @@
+
+// array
+	var posts=[1,2,3,4,5];
+	
+	for (let i = 0; i < posts.length; i++) {
+		console.log(posts[i])    
+	}
+
+	posts.forEach((x,i) => { console.log(x) });
+
+	posts.map((x,i) => {
+		console.log('map: '+x)
+	});
+
+	for (let x of posts) {
+	  console.log(x);
+	}
+
+// objects
+	var posts2={test:1,test2:3,test3:67};
+
+	for (let x in posts2){
+		console.log(x + ':' + posts2[x])
+	}
+
+// objects in arrays
+	var arr=[
+		{num:'1', val:'one'}
+		{num:'2', val:'two'}
+	]
+    
+	arr.map(function(x,i){
+        console.log(i+' : '+x.num+' - '+ x.val)		
+	});
+
+// arrays in objects
+	var carmodel={
+		year:[2002,2004,2005],
+		type:['toyota','benz','honda']
+	}
+
+	for (let x in carmodel){
+		carmodel[x].forEach((y,i) => {
+			console.log(i+' : '+x+' - '+y);
+		})
+	}
+
+
+// array constrcution
+	var arr=[
+		function(){return 'abc'},
+		function(){return 'xyz'},
+		'this is 3rd obj'
+	]
+
+	console.log(arr[0]());
+	console.log(arr[1]());
+	console.log(arr[2]);
+
+
+// object contruction
+	var obj={
+		test:123555,
+		tested:function (params) {
+			return this.test + params;
+		},
+		tester:(xx)=>{
+			return this.test + xx; 		//note, this keyword does not work in arrow funtions, returns undefined
+		}
+	}
+
+	console.log(obj.test);
+	console.log(obj.tested('aaa'));
+	console.log(obj.tester('aaa')); //undefined
+
+
+// function construction
+		function test(str,num=345,test=23) { 		//find how to write function callbacks, or add functions to parameters
+			var talk=str;
+			this.stringname=str;
+			this.numname=num;
+			this.testname=test;
+			this.tested=function(testedval='test'){
+				return this.stringname + this.numname + testedval;
+			}
+			var runner='hahahha';
+			return str+num+test;
+		}
+		
+		//add new property
+			test.prototype.newnumber = "08976567";		
+			test.prototype.name = function() {
+			  return this.stringname + " " + this.testname;
+			};
+
+		console.log(new test('teststr',undefined,20).tested(56)); 	//call function in function object
+		console.log(new test('teststr',undefined,87)); 		//create object alone
+		console.log(test('teststr',undefined,5670));  		//run function to get return
+
+		var dad= new test('mike','lol'); // create new object to dad
+		console.log('this is '+dad.stringname);
+		console.log(dad.tested('john'));
+		console.log(dad.talk); //undefined
+
+
+// class construction
+	class Model extends Car {
+		constructor(name, year) {
+			super(brand);	//use this.brand from Car
+		  this.name = name;
+		  this.year = year;
+		  this.comb=name+year;
+		  this.funct1=function () {  return 'this is '+name }
+		}
+		
+		x=5
+		
+		static name() {	return 1 }
+
+		funct2(){ return 'the car year is '+this.year }
+	}
+
+	console.log(new Car('toyota',1956).name);
+	console.log(new Car('toyota',1956).comb);
+	console.log(new Car('toyota',1956).x);
+	console.log(new Car('toyota',1956).funct1());
+	console.log(new Car('toyota',1956).funct2());
+	console.log(Car.name());
+
+
+// Logical Conditionals
+    var ? true:false
+    var && true
+	var || false
+		
+	//if isAuth is true, show nothing. If false, show Logo
+		{isAuth || <Logo />}
+	//if isAuth is true, show AuthenticatedApp. If false, show Login
+		{isAuth ? <AuthenticatedApp /> : <LoginScreen />}
+	//if isAuth is true, show Footer. If false, show nothing
+		{isAuth && <Footer />}
+
+
+// object destructuring
+	var arr=[
+		{
+			name:'john', class:'nur 1',
+			food:{ type:'bread', time:'11am' }
+		},
+		{
+			name:'luke',
+			food:{ type:'noddles', time:'1pm' }
+		},
+		{
+			timer:'this is function',
+			timerfunc: function(){ return 1+1; }
+		}
+
+	]
+	   var [a,b,c,d]=arr;
+	   var {name:aname = 'Nil', class:aclass = 'Nil', food:{type:atype = 'Nil', time:atime = 'Nil'}}=arr;
+
+	var arr2=[
+		function(){return 'abc'},
+		function(){return 'xyz'}
+	]
+		var [x,y]=arr2;
+
+//Generator Function
+	function* generator1(i) {
+		//const generator1=function* (i) {		
+	  yield i + 5;
+	  yield i + 10;
+	}
+	const gen1 = generator1(10);
+	console.log(gen1.next().value);	//15
+	console.log(gen1.next().value);	//20
+
+		function* generator2(i) {
+		  yield i;
+		  yield* generator1(i);
+		  yield i + 10;
+		}
+		const gen2 = generator2(5);
+		console.log(gen2.next().value);	//5
+		console.log(gen2.next().value);	//10
+		console.log(gen2.next().value);	//20
+		console.log(gen2.next().value);	//25
+
+	function* logGenerator() {
+	  console.log(0);
+	  console.log(1, yield);
+	  console.log(2, yield);
+	}
+	var gen = logGenerator();
+	gen.next();             // 0
+	gen.next('pretzel');    // 1 pretzel
+	gen.next('california'); // 2 california
+
+	function* yieldAndReturn() {
+	  yield 1;
+	  return 2;
+	  yield 3;
+	}
+	var gen = yieldAndReturn()
+	console.log(gen.next()); // 1
+	console.log(gen.next()); // 2
+	console.log(gen.next()); // undefined
+	
+	const obj = {
+	  *generator () {
+		yield 'a';
+		yield 'b';
+	  }
+	}
+	const gen = obj.generator()
+
+	class Foo {
+	  *generator () {
+		yield 1;
+		yield 2;
+		yield 3;
+	  }
+	}
+	const f = new Foo ();
+	const gen = f.generator();
+
+//Promise
+	var test = () => new Promise((resolve, reject) => {
+		//var test => new Promise((res, rej) => {
+	  if(true)	resolve(()=>{});	//resolve('foo')
+	  if(false) reject(()=>{});		//reject('bar'), reject(new Error('An error'))
+	});
+	
+	test. or test().then(func).catch(func).finally(func)
+	await test()
+	try{} catch{} finally{}
+	
+
+//exports/imports
+	nodejs
+		module.exports={testapp};
+		module.exports={...multiple vars or functions}
+		module.exports = {
+		  getName: () => {return 'Jim';},
+		  dob: '12.01.1982',
+		};
+		module.exports=testapp //testapp is default export
+		exports.testapp=testapp;
+		exports.testapp = function(){}
+	
+		const module = require('')
+		const module, { module, module, ... } = require('')
+	
+	Others
+	export default name
+	export name
+	
+	import name from ''
+	import {name} from ''

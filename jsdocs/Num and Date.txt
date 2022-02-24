@@ -1,0 +1,30 @@
+
+Numbers
+	Number.isFinite()	Checks whether a value is a finite number
+	Number.isInteger()	Checks whether a value is an integer
+	toFixed(x)	Formats a number with x numbers of digits after the decimal point
+	toPrecision(x)	Formats a number to x length
+	toString()	Converts a number to a string
+
+	Math.ceil(1.4);  //rounds to highest
+	Math.floor(1.8);	//rounds to lowest
+	Math.round(2.4);	//rounds to nearest
+	Math.trunc(8.76);	// return interger only
+	Math.random();	//use with (*1000)+1
+
+Date
+	dateStr=new Date("2015-03-25T12:00:00Z");
+	new Date();		//today
+	Date.now();
+	new Date("2015-03-25");
+	new Date("2015-03-25T12:00:00Z");
+	dateStr.
+		getFullYear()	Get the year as a four digit number (yyyy)
+		getMonth()	Get the month as a number (0-11)
+		getDate()	Get the day as a number (1-31)
+		getHours()	Get the hour (0-23)
+		getMinutes()
+		getTime()	//return date in millisecs
+		toUTCString();
+		toDateString();
+	Date.parse("March 21, 2012");	//return date in millisecs

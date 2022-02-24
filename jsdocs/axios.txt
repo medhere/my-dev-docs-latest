@@ -1,0 +1,101 @@
+	
+learn axios
+	axios.post('/user', {firstName: 'Fred', lastName: 'Flintstone'})
+	axios.get('/user?ID=12345')
+	axios.get('/user', {params: {ID: 12345} })
+	axios.request(config)
+	axios.get(url, config])
+	axios.post(url, data, config])
+	
+	axios({opts}).then((response)=>{}).catch((error)=>{}).then(()=>{});
+	opts
+	  url: '/user',
+	  method: 'get', // default
+	  baseURL: 'https://some-domain.com/api',
+	  headers: {'X-Requested-With': 'XMLHttpRequest'},
+	  params: {ID: 12345},
+	  data: {name: 'value'},
+	  data: 'Country=Brasil&City=Belo Horizonte',
+	  timeout: 1000, // default is `0` (no timeout)
+	  withCredentials: false, // default
+	  auth: { username: 'name', password: 'pass'},
+	  responseType: 'json', // options are: 'arraybuffer', 'document', 'json', 'text', 'stream' browser only: 'blob'
+	  xsrfCookieName: 'XSRF-TOKEN', // default
+	  xsrfHeaderName: 'X-XSRF-TOKEN', // default
+	  onUploadProgress: function (progressEvent) {},
+	  onDownloadProgress: function (progressEvent) {},
+	  validateStatus: function (status) {  return status >= 200 && status < 300; // default},
+	}
+
+	        onUploadProgress: function (progressEvent) {
+                var {loaded,total}=progressEvent,
+                percent = Math.floor((loaded*100)/total)
+                console.log(`uploaded: ${loaded}kb of ${total}kb | ${percent}%`)
+            },
+            onDownloadProgress: function (progressEvent) {
+                var {loaded,total}=progressEvent,   
+                percent = Math.floor((loaded*100)/total)
+                console.log(`downloaded: ${loaded}kb of ${total}kb | ${percent}%`)
+            }
+		
+	response .then(response=>response.opts)
+		opts
+		  data: {},
+		  status: 200,
+		  statusText: 'OK',
+		  headers: {},  // Example: `response.headers['content-type']`
+		  config: {},
+		  request: {}
+
+	error .catch(error=>error.opts)
+	opts
+		error.toJSON()
+		(error.response) ?
+			  error.response.data
+			  error.response.status
+			  error.response.headers
+		(error.request) ?  error.request :  error.message
+		error.config
+	
+
+	
+	// Add a request interceptor
+	axios.interceptors.request.use(function (config) {
+		return config;
+	  }, function (error) {
+		return Promise.reject(error);
+	  });
+
+	// Add a response interceptor
+	axios.interceptors.response.use(function (response) {
+		return response;
+	  }, function (error) {
+		return Promise.reject(error);
+	  });
+		
+	const instance = axios.create({
+	  baseURL: 'https://some-domain.com/api/',
+	  timeout: 1000,
+	  headers: {'X-Custom-Header': 'foobar'}
+	});
+
+
+	axios-retry
+	npm install axios-retry
+
+		const axiosRetry = require('axios-retry');
+		import axiosRetry from 'axios-retry';
+				
+		axiosRetry(axios, { retries: 3, retryDelay: axiosRetry.exponentialDelay});
+		axiosRetry(axios, { retries: 5, retryDelay: (retryCount) => { return retryCount * 1000; }});
+		axiosRetry(axios)
+		//add to config
+			'axios-retry': { retries: 3, retryDelay: axiosRetry.exponentialDelay }
+
+		Options		
+		Name				Type		Default
+		retries				Number		3
+		retryCondition		Function	isNetworkOrIdempotentRequestError
+		shouldResetTimeout	Boolean		FALSE
+		retryDelay			Function	(retryCount) => { return retryCount * 1000; }
+

@@ -1,0 +1,27 @@
+react-detect-offline
+	import { Offline, Online, Detector } from "react-detect-offline";
+
+	const DetectOffline = () => (
+	  <>
+		<Online polling={true}>Only shown when you're online</Online>		
+		<Offline polling={true}>Only shown offline (surprise!)</Offline>
+
+		<Detector polling={true} render={({ online }) => (
+			<div className={online ? "normal" : "warning"}>
+			  You are currently {online ? "online" : "offline"}
+			</div>
+		  )}
+		/>
+		
+	  </>
+	);
+
+	Prop			Type
+	polling			Obj or Bool
+	polling.enabled	Boolean
+	polling.url		String
+	polling.intervalNumber
+	polling.timeout	Number
+	onChange		Function
+	children 		Element(s) //for Online and Offline only
+	render 			Func	//for Detector only

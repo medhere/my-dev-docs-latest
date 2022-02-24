@@ -1,0 +1,32 @@
+HTTP session
+	use Illuminate\Http\Request;
+	(Request $request)
+		$value = $request->session()->get('key');
+		$value = $request->session()->get('key', function () { return 'default'; });	//if session not available
+		$data = $request->session()->all();		//get all session data
+		if ($request->session()->has('users')) { }	//present and not null
+		if ($request->session()->exists('users')) { }	//present and null
+		if ($request->session()->missing('users')) { }	//not present or null
+		$request->session()->put('key', 'value');	// store info in key
+		$request->session()->push('user.teams', 'developers');		// store in user that is array
+		$value = $request->session()->pull('key', 'default');		// get and delete item with default
+		$request->session()->forget('name');	// Forget single key
+		$request->session()->forget(['name', 'status']);	// Forget multiple keys
+		$request->session()->flush();
+		$request->session()->regenerate();	//regenerate session id, keep data
+		$request->session()->invalidate();	// regenerate seesion id, delete data
+		
+	Global session()
+		$value = session('key');
+		$value = session('key', 'default');	    // Specifying a default value
+		session(['key' => 'value']);    // Store a piece of data in the session
+		
+	Flashing
+		$request->session()->flash('status', 'Task was successful!');	//flash data for next request		
+		$request->session()->reflash();
+		$request->session()->keep(['username', 'email']);
+	
+	Session Blocking
+		Route::post($uri,$callback)->block($lockSeconds = 10, $waitSeconds = 10)
+		Route::post($uri,$callback)->block()
+

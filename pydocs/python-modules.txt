@@ -1,0 +1,25 @@
+python modules
+	flask
+		from flask import Flask
+		
+	dotenv
+			//use dotenv if not using pip shell and pip run
+		import os
+		from dotenv import load_dotenv
+		load_dotenv()
+		GCP_PROJECT_ID = os.getenv('GCP_PROJECT_ID')
+		SERVICE_ACCOUNT_FILE = os.getenv('SERVICE_ACCOUNT_FILE')
+		STORAGE_BUCKET_NAME = os.getenv('STORAGE_BUCKET_NAME')
+
+	livereload
+		livereload [-h] [-p PORT] [-w WAIT] [directory]
+		with flask
+			# app is a Flask object
+			from livereload import Server, shell
+				app = create_app()
+				app.debug = True
+				server = Server(app.wsgi_app)
+				server.setHeader('Access-Control-Allow-Origin', '*')
+				server.setHeader('Access-Control-Allow-Methods', '*')
+				# server.watch('directory')
+				server.serve()

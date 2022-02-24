@@ -1,0 +1,68 @@
+courseclub.me
+fcs forum
+freecoursesite.com
+
+appbrewery.co
+adobecolor
+colorhunt.co
+fonts.google.com
+cssfontstack.com
+dailyui
+collectui
+canva.com
+keybr.com
+codepen.io
+devdocs.io
+unicode-table.com
+github.io for hosting sites vid 27
+favicon.cc
+favicon.io
+loremipsumgenerator.com
+lorem-ipsum.perbang.dk
+flaticon.com
+giphy.com
+wd2 css application
+pesticide.io
+cssbuttongenerator.com
+minify.org
+hyper.is, hyper terminal
+serverfault.com
+learnenough.com
+nodejs.org/api
+stateofjs.com
+npm
+expressjs.com
+nodemon
+wikipedia http status codes
+devcenter.heroku.com
+any-api.com
+stackoverflow node js ejs including a partial
+katacoda.com
+sqliteonline.com
+postman
+mongodb.com
+mongoose npm
+cryptii.com
+codesandbox.io
+babeljs.io
+airbnb react jsx style guide
+react developer tools extension on browser
+flatuicolors.com
+usehooks.com
+en.rakko.tools
+www.textcompare.org
+		
+	
+learn hosting
+	firebase
+	
+learn regex
+
+
+learn react-redux
+learn graphql
+
+
+
+
+

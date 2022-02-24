@@ -1,0 +1,217 @@
+New VM
+	create new vm under compute engine, vm instances
+	start or stop new vm instances
+	install google cloud sdk setup
+
+google gcloud
+	install SSH for Google Cloud Platform on browser
+	open cmd and gcloud init, or gcloud -h
+
+ip	35.208.129.103 
+
+ssh
+	gcloud compute ssh earlyfuture-vm --project earlyfuturecloud
+	or putty
+	edhere_michael@35.208.129.103
+	keyboard xterm-r6
+	add ppk under ssh->auth
+	
+open firewall ports 
+	click on 3dot option of vm instance, select network details
+	under vpc network page, select firewall menu, then create firewall rule
+	for ip4, use 0.0.0.0/0 to allow all incoming ips
+		ports
+		servers 7000-8443
+		ftp 21,39000-40000
+
+go to aapanel and get install script
+save entry point url, username and password
+aaPanel Internet Address: http://35.208.129.103:7800/admin
+aaPanel Internal Address: http://10.128.0.2:7800/admin
+username: mememe
+password: mememe
+
+ping -c 3 google
+edit /etc/resolv.conf
+	sudo nano /etc/resolv.conf or use aapanel editor
+	add nameserver 8.8.8.8
+		nameserver 1.1.1.1
+		nameserver 1.0.0.1
+		nameserver 9.9.9.9
+		nameserver 80.80.80.80
+			options edns0 trust-ad
+			search earlyfuture.com.ng us-central1-c.c.earlyfuturecloud.internal c.earlyfuturecloud.internal google.internal
+	ctrl x to save
+	sudo systemctl restart systemd-resolved.service
+	sudo systemctl status systemd-resolved.service
+
+install	
+always install latest version
+	Node.js version manager
+		install nodejs 16
+	nginx
+	MySQL
+	PHP-7.3, 8.1
+		check phpinfo
+		install extra modules
+	Pure-Ftpd
+	phpMyAdmin
+	WebSite Speed
+	Docker Manager
+	MongoDB
+	Fail2ban Manager
+		update config files /etc/fail2ban
+		/var/mail/root for mails
+	Python Manager
+	PHP Guardian
+	Supervisor
+	NGINX free firewall
+
+config aapanel on web
+	if change of port from 7800
+	sudo systemctl start bt
+	sudo systemctl status bt
+
+map aapanel
+	create static site
+	reverse proxy to http://127.0.0.1:7800
+	disable 7800 port on gcp if necessary
+
+add nodejs and python to system path
+	nano ~/.bashrc
+		add to beggining of path
+		export PATH=/www/server/nodejs/v16.13.2/bin:$PATH
+		export PATH=/www/server/python_manager/versions/3.10.0/bin:$PATH
+			to add to end of path, export PATH=$PATH:/home/path
+	source ~/.bashrc
+	echo $PATH
+	type python3
+	which python3
+	type node
+	which node
+
+change A records on DNS
+	*.earlyfuture.com.ng.	14400	A	35.208.129.103
+	*.earlyfuture.com.ng.	300		TXT	v=spf1 +a +ip4:35.208.129.103 ~all
+
+Openlitespeed, not yet needed, attempt docker
+	install from website
+	to change password /usr/local/lsws/admin/misc/admpass.sh
+	admin 7080, example 8088
+	
+websites
+	create new
+		create group to match website
+		create folder for general website
+		create folder for alias of each website
+		create website with php,node,python
+			for php,copy without composer folder
+			for node, copy without node_modules
+			for python, generate requirements.txt and copy without .venv folder to alias folder, map to same alias folder
+		go to nginx logs format, apply rule to site
+		check website on Website Speed, fail2ban, nginx free firewall
+		change root entry point for codeigniter and latavel
+				
+task managers
+	top
+	htop
+	ps
+	pstree	
+
+ports
+	ufw status numbered
+	ufw delete 1
+	ufw
+	
+	sudo lsof -i -P -n | grep LISTEN
+	sudo netstat -tulpn | grep LISTEN
+	sudo ss -tulpn | grep LISTEN
+	sudo ss -tulw
+	sudo lsof -i:22 ## see a specific port such as 22 ##
+	sudo nmap -sTU -O IP-address-Here
+	less /etc/services
+
+FQDN
+	set server name to A record IP on DNS hosts as *.server.earlyfuture.com.ng
+	hostnamectl status
+	hostnamectl set-hostname cloud.server.earlyfuture.com.ng
+	ping cloud.server.earlyfuture.com.ng
+	host cloud.server.earlyfuture.com.ng
+	dig cloud.server.earlyfuture.com.ng
+	sudo nano /etc/hosts -> 35.208.129.103 cloud.server.earlyfuture.com.ng
+
+create snapshot
+	under computer engine, select storage, disks, click 3dot icon, select create snapshot
+	fill in details, then create
+
+autoremove
+	apt autoremove --purge
+
+install webdevops/php-apache:8.1 using docker
+	Aapanel
+	using docker manager
+	/app/ -> /www/wwwroot
+	/opt/docker/etc/php/php.ini ->	?
+	/opt/docker/etc/httpd/conf.d/ -> ?
+	/opt/docker/etc/httpd/vhost.common.d/ -> ?
+	80 -> 8080
+	443 -> 8443
+	create website and reverse proxy to http://127.0.0.1:8080/443
+
+	OR
+	using command
+	docker pull webdevops/php-apache:8.1
+	docker image ls -a
+	docker run --privileged -d --name apache2-server -p 8080:80 -v /www/wwwroot:/app webdevops/php-apache:8.1
+	docker logs -f apache2-container
+	
+	docker ps -a
+	docker container stop apache-server
+	docker container start apache-server
+	docker container restart apache-server
+	docker logs apache-server
+
+dns mapping
+For the example.com domain name, create an A record with your DNS provider. For the www.example.com subdomain, create a CNAME record for www to point it to the example.com domain. The A record maps a hostname to an IP address. The CNAME record creates an alias for the A record. This lesson assumes you want example.com and www.example.com to map to the same IP address.
+
+buy domain name
+namecheap
+	.app	$14.98	$16.98	$14.48
+	.dev 	$14.98	$16.98	$14.98	
+freenom
+	BUSINESS 	$ 5.53 	$ 5.53 	$ 5.53
+	COMPANY 	$ 5.53 	$ 5.53 	$ 5.53
+domain name from freenom
+	earlyfuture.cf
+	glue record
+	ns1.earlyfuture.cf
+	
+CodeIgniter on nginx, use 8.1
+	add to config
+		location / {
+			try_files $uri $uri/ /index.php$is_args$args;
+		}
+		error_page 404 /index.php;
+		
+		# deny access to hidden files such as .htaccess
+		location ~ /\. {
+			deny all;
+		}
+	use php81 app -> disabled functions
+		
+
+run stress tests???
+install vpn???
+	https://github.com/hwdsl2/docker-ipsec-vpn-server using docker
+	VPN_IPSEC_PSK=tewntyrandomcharacters
+	VPN_USER=test
+	VPN_PASSWORD=test
+	VPN_ANDROID_MTU_FIX=yes
+
+	
+Linux Commands
+Files:	tar · pv · cat · tac · chmod · grep ·  diff · sed · ar · man · pushd · popd · fsck · testdisk · seq · fd · pandoc · cd · $PATH · awk · join · jq · fold · uniq · journalctl · tail · stat · ls · fstab · echo · less · chgrp · chown · rev · look · strings · type · rename · zip · unzip · mount · umount · install · fdisk · mkfs · rm · rmdir · rsync · df · gpg · vi · nano · mkdir · du · ln · patch · convert · rclone · shred · srm	
+
+Processes:	alias · screen · top · nice · renice · progress · strace · systemd · tmux · chsh · history · at · batch · free · which · dmesg · chfn · usermod · ps · chroot · xargs · tty · pinky · lsof · vmstat · timeout · wall · yes · kill · sleep · sudo · su · time · groupadd · usermod · groups · lshw · shutdown · reboot · halt · poweroff · passwd · lscpu · crontab · date · bg · fg	
+
+Networking:	netstat · ping · traceroute · ip · ss · whois · fail2ban · bmon · dig · finger · nmap · ftp · curl · wget · who · whoami · w · iptables · ssh-keygen · ufw

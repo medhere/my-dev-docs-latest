@@ -1,0 +1,67 @@
+learn file management
+	FS-EXTRA
+	const fs=require('fs-extra')
+	fs.
+		copy(src[file|dir], dest[file|dir], {overwrite:true, errorOnExist:false}, callback(err))
+		emptyDir(dir, callback(err))
+		ensureFile(file, callback(err))
+		ensureDir(dir,{mode: '700'},callback(err))
+		move(src[file|dir], dest[file|dir], {overwrite:false} , callback(err))
+		outputFile(file, data, {encoding:'utf8', mode: '700', flag: 'w'}, callback(err)) //the same as fs.writeFile
+		pathExists(file, callback(err, exists))
+		remove(path, callback(err))
+			
+		all normal nodejs fs functions	
+		fs.createWriteStream(file, {flags: 'w', encoding: 'utf8', mode: 0o700, autoClose: true})
+			.open .write .close
+		fs.mkdtemp(prefix "foo-", {encoding:'utf8'}, callback(err, dir))
+		fs.readdir(dir, options, callback(err,files))		//files is Array
+		fs.readFile(path, options, callback(err,data))
+		fs.rename(oldfile, newfile, callback)
+		process.cwd()
+
+		Number	Description
+		7	read, write, and execute
+		6	read and write
+		5	read and execute
+		4	read only
+		3	write and execute
+		2	write only
+		1	execute only
+		0	no permission
+					
+	FS-JETPACK
+	const jp=require('fs-jetpack')
+	
+	jp.dir("greets").file("greet.txt", { content: "Hello world!" }).cwd("..").dir("greets-i18n").file("polish.txt", { content: "Witaj świecie!" });
+	var data = jp.read(path)
+	for async .then(data=>consol.log(data)).catch(err=>console.log(err))
+	
+	API:{optional}
+		appendAsync(path, data, {mode:'700'})
+		copyAsync(from, to, {overwrite:false, matching: ["*.md", "*.txt","images/**"]})
+		createWriteStream(path, {flags: 'w', encoding: 'utf8', mode: 0o700, autoClose: true})  //.open .write .close
+		cwd(path),cwd()			//'..' | './'  return path
+		dirAsync(path, {empty:false, mode:'700'})		//returns New CWD context with directory specified in path
+		existsAsync(path)			//return false,"dir","file","other"
+		fileAsync(path, {content:String|Buffer|Object|Array, mode:'700'})
+		findAsync(path, {matching:["*.md", "*.txt","images/**"], files:true, directories:false, recursive:true})			//returns Array of paths (.forEach(jp.function))
+		inspectAsync(path, {mode:false, times:false, absolutePath:false})			//return Object
+		inspectTreeAsync(path, {times:false, relativePath:true}) 			//return Object tree
+		listAsync(path)			//return Array of file names
+		moveAsync(from, to, {overwrite:false})
+		path(parts...) //return path as String | path(), path("three"), path("..", "four");
+		readAsync(path, {returnAs: 'utf8' | 'buffer' | 'json' | 'jsonWithDates'}) // returns file contents
+		removeAsync(path)		//removeAsync() on a path
+		renameAsync(path, newName, {overwrite:false})
+		tmpDirAsync({prefix: "foo_", basePath: path })			//returns new temp dir path  jp.tmpDir().anyfunction
+		writeAsync(path, data, {mode:'700', atomic:false})
+						
+		to convet base64 to img
+			jp.createWriteStream('image.jpg', {encoding: 'base64'}).write(req.body.img.split('base64,')[1]);
+			OR
+			var buf = Buffer.from(req.body.img.split('base64,')[1], 'base64');
+			jp.writeAsync('image.jpg', buf, {atomic:true}).then(data=>console.log(data)).catch(err=>console.log(err))
+			jp.fileAsync("image.jpg", { content: buf }).then(data=>console.log(data)).catch(err=>console.log(err))
+			
+		to convert blob to img

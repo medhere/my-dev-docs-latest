@@ -1,0 +1,109 @@
+learn express
+	req.headers
+	req.body
+	req.query
+	req.params
+	req.session.sessonname
+	req.session.destroy();
+	req.cookies.cookiename
+	req.signedCookies.cookiename
+	req.subdomains
+	req.xhr
+
+	res.download('/report-12345.pdf'), res.download('/report-12345.pdf', 'report.pdf')
+	res.send('')
+	res.sendFile(__dirname+'/filename.ext')
+	req.render('i.ejs',{key:value})
+	res.json({ error: 'Not found' })
+	res.cookie('cookiename','contents')
+	res.cookie('name', 'tobi', { domain: '.example.com', path: '/', secure: true, maxAge: 60*60*24 , httpOnly: true, signed: true, encode: String, sameSite: true})
+	res.clearCookie('cookiename')
+	res.redirect('/path')
+	res.format({
+		html: function () { res.render('404', { url: req.url }) },
+		json: function () { res.json({ error: 'Not found' }) },
+		text: function () { res.send('Not found') },
+		default: function () {res.status(406).send('Not Acceptable') }
+	})
+	res.attachment('path/to/logo.png')
+	res.sendStatus()
+	res.end()
+
+	
+	app.map = function(a, route){
+    route = route || '';
+    for (var key in a) {
+      switch (typeof a[key]) {
+        case 'object': app.map(a[key], route + key); break;
+        case 'function': if (verbose) console.log('%s %s', key, route);
+          app[key](route, a[key]);break;
+		  }
+		}
+	  };
+
+	var users = {
+	  list: function(req, res){  res.send('user list') },
+	  get: function(req, res){ res.send('user ' +  escapeHtml(req.params.uid)) },
+	  delete: function(req, res){ res.send('delete users') }
+	};
+	
+	app.map({
+	  '/users': {
+		get: users.list,
+		delete: users.delete,
+		'/:uid': {
+		  get: users.get,
+		  '/pets': {
+			get: pets.list,
+			'/:pid': {
+			  delete: pets.delete
+			}
+		  }
+		}
+	  }
+	});
+
+	app.route('/route').get().post()
+
+
+learn https for node
+	use openssl from github client
+	openssl req -x509 -newkey rsa:2048 -keyout keytmp.pem -out cert.pem -days 365
+	openssl rsa -in keytmp.pem -out key.pem
+	openssl dhparam -out dh-strong.pem 2048
+	
+	openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -subj '/C=US/ST=Oregon/L=Portland/O=Company Name/OU=Org/CN=localhost'
+
+	
+		const express = require('express'), app = express(), port=3002
+		const https = require('https'), http = require('http'), fs = require('fs');
+
+		app.get('/',(req,res)=>{res.send('12345');});
+		
+		// const httpServer = http.createServer(app);
+		const httpsServer = https.createServer({key: fs.readFileSync('./certs/key.pem'),cert: fs.readFileSync('./certs/cert.pem'),dhparam: fs.readFileSync("./certs/dh-strong.pem")}, app);
+		// httpServer.listen(port, () => {console.log(`HTTP Server listening on port ${port}!`)});
+		httpsServer.listen(port, () => {console.log(`HTTPS Server listening on port ${httpsport}!`))});		
+
+
+express.Router
+	var express = require('express');
+	var api1 = express.Router();
+
+	api1.get('/', (req, res)=>{ res.send('Hello from API root route.')});
+	const api2 = (req, res)=>{ res.send('api2') };
+	const api3={
+	  get:(req, res)=>{ res.send('api3:get') },
+	  post:(req, res)=>{ res.send('api3:post') }
+	}
+	module.exports = {api1,api2,api3};
+
+	usage
+	const {api1,api2,api3} = require('./route')
+
+	app.use('/api1', api1);
+	app.get('/api2', api2);
+	app.route('/api3')
+		.get(api3.get)
+		.post(api3.post);
+

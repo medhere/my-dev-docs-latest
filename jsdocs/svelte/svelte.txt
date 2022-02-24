@@ -1,0 +1,33 @@
+https://sveltesociety.dev/
+
+svelteKit
+	npm init svelte@next .
+	npm install
+	git init && git add -A && git commit -m "Initial commit" (optional step)
+	npm run dev
+	
+	npm run dev -- --open
+
+	npm run dev
+	Starts a development server.
+		-p/--port — which port to start the server on
+		-o/--open — open a browser tab once the server starts
+		-h/--host — expose the server to the network.
+		-H/--https — launch an HTTPS server using a self-signed certificate. Useful for testing HTTPS-only features on an external device
+
+	npm run build
+	Builds a production version of your app, and runs your adapter if you have one specified in your config. It accepts the following option:
+
+	npm run preview
+	After you've built your app, start the production version
+		-p/--port
+		-o/--open
+		-h/--host
+		-H/--https
+		
+		
+svelte
+	degit sveltejs/template .		//uses rollup
+		or degit sveltejs/template-webpack .
+	npm install
+	npm run dev

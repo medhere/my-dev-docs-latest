@@ -1,0 +1,30 @@
+
+create webapp
+	npm int
+	create-react-app app name
+
+for server
+	express passport ejs express-mongo-sanitize mongoose cookie-parser helmet express-session==session-file-store md5 cors csurf knex mysql2 compression
+	node-rate-limiter-flexible xss multer jsonwebtoken (fs-extra|fs-jetpack) jimp http-errors nodemailer base64-to-image
+
+for react
+	react-router-dom@next [@mui/material @mui/icons-material|@material-ui/core @material-ui/icons] @emotion/react @emotion/styled @ionic/core ionicons pullstate formik/react-hook-form(react-hook-form-persist) yup react-jwt|jwt-decode react-error-boundary (react-webcam|@wmik/use-media-recorder) react-use-cart materializecss react-materialize react-detect-offline
+
+for next
+	all react + next-routes-extended
+
+for both
+	nanoid axios(axios-retry) lodash dotenv validator
+
+for nextjs
+	next-routes-extended next-auth
+
+for svelte		
+	npm i axios axios-retry @macfja/svelte-persistent-store materialize-css	svelte-use-form svelte-forms-lib svelte-spa-router yup lodash jwt-decode cart-localstorage svelte-material-ui s-offline
+	npm i --save-dev attractions svelte-preprocess sass postcss @sveltejs/adapter-static@next @sveltejs/adapter-node@next
+	others - ionic online dist
+
+	find for svelte (react-webcam|@wmik/use-media-recorder)
+
+global		
+ @capacitor/cli @ionic/cli create-next-app create-react-app degit http-server nodemon npm pm2 reactserve

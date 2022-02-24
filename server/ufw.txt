@@ -1,0 +1,50 @@
+Init
+    sudo ufw default deny incoming
+    sudo ufw default allow outgoing
+
+SSH
+    sudo ufw app list
+    sudo ufw allow OpenSSH	OR
+    sudo ufw allow ssh	OR
+    sudo ufw allow 22
+
+Web Ports
+    sudo ufw show added
+    sudo ufw enable
+	sudo ufw allow http or sudo ufw allow 80
+	sudo ufw allow https or sudo ufw allow 443
+	sudo ufw allow ‘Apache Full’
+	sudo ufw allow ‘Nginx Full’
+	
+Range
+	sudo ufw allow 6000:6007/tcp
+	sudo ufw allow 6000:6007/udp
+
+Ip Addr
+    sudo ufw allow from 203.0.113.4
+    sudo ufw allow from 203.0.113.4 to any port 22
+
+Network Interface
+    ip addr
+    sudo ufw allow in on eth0 to any port 80
+    sudo ufw allow in on eth1 to any port 3306
+
+Deny
+    sudo ufw deny http
+    sudo ufw deny from 203.0.113.4
+    sudo ufw deny out 25
+
+Deleting a UFW Rule By Number
+    sudo ufw status numbered
+    sudo ufw delete 2
+	for i in 6 5 3 2;do ufw delete $i;done
+
+Deleting a UFW Rule By Name
+    sudo ufw delete allow "Apache Full"
+    sudo ufw delete allow http
+    sudo ufw delete allow 80
+
+Status
+	sudo ufw status verbose
+    sudo ufw disable
+    sudo ufw reset

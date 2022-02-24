@@ -1,0 +1,17 @@
+Javascript		
+package registry for js: npmjs
+npm
+	npm install        install all the dependencies in your project
+	npm install <foo>  add the <foo> dependency to your project
+	npm run <foo>      run the script named <foo>
+	npm help <term>    search for help on <term> (in a browser)
+	npm help npm       more involved overview (in a browser)
+
+	All commands:
+		audit, bugs, cache, completion,
+		config, deprecate, diff, docs, doctor,
+		explore, get, init, install,
+		ll, ls, outdated, pack, ping,
+		pkg, prefix, profile, prune, publish, rebuild, repo, run-script, search, set,
+		shrinkwrap, star, stars, start, stop, team, test, token,
+		uninstall, update, version, view

@@ -1,0 +1,543 @@
+For Nginx Server
+	add to conf file
+    location / {
+        try_files $uri $uri/ /index.php$is_args$args;
+    }
+
+    error_page 404 /index.php;
+
+    # deny access to hidden files such as .htaccess
+    location ~ /\. {
+        deny all;
+    }
+
+
+Helpers/Constants
+	app/Helpers and system/Helpers
+	helper('name');
+	helper(['name', 'name', 'name']);
+	date()
+	
+	url	
+	 previous_url([$returnObject = false])
+	 base_url('blog/post/123');
+	 site_url('news/local/123');	
+	 url_to('Page::index', 'home');
+	 url_title($str[, $separator = '-'[, $lowercase = false]])
+	 route_to('App\Controllers\Galleries::showUserGallery', 15, 12)
+	helper('cookie');
+	 set_cookie($name[, $value = ''[, $expire = ''[, $domain = ''[, $path = '/'[, $prefix = ''[, $secure = false[, $httpOnly = false[, $sameSite = '']]]]]]]])
+	 get_cookie($index[, $xssClean = false])
+	 delete_cookie($name[, $domain = ''[, $path = '/'[, $prefix = '']]])
+	 has_cookie(string $name[, ?string $value = null[, string $prefix = '']])
+	helper('filesystem');
+	 directory_map($source_dir, $directory_depth = 0, $hidden = false)
+	 directory_mirror($original, $target, $overwrite = true)
+	 write_file($path, $data, $mode = 'wb')
+	 delete_files($path, $delDir = false, $htdocs = false, $hidden = false)
+	 get_filenames($source_dir, $include_path = false)
+	helper('html');
+	 img(['src' => '',alt' => '', class' => '', width' => '', height' => '',title' => '',rel' => '']);
+	 link_tag('feed', 'alternate', 'application/rss+xml', 'My RSS Feed');
+	 script_tag('js/mystyles.js');
+	helper('inflector');
+	 camelize('my_dog_spot');
+	 pascalize('my_dog_spot');
+	 underscore('my dog spot');
+	 humanize('my-dog-spot', '-');
+	helper('text');
+	 random_string($type = 'alnum', $len = 8) //alpha, alnum, basic, numeric, nozero, md5, sha1, crypto
+	 word_limiter($str, $limit = 100, $end_char = '&#8230;')
+	 character_limiter($str, $n = 500, $end_char = '&#8230;')
+	  
+	global functions
+	 $foo = cache('foo');
+	 cookie($name, $value, $options = [])
+	 cookies($cookies = [], true)
+	 env($key, $default)
+	 esc($data, 'html', $encoding) //html, js, css, url, attr, raw
+	 session($key)
+	 view($name, $arraydata, $options=[])
+	 csrf_token()
+	 force_https($duration = 31536000, $request = null, $response = null)
+	 redirect($route)
+	 remove_invisible_characters($str, $urlEncoded = true)
+	 stringify_attributes($attributes)
+
+	Global Constants
+	 constant ROOTPATH
+	 constant APPPATH
+	 constant SYSTEMPATH
+	 constant FCPATH
+	 constant WRITEPATH
+
+
+Request/Response/Redirect
+	use CodeIgniter\HTTP\IncomingRequest;
+	$request = service('request'); or $this->request, $request = \Config\Services::request();
+	$request->getUri()->getPath();
+	$request->getGet('foo');
+	$request->getPost('foo');
+	$request->getVar('foo'); //$_Request[]
+	$data = $request->getVar('fizz.buzz');
+	$request->getCookie('foo')
+	$request->getJSON();
+	$request->getServer('Host');
+	$request->getHeader('host');
+	$request->header('host');
+	$request->hasHeader('DNT')
+	$request->getHeader('Content-Type');
+	$request->getMethod();  // get, post, put, etc
+	if (! $request->isSecure()) { force_https(); }
+	uri = $request->getUri();
+	  $uri->getScheme();         // http
+	  $uri->getAuthority();      // snoopy:password@example.com:88
+	  $uri->getUserInfo();       // snoopy:password
+	  $uri->getHost();           // example.com
+	  $uri->getPort();           // 88
+	  $uri->getPath();           // /path/to/page
+	  $uri->getQuery();          // foo=bar&bar=baz
+	  $uri->getSegments();       // ['path', 'to', 'page']
+	  $uri->getSegment(1);       // 'path'
+	  $uri->getTotalSegments();  // 3
+	$file = $request->getFile('userfile');
+	$files = $request->getFileMultiple('userfile');
+	$files = $request->getFiles();
+		$count = count($files['name']);
+        if($count>$maxCount){$count=$maxCount;}
+        for($i=0;$i<$count;$i++){	}
+	foreach($files['images'] as $img) {
+        if ($img->isValid() && !$img->hasMoved()) {
+            $newName = $img->getRandomName();
+            $img->move(WRITEPATH . 'uploads', $newName);
+    }}
+	if ($files->hasFile('userfile') && $files->isValid()) {
+		$file = $files->getFile('userfile');
+		$name = $file->getRandomName();
+		$file->addDirectory(WRITEPATH . 'Filters');
+		$file->move(WRITEPATH . 'uploads', $newName, $overwrite=false);
+		$file->getError()
+		$file->getErrorString()
+		echo $file->getSize('mb'); // 1.23
+		echo $file->guessExtension(); // jpg
+		echo $file->getType(); // image/jpg
+	}
+
+	use CodeIgniter\HTTP\Response;
+	$response = service('response'); or $this->response
+	$response->setStatusCode(Response::HTTP_OK);
+	$response->setStatusCode(404, 'Nope. Not here.');
+	$response->setBody($output);
+	return $response->setJSON($data);
+	$response->setHeader('Content-type', 'text/html');
+	$response->noCache();
+	$response->setCookie($name, $value, $expire, $domain, $path, $prefix, $secure, $httponly, $samesite);
+	$response->deleteCookie($name = ''[, $domain = ''[, $path = '/'[, $prefix = '']]])
+	if ($response->hasCookie($name)) ...
+	$cookie = $response->getCookie($name);
+	return $response->download($name, $data);
+	return $response->download('/path/to/photo.jpg', null);
+	$response->download('awkwardEncryptedFileName.fakeExt', null)->setFileName('expenses.csv');
+	$response->send();
+		
+	 API Response
+	 use CodeIgniter\API\ResponseTrait;
+	 use ResponseTrait; //for controllers
+	 setResponseFormat('json')
+	 respond($data, $statusCode = 200, $message = '')
+	 fail($messages, $status = 400, $code = null, $message = '')
+
+	redirect($route)
+	return redirect()->back();
+	return redirect()->to('/admin');
+	return redirect()->back()->with('foo', 'message');
+	return redirect()->back()->withCookies();
+	return redirect()->back()->withHeaders();
+
+Cookie
+	use CodeIgniter\Cookie\Cookie;
+	$cookie = new Cookie(
+	 remember_token',
+	 f699c7fd18a8e082d0228932f3acd40e1ef5ef92efcedda32842a211d62f0aa6',
+		[
+		 expires'  => new DateTime('2025-02-14 00:00:00', new DateTimeZone('UTC')),
+		 prefix'   => '__Secure-',
+		 path'     => '/',
+		 domain'   => '',
+		 secure'   => true,
+		 httponly' => true,
+		 raw'      => false,
+		 samesite' => Cookie::SAMESITE_LAX,
+		]
+	);
+	$cookie->getName(); // 'remember_token'
+	$cookie->isExpired();
+
+Routing
+	$routes->get('products', 'Product::feature');
+	$routes->post('products', 'Product::feature');
+	$routes->match(['get', 'put'], 'products', 'Product::feature');
+	$routes->add('product/(:num)', 'App\Catalog::productLookup');
+	(:any)(:segment)(:num)(:alpha)(:alphanum)
+	$routes->add('users/(:num)/gallery(:any)', 'App\Controllers\Galleries::showUserGallery/$1/$2');
+		<a href="<?= route_to('App\Controllers\Galleries::showUserGallery', 15, 12) ?>">View Gallery</a>
+	$routes->group('blog', ['namespace' => 'Acme\Blog\Controllers'], function ($routes) {
+		$routes->get('/', 'Blog::index');
+	});
+	$routes->group('admin', function ($routes) {
+		$routes->group('users', function ($routes) {
+			$routes->add('list', 'Admin\Users::list');
+		});
+	});
+	$routes->get('from', ['hostname' => 'accounts.example.com']);
+	$routes->add('from', 'to', ['subdomain' => '*']);
+	$routes->add('users/delete/(:segment)', 'AdminController::index', ['filter' => 'admin-auth:dual,noreturn']); //:arguments,
+	$routes->add('admin',' AdminController::index', ['filter' => ['admin-auth', \App\Filters\SomeFilter::class, anotherFilter]]);
+		app/Filters
+		app/Config/Filters.php
+		$multipleFilters true in app/Config/Feature.php
+
+Views/Layouts
+	<?php ?>
+	<?= ?>
+
+	Multiple Views
+	echo view('')
+	echo view('')
+
+	Layouts
+	header.php
+	layout.php
+	<?= $this->renderSection('content') ?>
+
+	view.php
+	<?= $this->extend('layout') ?>
+	<?= $this->section('content') ?>
+		<p>Lorem Ipsum is .... Lorem Ipsum.</p>
+	<?= $this->endSection() ?>
+	<?=$this->include("header")?>		
+	<?php include_once 'anyrootfile.php' ?>
+
+Table
+	$table = new \CodeIgniter\View\Table();
+	$data = [
+		['Name', 'Color', 'Size'],
+		['Fred', 'Blue',  'Small'],
+	];
+	echo $table->generate($data);
+
+	$query = $db->query('SELECT * FROM my_table');
+	echo $table->generate($query);
+
+	$table->setHeading('Name', 'Color', 'Size');
+	$table->addRow('Fred', 'Blue', 'Small');
+	echo $table->generate();
+
+	$table->setCaption('Preferences')
+	->setHeading('Name', 'Color', 'Size')
+	->addRow('Fred', 'Blue', 'Small')
+	$table->setEmpty("&nbsp;");
+	table->setFooting('Subtotal', $subtotal, $notes); // or
+
+DB
+	app/Config/Database.php.
+	app/Config/Database.php. You can also set database connection values in the .env file.
+	$db = \Config\Database::connect(); or $db = db_connect();
+	$db = \Config\Database::connect('group_name');
+
+	$db->query("SELECT * FROM some_table WHERE id = ? AND status = ? AND author = ?", [3, 'live', 'Rick']);
+	$db->query("SELECT * FROM some_table WHERE id = :id: AND status = :status: AND author = :name:", ['id' => 3,'status' => 'live','name'   => 'Rick']);
+
+	$query = $db->query('SELECT name, title, email FROM my_table');
+    if($db->affectedRows()){
+	$results = $query->getResult(); 
+	foreach ($results as $row) {
+		echo $row->title;
+	}
+	
+	}
+
+	$results = $query->getResultArray();
+	foreach ($results as $row) {
+		echo $row['title'];
+	}
+
+	$row = $query->getRow();
+	echo $row->name;
+
+	$row = $query->getRowArray();
+	echo $row['name'];
+
+	$sql = "INSERT INTO table (title) VALUES(" . $db->escape($title) . ")";
+	$sql = "INSERT INTO table (title) VALUES('" . $db->escapeString($title) . "')";
+	$db->escapeLikeString()
+
+	if ( ! $db->simpleQuery('SELECT `example_field` FROM `example_table`')) { $error = $db->error(); }
+	if ($query->hasError()) {
+		echo 'Code: ' . $query->getErrorCode();
+		echo 'Error: ' . $query->getErrorMessage();
+	}
+
+	echo $db->table('my_table')->countAll();
+	$this->db->transStrict(false);
+	$this->db->transStart();
+	$this->db->query('AN SQL QUERY...');
+	$this->db->query('ANOTHER QUERY...');
+	$this->db->query('AND YET ANOTHER QUERY...');
+	$this->db->transComplete();
+	if ($this->db->transStatus() === false) {
+		// generate an error... or use the log_message() function to log your error
+	}
+
+	$this->db->transBegin();
+	$this->db->query('AN SQL QUERY...');
+	$this->db->query('ANOTHER QUERY...');
+	$this->db->query('AND YET ANOTHER QUERY...');
+	if ($this->db->transStatus() === false) {   $this->db->transRollback(); }
+	else {  $this->db->transCommit(); }
+
+Email
+	app/Config/Email.php.
+	$mailer = \Config\Services::email();
+    $mailer->initialize(['protocol' => 'sendmail','mailPath' => 'C:\laragon\bin\sendmail\sendmail.exe -bs']);
+
+	$mailer->clear();
+	$mailer->setMailType('html')
+	$mailer->setFrom('your@example.com', 'Your Name');
+	$mailer->setTo('one@example.com, two@example.com, three@example.com');
+	$mailer->setCC('another@another-example.com');
+	$mailer->setPriority(1-5)
+	$mailer->setReplyTo('you@example.com', 'Your Name');
+	$mailer->setBCC('them@their-example.com');
+	$mailer->setSubject('Email Test');
+	$mailer->attach('/path/to/photo1.jpg');
+	$mailer->attach('image.jpg', 'inline');
+	$mailer->attach('http://example.com/filename.pdf');
+	$mailer->attach('filename.pdf', 'attachment', 'report.pdf');
+	$cid = $mailer->setAttachmentCID($filename);
+		$mailer->setMessage('<img src="cid:'. $cid .'" alt="photo1" />');
+
+	$mailer->setMessage('Testing the email class.');
+	$mailer->send();
+
+Cypher
+	app/Config/Encryption.php.
+	$key = \CodeIgniter\Encryption\Encryption::createKey();  // $key will be assigned a 32-byte (256-bit) random key
+	$key = sodium_crypto_secretbox_keygen(); // for the SodiumHandler
+	$key = \CodeIgniter\Encryption\Encryption::createKey(SODIUM_CRYPTO_SECRETBOX_KEYBYTES);// for the SodiumHandler
+	$encoded = bin2hex(\CodeIgniter\Encryption\Encryption::createKey(32));
+	$key = hex2bin('your-hex-encoded-key');
+	public $key = 'YOUR KEY';
+
+	$config = new \Config\Encryption();
+	$config->key = 'aBigsecret_ofAtleast32Characters';
+	$config->driver = 'OpenSSL';  //Sodium
+	$encrypter = \Config\Services::encrypter($config);
+	OR
+	$encryption = new \CodeIgniter\Encryption\Encryption();
+	$encrypter = $encryption->initialize($config);
+
+	$encrypter = \Config\Services::encrypter();
+	$plainText = 'This is a plain-text message!';
+	$ciphertext = $encrypter->encrypt($plainText);
+	$encoded = base64_encode($encrypter->encrypt($plaintext)); //use base64_decode
+	echo $encrypter->decrypt($ciphertext);
+
+Images
+	$image = \Config\Services::image();
+	$image->withFile('/path/to/image/mypic.jpg')
+    ->fit(100, 100, 'center') //‘top-left’, ‘top’, ‘top-right’, ‘left’, ‘center’, ‘right’, ‘bottom-left’, ‘bottom’, ‘bottom-right’.
+	->reorient()
+	->resize(200, 100)
+    ->rotate(90) //180,270
+	->flatten(r,g,b)
+    ->crop(100, 100, 0, 0)
+	->flip('horizontal') //vertical
+	->text('Copyright 2017 My Photo Co', [
+     color'      => '#fff',
+     opacity'    => 0.5,
+     withShadow' => true,
+     hAlign'     => 'center',//left, center, right
+     vAlign'     => 'bottom',//top, middle, bottom
+     fontSize'   => 20,
+		fontPath => ''path to font
+    ])
+	->withResource()
+    ->save('/path/to/image/mypic_thumb.jpg',100);
+	
+	->convert(IMAGETYPE_PNG)
+    ->save('/path/to/new/image.png');
+	
+Sessions
+	app/Config/App.php
+	$session = \Config\Services::session($config); OR $session = session();
+	session_write_close();
+
+	$_SESSION['item']
+	$session->get('item');
+	$session->item
+	session('item');
+	$session->getTempdata('item');
+
+	$_SESSION
+	$session->get();
+	$session->getTempdata();
+
+	$_SESSION['item'] = 'value';
+	$session->set(['username'  => 'johndoe','email' => 'johndoe@some-site.com']);
+	$session->set('some_name', 'some_value');
+
+	isset($_SESSION['some_name'])
+	$session->has('some_name');
+
+	unset($_SESSION['some_name']);
+	unset($_SESSION['some_name'],$_SESSION['another_name']);
+	$session->remove('some_name');
+	$session->remove(['username', 'email']);
+	$session->removeTempdata('item');
+
+	$session->setTempdata('item', 'value', 300);
+	$session->markAsTempdata('item', 300);
+	$session->markAsTempdata(['item', 'item2'], 300);
+	$session->markAsTempdata(['item' => 300,'item2' => 240,]);
+	$session->setTempdata(['newuser' => true, 'message' => 'Thanks for joining!'], null, $expire);
+
+	session_destroy();
+	$session->destroy();
+	$session->stop();
+
+Validation
+	$validation =  \Config\Services::validation();
+	$validation->setRules([
+		'' => ['label' => '', 'rules' => '',],
+		'' => ['label' => '', 'rules' => '', 'errors' => [
+			  '' => ''
+			  ]],
+		'username' => ['label' => 'Username', 'rules' => 'required', 'errors' => ['required' => 'You must choose a Username.']],
+		'password' => ['label' => 'Password', 'rules' => 'required|min_length[10]|matches{password2}','errors' => ['min_length' => 'Supplied value ({value}) for {field} must have at least {param} characters.']],
+		'contacts.*.name' => 'required',
+		user_ids.*' => 'required',
+	]);
+	$validation->run($arraydata);
+	$validation->withRequest($this->request)->run();
+	$validation->reset();
+
+	$errors = $validation->getErrors();
+	$error = $validation->getError('username');
+	$validation->hasError('username');
+	$validation->listErrors()
+	$validation->showError('')
+
+	$validation->check($value, 'required');
+
+	alpha		No	Fails if field has anything other than alphabetic characters.
+	alpha_space	No	Fails if field contains anything other than alphabetic characters or spaces.
+	alpha_dash	No	Fails if field contains anything other than alphanumeric characters, underscores or dashes.
+	alpha_numeric	No	Fails if field contains anything other than alphanumeric characters.
+	alpha_numeric_space	No	Fails if field contains anything other than alphanumeric or space characters.
+	alpha_numeric_punct	No	Fails if field contains anything other than alphanumeric, space, or this limited set of punctuation characters: ~ (tilde), ! (exclamation), # (number), $ (dollar), % (percent), & (ampersand), * (asterisk), - (dash), _ (underscore), + (plus), = (equals), | (vertical bar), : (colon), . (period).
+	decimal		No	Fails if field contains anything other than a decimal number. Also accepts a + or - sign for the number.
+	differs		Yes	Fails if field does not differ from the one in the parameter.
+	exact_length	Yes	Fails if field is not exactly the parameter value. One or more comma-separated values.
+	greater_than	Yes	Fails if field is less than or equal to the parameter value or not numeric.
+	greater_than_equal_to	Yes	Fails if field is less than the parameter value, or not numeric.
+	if_exist	No	If this rule is present, validation will only return possible errors if the field key exists, regardless of its value.
+	in_list		Yes	Fails if field is not within a predetermined list.
+	less_than	Yes	Fails if field is greater than or equal to the parameter value or not numeric.
+	less_than_equal_to	Yes	Fails if field is greater than the parameter value or not numeric.
+	matches		Yes	The value must match the value of the field in the parameter.
+	max_length	Yes	Fails if field is longer than the parameter value.
+	min_length	Yes	Fails if field is shorter than the parameter value.
+	not_in_list	Yes	Fails if field is within a predetermined list.
+	numeric		No	Fails if field contains anything other than numeric characters.
+	regex_match	Yes	Fails if field does not match the regular expression.
+	permit_empty	No	Allows the field to receive an empty array, empty string, null or false.
+	required	No	Fails if the field is an empty array, empty string, null or false.
+	required_with	Yes	The field is required when any of the other required fields are present in the data.
+	required_without	Yes	The field is required when all of the other fields are present in the data but not required.
+	string		No	A generic alternative to the alpha* rules that confirms the element is a string
+	valid_base64	No	Fails if field contains anything other than valid Base64 characters.
+	valid_email	No	Fails if field does not contain a valid email address.
+	valid_emails	No	Fails if any value provided in a comma separated list is not a valid email.
+	valid_date	No	Fails if field does not contain a valid date. Accepts an optional parameter to matches a date format.
+	uploaded	Yes	Fails if the name of the parameter does not match the name of any uploaded files.
+	max_size	Yes	Fails if the uploaded file named in the parameter is larger than the second parameter in kilobytes (kb). Or if the file is larger than allowed maximum size declared in php.ini config file - upload_max_filesize directive.
+	max_dims	Yes	Fails if the maximum width and height of an uploaded image exceed values. The first parameter is the field name. The second is the width, and the third is the height. Will also fail if the file cannot be determined to be an image.
+	mime_in		Yes	Fails if the file’s mime type is not one listed in the parameters.
+	ext_in		Yes	Fails if the file’s extension is not one listed in the parameters.
+	is_image	Yes	Fails if the file cannot be determined to be an image based on the mime type.
+
+Caching
+	app/Config/Cache.php.
+
+	cache()->save('foo', $foo, 300);
+	cache('foo')
+	OR
+	$cache = \Config\Services::cache();
+	$foo = $cache->get('foo');
+	remember($key, $ttl, $callback)
+	save($key, $data, $ttl, $raw = false)
+	$cache->delete('cache_item_id');
+	$cache->clean();
+
+
+CURL
+	app/Config/CURLRequest.php
+	public $shareOptions = false;
+
+	$client = \Config\Services::curlrequest();
+
+	$response = $client->request('POST', 'https://api.github.com/user', [
+		'auth' => ['user', 'pass','digest|basic'],
+		'connect_timeout' => 0,
+		'timeout' => 5,
+		'cookie' => WRITEPATH . 'CookieSaver.txt',
+		'headers' => ['User-Agent' => 'testing/1.0', 'Accept'=> 'application/json',],
+		'http_errors' => false,
+		'form_params' => ['foo' => 'bar','baz' => ['hi', 'there'],], //OR 
+		'json' => ['foo' => 'bar'],		//OR
+		'query' => ['foo' => 'bar'],	//for GET OR
+		'body' => $body, //Multipart FOR POST
+		'multipart' => ['foo' => 'bar', 'userfile' => new \CURLFile('/path/to/file.txt')], //Multipart FOR POST
+		'version' => 1.0|1.1|2.0,
+		'allow_redirects' => ['max'=>10, 'strict'=>true, 'protocols' => ['http','https']],
+		'user_agent' => 'CodeIgniter Framework v4'
+	]);	
+
+
+echo $response->getStatusCode();
+echo $response->getBody();
+echo $response->getHeader('Content-Type');
+
+	
+Throttler
+	app/Filters/Throttle.php:
+	<?php
+
+	namespace App\Filters;
+
+	use CodeIgniter\Filters\FilterInterface;
+	use CodeIgniter\HTTP\RequestInterface;
+	use CodeIgniter\HTTP\ResponseInterface;
+	use Config\Services;
+
+	class Throttle implements FilterInterface{
+		public function before(RequestInterface $request, $arguments = null){
+			$throttler = Services::throttler();
+			if ($throttler->check(md5($request->getIPAddress()), 60, MINUTE) === false) {
+				return Services::response()->setStatusCode(429);
+			}else{
+				//$throttler->remove($key)
+			}
+		}
+	}	
+	]);
+
+
+	/app/Config/Filters.php and first add an alias to the filter:
+	public $aliases = [
+		'throttle' => \App\Filters\Throttle::class,
+	];
+	public $methods = [
+		'post' => ['throttle', 'csrf'],
+	];

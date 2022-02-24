@@ -1,0 +1,52 @@
+<!-- svelte-spa-router -->
+
+<script>
+import Router,{link, push, pop, replace, location, querystring } from 'svelte-spa-router';
+import {wrap} from 'svelte-spa-router/wrap';
+
+import Home from "./Links/Home.svelte";
+import Admin from "./Links/Admin.svelte";
+import User from "./Links/User.svelte";
+import Params from "./Links/Params.svelte";
+import NotFound from "./Links/NotFound.svelte";
+
+var user=false
+
+
+var routes = {
+    '/': Home,
+    '/admin': Admin,
+    '/admin/*': Admin,
+    '/params/:first/:last?': Params,
+    '/user':wrap({
+        component: User,
+        props: {foo: 'bar'},
+        conditions:[
+             (detail) => {
+                if (user==false) replace('/link1');
+                // detail.{route,location,querystring,userData,params}                
+                return false
+            }
+        ]
+    }),
+   '*': NotFound,
+}
+
+$: params= new URLSearchParams($querystring);
+
+</script>
+
+<ul>
+    <li><a href use:link={{href: '/', disabled: false}}>Home</a></li>
+    <li><a href="#/user">User</a></li>
+    <li><a href use:link={'/admin'}>Admin</a></li>
+    <li><a href="#/params/mike/john">Params1</a></li>
+    <li><a href="#/params/mike/">Params2</a></li>
+    <li><a href="#/user?name=hahah&sex=male">Query</a></li>
+    <li><a href="#/does/not/exist">Not found</a></li>
+    <li><button on:click={()=>{push('/link1')}}>go to link1</button></li>
+</ul>
+<p>The current page is: {$location}</p>
+<p>The querystring is: {$querystring}</p>
+
+<Router routes={routes} prefix="/" restoreScrollState={true}/>

@@ -1,0 +1,543 @@
+	Views/Component
+		used in routes or controllers
+			view('folder.nameofview')	//resources/views
+			<x-folder.component>		//resources/views/components
+		php artisan view:cache	//cache views
+		php artisan view:clear	//clar cache
+	
+		View
+		<!-- View stored in resources/views/myview.blade.php -->
+			<body>
+				Hello, {{ $name }}.		// display content of named variable from view(), also <?php echo $name; ?>
+				The current UNIX timestamp is {{ time() }}
+				@verbatim	//multiline no blade statements	
+					<div class="container">
+						Hello, {{ name }}.
+					</div>
+				@endverbatim
+				{{-- This comment will not be present in the rendered HTML --}}		//comments
+	
+				<div>@include('shared.errors')</div>
+				@include('view.name', ['status' => 'complete'])	//pass data to included view						
+
+				@inject('metrics', 'App\Services\MetricsService')
+					<div>Monthly Revenue: {{ $metrics->monthlyRevenue() }}.</div>
+				
+				@once		//rendered once
+				@endonce
+				
+				@php
+				@endphp
+
+				@if (count($records) === 1)
+				@elseif (count($records) > 1)
+				@else
+				@endif
+
+				@for ($i = 0; $i < 10; $i++)
+					The current value is {{ $i }}
+				@endfor
+
+				@foreach ($users as $user)
+					<p>This is user {{ $user->id }}</p>
+				@endforeach
+
+				@switch($i)
+					@case(1)
+						First case... @break
+					@case(2)
+						Second case... @break
+					@default
+						Default case...
+				@endswitch
+
+				@isset($records)	// $records is defined and is not null...
+				@endisset
+
+				@empty($records)	// $records is "empty"...
+				@endempty
+
+				<form action="/foo/bar" method="POST">
+					@csrf
+					@method('PUT|PATCH|DELETE')		//or use hidden with name _method value PUT|PATCH|DELETE
+					<input id="title" type="text" class="@error('title') is-invalid @else is-valid @enderror">
+					@error('title')
+						<div class="alert alert-danger">{{ $message }}</div>
+					@enderror
+				</form>
+		
+			</body>
+		
+		Layouts
+			<!-- View stored in resources/views/components/mycomponent.blade.php -->
+				@props(['type','message'])
+				@props(['type' => 'information', 'message'])	//type default to info			
+				<div {{ $attributes }} id={$id}>
+					{{ $slot }}					
+					{{ $type }} : {{ $message }}
+					{{ $anotherslot ?? 'You did not use 2nd slot'}}
+				</div>
+								
+				usage in blade
+					<x-folder.nameofcomponent/>
+					<x-nameofcomponent :type="data" :message="$message" id="newid" class="classname"/>	//all other attributes rending in attributes
+					<x-nameofcomponent :type="data" :message="$message" id="newid"  class="classname">
+						<x-slot name="anotherslot">I used the 2nd slot</x-slot>
+						<h4>{{ $name }}, this is default slot</h4>			
+					</x-nameofcomponent>
+						//Route::get('/tasks', function () {	return view('tasks', ['name' => 'hello']);	});
+					
+			/resources/views/components/accordion/index.blade.php	//@prop(['prop' => 'propdefault'])
+			/resources/views/components/accordion/item.blade.php	//@aware(['prop' => 'propdefault'])	//access parent $prop with @aware
+				<x-accordion>	//from index.blade.php
+					<x-accordion.item>	//from item.blade/php
+					</x-accordion.item>
+				</x-accordion>	
+
+			//dynamic
+			<x-dynamic-component :component="$componentName" class="mt-4" />
+	
+
+	Routes, Resquest, Response, Params	
+		php artisan route:list
+		use Illuminate\Support\Facades\Route;
+		use Illuminate\Support\Facades\Request;
+		use Illuminate\Support\Facades\Response;
+				without Facdes request()->, response('')->
+				with Facades $request->, $reponse->
+						for response, return is ok
+			config/cors.php for CORS
+			routes/web.php or api.php
+		Route::view('/welcome', 'welcome');
+		Route::view('/welcome', 'welcome', ['name' => 'Taylor']);
+		Route::get|post('/user/{id?}', function ($id, Request $request, Response $response) {
+			
+			Request
+					http://example.com/foo/bar,
+				$urlWithQueryString = $request->fullUrl();	//with query string
+				$method = $request->method();
+				if ($request->isMethod('post'))
+				$value = $request->header('X-Header-Name', 'default');	//set as default str if empty
+				$token = $request->bearerToken();
+					Retrieving Input/Query
+				$input = $request->all();  // as array
+				$input = $request->input();	//associative array:
+				$input = $request->input('name', 'Sally');
+				$inputs = $request->input('products.*.name');		
+				$name = $request->input('user.name');
+				$checkbox = $request->boolean('checkbox');
+				$input = $request->only('username', 'password');
+				$input = $request->except('credit_card');
+				if ($request->has(['name', 'email'])) { }
+				if ($request->filled('name')) { }				
+					Cookie
+				$value = $request->cookie('name');
+					Files
+				$file = $request->file('filename');
+				if ($request->hasfile('filename')) { }
+				if ($request->file('filename')->isValid()) { }
+				$path = $request->file('filename')->path();
+				$extension = $request->file('filename')->extension();
+				$name=	$request->file('filename')->hashName()'
+					more methods https://api.symfony.com/master/Symfony/Component/HttpFoundation/File/UploadedFile.html
+				$path = $request->file('filename')->storeAs('images/id', 'filename.jpg', 'local');	//accepts the path, filename, and disk name(optional)
+				$path = Storage::putFileAs('images', $request->file('avatar'), 'photo.jpg');	//use a name
+
+
+			Response
+				return 'User '.$id;
+				return response()->view('hello', ['name' => 'Abigail,...], 200)	
+					resources/views/admin/profile.blade.php
+					return view('admin.profile');
+				return response()->json([ 'name' => 'Abigail,... ])
+				->header('X-Header-One', 'Header Value');
+					Cookie
+				return response('Hello World')->cookie(	'name', 'value', $minutes, $path, $domain, $secure, $httpOnly);
+				return response('Hello World')->withoutCookie('name');
+						Disable Encryption:	app/Http/Middleware/EncryptCookies.php
+								protected $except = ['cookie_name',];
+					Redirect
+				return back()->withInput();
+				return redirect()->route('user.create')
+				return redirect('home/dashboard');
+				return redirect()->action([Nameofcontroller::class, 'index']);
+				return redirect()->action([Nameofcontroller::class, 'profile'], ['id' => 1]);	//with route parameters
+				
+				$response->view('')			//without return
+			
+			
+		})
+		
+		Route::match(['get', 'post'], $uri, function(Request $request, Response $response){});
+		Route::redirect('/here', '/there');
+		Route::get|post|match('/user', [UserController::class, 'index']);
+		Route::prefix('admin')->group(function () {
+			Route::get($uri, $callback);
+				// "/admin/$uri"
+		});	
+
+		use App\Http\Middleware\Nameofmiddleware;
+		Route::get($uri,$callback)->middleware([Nameofmiddleware::class],...);
+		Route::without+|middleware([Nameofmiddleware::class],...)->group(function () {
+			Route::get($uri, $callback);
+			Route::get($uri, $callback)->withoutMiddleware([Nameofmiddleware::class]);
+		});
+		Route::fallback(function(Request $request, Response response){});
+		Route::resource('users', Nameofcontroller::class);
+		Route::resource('users', nameofcontroller::class)->parameters(['users' => 'admin_user']);
+		Route::resources(['users' => Nameofcontroller1::class, 'admins' => Nameofcontroller2::class,])
+		->missing(function (Request $request) {
+            return Redirect::route('photos.index');
+        });		//missing is optional
+		Route::resource('users', Nameofcontroller::class)->only(['index', 'show']);
+		Route::resource('users', Nameofcontroller::class)->except(['create', 'store', 'update', 'destroy']);
+		Route::apiResource('users', Nameofcontroller::class);
+
+	Controller
+	controllers are stored in the app/Http/Controllers directory
+		php artisan make:controller nameofcontroller
+		php artisan make:controller nameofcontroller --invokable		//__invoke
+		php artisan make:controller nameofcontroller --resource			//CRUD
+		php artisan make:controller nameofcontroller --api			//API
+		
+			public function show()
+			
+			single action controller
+			public function __invoke()
+			
+			add middleware
+			public function __construct(){	
+				//use App\Http\Middleware\Nameofmiddleware;
+				$this->middleware([Nameofmiddleware::class]);
+				$this->middleware([Nameofmiddleware::class])->only('index');
+				$this->middleware([Nameofmiddleware::class])->except('store');
+			}
+
+		CRUD using --resource				Verb		URI					Action	Route Name
+			public function index()			//GET		/users				index	user.index
+			public function create()		//GET		/users/create		create	users.create
+			public function store(Request $request)		POST		/users				store	users.store
+			public function show($id)		//GET		/users/{id}			show	users.show
+			public function edit($id)		//GET			/users/{id}/edit 	edit	users.edit
+			public function update(Request $request, $id)		PUT/PATCH 	/users/{id}			update	users.update
+			public function destroy($id)	//DELETE		/users/{id}			destroy	users.destroy
+			//accessed in Route::resource
+			Route::resource('users', Nameofcontroller::class);
+				add custom
+				public function getThis($id)
+				//accessed in Route::get|post
+				Route::get('/users/extra', [Nameofcontroller::class, 'getThis']);
+			
+		For APIs --api
+			public function index()
+			public function store(Request $request)
+			public function show($id)
+			public function update(Request $request, $id)
+			public function destroy($id)
+		
+
+	Middleware
+	php artisan make:middleware nameofmiddleware
+	app/HTTP/Middleware/nameofmiddleware.php		
+		use \Illuminate\Http\Request  $request
+		use \Illuminate\Http\Response  $response
+		use Closure $next;
+		
+		public function handle|funcname(Request $request,Response $response, Closure $next){
+			$response = $next($request);			// perform action before handling request
+			return $response;			// Perform action after handling request
+		}
+			
+			
+	Storage
+	config/filesystems.php
+	use Illuminate\Support\Facades\Storage;
+		Storage::disk('local')->;	//to select
+			storage/app/example.txt:
+		Storage::put('example.txt', 'Contents');
+		Storage::writeStream('path.jpg', $resource, $options = [])
+		$contents = Storage::get('file.jpg');
+		if (Storage::exists('file.jpg')) {}
+		if (Storage::missing('file.jpg')) {}
+		return Storage::download('file.jpg');
+		$size = Storage::size('file.jpg');
+		$path = Storage::path('file.jpg');
+		Storage::copy('old/file.jpg', 'new/file.jpg');
+		Storage::move('old/file.jpg', 'new/file.jpg');
+		Storage::delete(['file.jpg', 'file2.jpg']);
+		$files = Storage::files($directory);	//single dir
+		$files = Storage::allFiles($directory);	//sub-dirs
+		$directories = Storage::directories($directory);
+		$directories = Storage::allDirectories($directory);
+		Storage::makeDirectory($directory);
+		Storage::deleteDirectory($directory);		//remove a directory and all of its files
+
+	
+	DB
+		config/database.php	OR .env
+			normal
+				'mysql' => [
+					'driver' => 'mysql', 'database' => 'database', 'prefix' => '',
+					'username' => 'root', 'password' => '',
+					'charset' => 'utf8mb4',	'collation' => 'utf8mb4_unicode_ci'
+				]
+			using URL( url (or corresponding DATABASE_URL environment variable))
+				driver://username:password@host:port/database?options
+				mysql://root:password@127.0.0.1/forge?charset=UTF-8
+					can set up multiple dbs
+		php artisan db mysql
+		use Illuminate\Support\Facades\DB;
+			$users1 = DB::connection('mysql1');
+			$users1->select(...);
+			$users2 = DB::connection('mysql2')->select(...);
+			
+			$users = DB::statement('select * from users where active = ?', [1]);	// symbol binding for sql injection
+			$users = DB::statement('select * from users where id = :id', ['id' => 1]);	//named binding for sql injection
+					foreach ($users as $user) {			
+
+		Query Builder					
+		$users2 = DB::connection('mysql2')->table('')...;	
+
+		$users = DB::table('tablename')
+			->get()		foreach ($users as $user) {}, foreach ($users as $name => $user) {}
+			->first()	$user->email;	//1 row
+			->value('email');			//1 col
+			->chunk(100, function ($users) { });	//return false; to stop chucking
+			->chunkById(100, function ($users) { }); 
+			->distinct()->get();
+			->inRandomOrder()->get();	//get random order
+			->where('user','>=','value')->get();
+			->whereDate('created_at', '2016-12-31')->get();
+			->offset(10)->limit(5)->get(); SAME AS ->skip(10)->take(5)->get();	//used for pagination			
+			->insert([email' => 'kayla@example.com','votes' => 0],...);
+			->where('id', 1)->update(['votes' => 1,...]);
+			->where('votes', '>', 100)->delete();
+
+					//Use upsert for multiple, updateOrInsert for 1 recor
+			->upsert([
+				['departure' => 'Oakland', 'destination' => 'San Diego', 'price' => 99],...], //insert
+				['departure', 'destination'], // if in table
+				['price']	// fields that should be updated if record exists
+				);	
+			->updateOrInsert(
+				['name' => 'John'],	//where
+				['votes' => '2']	//update this or insert all with where
+			);
+		$users = DB::raw('Select * from tablename where user = ?',['data'])
+				
+			
+	Encryption
+		Configuration
+		key configuration in config/app.php set APP_KEY
+		use php artisan key:generate
+
+		Encrypt
+		use Illuminate\Support\Facades\Crypt;
+		use Illuminate\Contracts\Encryption\DecryptException;
+			$request->user()->fill([
+				'token' => Crypt::encryptString($request->token),
+			])->save();
+
+		Decrypting A Value
+
+		try {
+			$decrypted = Crypt::decryptString($encryptedValue);
+		} catch (DecryptException $e) {
+			//
+		}			
+			
+			
+	Validation
+		use in routes and controllers
+		use Illuminate\Support\Facades\Validator;		
+		//Validator::make($object, $rules)->; Or ->validate()		
+
+		$validated = $request->validate([ 
+				'title' => 'required|unique:posts|max:255', 
+				'body' => ['required', 'max:20'],
+				'author.name' => 'required',
+				'person.*.email' => 'email|unique:users',
+			...	]);
+		$validated = $request->validateWithBag('post', [...]);	//store error msgs in named error bag
+		Validator::make($request->all(), [...])->validate();
+		Validator::make($request->all(), [...])->validateWithBag('post');	//save to error bag
+				@foreach ($errors->all() as $error)	//@error('title', 'post') for error bag
+					<li>{{ $error }}</li>
+				@endforeach
+	        
+        if ($validated->fails()) {
+            return redirect('post/create')->withErrors($validated)->withInput();
+        }
+	
+		$validated = $request->validated();
+		$validated = $request->safe()->only(['name', 'email']);
+		$validated = $request->safe()->except(['name', 'email']);
+		$validated = $request->safe()->all();
+		$validated = $request->safe()->merge(['name' => 'Taylor Otwell']);	// add extra data	
+		$errors = $validator->errors();
+		$errors->all();		//as array
+		$errors->get('email');	//as array
+		$errors->has('email')
+
+		Rules
+			accepted|declined	//true,yes,on,1|false,no,off,0
+			alpha
+			alpha_dash	//may have alpha-numeric characters, as well as dashes and underscores.
+			alpha_num
+			integer
+			confirmed 	//field and field_confirmation
+			date
+			file
+			mimetypes:text/plain,...
+			mimes:jpg,bmp,png
+			email	//'email:rfc,dns,strict,spoof,filter'
+			image
+			boolean
+			numeric
+			string
+			array	//'array',	//'array:username,locale',	//array with accepted keys
+			bail
+
+			nullable	//may be null.
+			present		//present but can be empty.
+			required	//present and not empty. 
+			required_if:anotherfield,value,...		//field must be present and not empty if the anotherfield field is equal to any value.
+			same:field
+			exclude		//exclude field from the request data returned by the validate methods.
+			exclude_if:anotherfield,value
+			
+			after:date|before:date	//|date|after:tomorrow	,|date|after:start_date
+			between:min,max		//size between the given min and max. Strings, numerics, arrays, and files.
+			different:field		//must have a different value than field.
+			digits:value		//must have exact length of value
+			dimensions		//'dimensions:min_width=100,min_height=200'		min_width, max_width, min_height, max_height, width, height, ratio(3/2,1.5)
+			ends_with:foo,bar,...
+			gt:field|gte:field	//>,>=field
+			lt:field|lte:field	//<,<=field
+			not_in|in:foo,bar,...	//not|included in values, explode array
+			max:value|min:value	//<=value, >=value
+			size:value	//'size:12'; 'integer|size:10'; 'array|size:5'; 'file|size:512';
+			regex:pattern|not_regex:pattern
+
+			Passwords
+			use Illuminate\Validation\Rules\Password;
+				'password' => ['required', 'confirmed', Password::min(8)],
+			Password::min(8)
+			->letters()
+			->mixedCase()
+			->numbers()
+			->symbols()
+			->uncompromised()	//uses haveibeenpwned.com service
+			->uncompromised(3);	// number of apearances
+			
+	Mail
+		php artisan make:mail Orders
+		php artisan make:mail Orders --markdown=emails.orders
+		app/Mail
+		create resources/views/emails
+
+			app/Mail/Orders.php
+				use Queueable, SerializesModels;
+				public $order;
+
+				public function __construct(Order $order){
+						$this->order = $order;
+				}
+
+				public function build(){
+					return $this->from('example@example.com', 'Example')
+								->replyTo($address, $name)
+								->subject(string $subject)
+								->priority(int $level)
+								->view('emails.orders')->with([
+									  'orderPrice' => $this->order->price,
+									])
+									OR
+								->markdown('emails.orders.shipped', [
+									'orderPrice' => $this->->order->price,
+								]);
+								->attach('/path/to/file')
+								->attachFromStorage('/path/to/file','name.ext')
+				}
+
+			email/orders.blade.php
+				<div>
+					<img src="{{ $message->embed($pathToImage) }}">
+					Price: {{ $orderPrice }}
+				</div>
+
+
+			Markdown Mailables
+				@component('mail::message')
+				# Order Shipped
+				Your order has been shipped!
+
+				@component('mail::panel')
+				This is the panel content.
+				@endcomponent
+
+				@component('mail::table')
+				| Laravel       | Table         | Example  |
+				| ------------- |:-------------:| --------:|
+				| Col 2 is      | Centered      | $10      |
+				| Col 3 is      | Right-Aligned | $20      |
+				@endcomponent
+
+				@component('mail::button', ['url' => $url, 'color' => 'success'])	//primary, success, and error
+				View Order
+				@endcomponent
+
+				Thanks,<br>
+				{{ $name  }}
+				@endcomponent
+
+			Theming
+			new theme for Laravel's Markdown components, new CSS file in html/themes directory. update the theme option of config/mail.php configuration
+
+
+		Sending Mail
+		use App\Mail\Orders;
+		use Illuminate\Support\Facades\Mail;
+			Mail::to(string|array $address, $name)
+					OR->addAddresses(string|array $address)
+				->cc($moreUsers)
+				->bcc($evenMoreUsers)
+				->send(new Orders($order));
+
+			foreach (['taylor@example.com', 'dries@example.com'] as $recipient) {
+				Mail::to($recipient)->send(new OrderShipped($order));
+			}
+			
+			Mail::mailer('postmark')->to($request->user())->send(new Orders($order));
+				
+			Illuminate\Support\Facades\Mail;
+			Mail::html($html)
+				->sendMailable(Mailable $mailable)
+				->failures()
+
+	Paths
+
+		app dir
+		$path = app_path('Http/Controllers/Controller.php');
+
+		root dir
+		$path = base_path('vendor/bin');
+
+		config dir
+		$path = config_path();
+
+		db dir
+		$path = database_path('factories/UserFactory.php');
+
+		public dir
+		$path = public_path('css/app.css');
+
+		resources dir
+		$path = resource_path('sass/app.scss');
+
+		storage dir
+		$path = storage_path('app/file.txt');
+	
+	
+	
+	

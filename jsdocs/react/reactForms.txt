@@ -1,0 +1,117 @@
+learn react forms with files
+FORMIK
+  const formik = useFormik({
+    initialValues: { email: '', password: '', file:'',toggle: false, checkbox: [],radio:''},
+    validationSchema: yup.object({
+      email: yup.string('Enter your email').email('Enter a valid email').required('Email is required'),
+      password: yup.string('Enter your password').min(8, 'Password should be of minimum 8 characters length').required('Password is required'),
+    }),
+    onSubmit: (values) => { alert(JSON.stringify(values, null, 2)) },
+  });
+  
+	onChange={formik.handleChange}, onChange={e=>formik.setFieldValue('file',e.target.files[0])
+	value={formik.values.email}
+	{formik.values.email}
+	error={formik.touched.email && Boolean(formik.errors.email)}
+	helperText={formik.touched.email && formik.errors.email}
+	
+REACT-HOOK-FORM
+	const { register, handleSubmit, formState:{errors} } = useForm();
+    const { register, setError, trigger, clearErrors, handleSubmit, setValue, getValues, setFocus, reset, watch, formState } = useForm();
+	const { errors, isDirty, dirtyFields, touchedFields, isSubmitted, isSubmitSuccessful, isSubmitting, submitCount, isValid, isValidating } = formState;
+    const onSubmit = data => {console.log(data) };	
+		
+	<form onSubmit={handleSubmit(onSubmit)}>
+	<input name="foo" defaultValue="bar" ref={register} />
+	<input defaultValue="bar" {...register('for')} />
+
+	register
+		{...register("example",{opts})}
+			opts
+			required:true or 'error msg'
+			maxLength: 2 or {value,message}
+			minLength: 1 or {value,message}
+			max: 3 or {value,message}
+			min: 1 or {value,message}
+			pattern: /[A-Za-z]{3}/ or {value,message}
+			validate: value => value === '1' || 'error msg'
+			valueAsNumber: true
+			valueAsDate: true
+			setValueAs: v => parseInt(v)
+			disabled: true (use readOnly attrib instead if u want values sent in form)
+			onChange: (e) => console.log(e)
+			onBlur: (e) => console.log(e)
+			value: 'bill'
+
+			<input {...register('test',{opts})
+			<input {...register('test')} onChange={handleChangeFunction}/> // register's onChange handled by your function
+			const firstName = register('firstName', { required: true })
+				<input
+				  name={firstname.name}
+				  onChange={(e) => {
+					firstName.onChange(e); // method from hook form register 
+					handleChange(e); // your method }}
+				  onBlur={firstName.onBlur}
+				  ref={firstName.ref} // rest handled by register
+				/>
+				<button disabled={!isDirty || !isValid} />;
+				
+	handleSubmit
+		const onSubmit = (data, e) => console.log(data, e);
+			formdata
+			const onSubmit = (data, e) =>{ form = new FormData(e.target); console.log(form,data,e};
+		const onError = (errors, e) => console.log(errors, e);
+		<form onSubmit={handleSubmit(onSubmit,onError)} /> 
+		handleSubmit(onSubmit,onError)(); //to trigger immediately outside form
+		
+	reset
+		onClick={reset}
+		reset({name: "value"});
+	watch
+		const watchField = watch('name'), watch(['name1','name2'])
+		watchField && 'field changed'
+	setError	
+		setError('name', { type, message }
+	clearErrors
+		clearErrors(["name1", "name2"])
+		clearErrors("name")
+		clearErrors()
+	setValue
+		setValue('name', 'value', { shouldValidate: true, shouldDirty: true, shouldTouch:true})
+		setValue('name', 'value')
+	getValues	
+		getValues();
+		singleValue = getValues("name");
+		multipleValues = getValues(["name1", "name2"]);
+	setFocus("name");
+	formState
+		errors
+			error={errors.name && Boolean(errors.name)}
+			helperText={errors.name && `${errors.name['type']} : ${errors.name['message']`}}		
+	trigger
+		trigger("lastName");
+		trigger(["firstName", "lastName"]);
+		trigger();
+			
+
+	Persist form values
+	import useFormPersist from 'react-hook-form-persist'
+	useFormPersist("foo", {watch, setValue}, {
+		storage: window.localStorage, // default window.sessionStorage
+		exclude: ['name1'] //include: ['name2']
+    });
+	
+	Validate with yup
+		npm install @hookform/resolvers yup
+		import { yupResolver } from '@hookform/resolvers/yup';
+		import * as yup from "yup";
+		
+		const schema = yup.object({
+		  firstName: yup.string().required(),
+		  age: yup.number().positive().integer().required(),
+		}).required();
+
+		const { register, handleSubmit, formState } = useForm({
+			resolver: yupResolver(schema)
+		});
+	

@@ -1,0 +1,46 @@
+<?php
+header("Access-Control-Allow-Origin: *");
+
+require_once 'PHPMailer.php';
+use PHPMailer\PHPMailer\PHPMailer;
+
+if($_SERVER["REQUEST_METHOD"] != "POST"){ die('wrong connection');}
+
+$requester = $_POST['requester'];
+$from = $_POST['from'];
+$to = $_POST['to'];
+$subject = $_POST['subject'];
+$replyto = isset($_POST['replyto']) ? $_POST['replyto'] : '';
+$cc = isset($_POST['cc']) ? $_POST['cc'] : '';
+$body= $_POST['body'];
+
+$mail = new PHPMailer();
+$mail->isHTML(true);
+$mail->setFrom($from, explode('.',explode("@",$from)[1])[0]);
+$mail->addAddress($to);
+$mail->AddEmbeddedImage("$requester.jpg", "logo");
+if($replyto!=""){$mail->addReplyTo($replyto, explode("@",$replyto)[1]);}
+if($cc!=""){$mail->addCC($cc);}
+$mail->Subject=$subject;
+$mail->Body=$body;
+if($mail->Send()) {echo json_encode(['status'=>'success']);}else{echo json_encode(['status'=>'failed']);}
+
+?>
+
+
+//usage script for codeigniter
+ 		$req="";
+		$from="";
+		$to="";
+		$subj="";
+		$body="";
+
+    	$client = \Config\Services::curlrequest();
+    	$response = $client->request("POST", "https://earlyfuture.com.ng/mailer/", [ "http_errors" => false,
+            "multipart" => ["requester"=>"$req", "from"=>"$from", "to"=>"$to", "subject"=>"$subj", "replyto"=>"", "cc"=>"", "body"=>"$body"]
+    	]);	
+        if($response->getStatusCode()=="200" && json_decode($response->getBody(),true)["status"]=="success") {
+            echo "sent";
+        }else{
+            echo "not sent";
+        }

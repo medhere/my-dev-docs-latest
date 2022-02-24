@@ -1,0 +1,46 @@
+Arrays
+array.
+	arr=[...arr,...arr1]
+	arr=[...arr,value]
+	copyWithin()
+	entries()
+	every((val,i)=>) | some((val,i)=>)
+	filter((val)=>)
+	forEach((val,i)=>)
+	includes('')
+	indexOf() | lastIndexOf()
+	Array.isArray()
+	join()
+	length
+	map((val,i)=>)
+	pop()|push()
+	reduce()
+	shift()
+	slice(start, end)
+	sort()
+	splice(index, howmany, item1, ....., itemX)
+	toString()
+	unshift()
+
+Objects
+	obj={...obj,...obj1}
+	obj={...obj,[name]:value}
+
+Strings
+str.
+	charAt()
+	charCodeAt()
+	endsWith()
+	includes()
+	length
+	replace(searchvalue, newvalue)
+	replace()
+	search()
+	slice(start, end)
+	split(",")
+	startsWith()
+	substr(start, length)
+	toLowerCase()
+	toString()
+	toUpperCase()
+	trim()

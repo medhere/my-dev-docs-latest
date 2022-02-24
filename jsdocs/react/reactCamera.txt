@@ -1,0 +1,509 @@
+npm i react-webcam
+npm i --force @wmik/use-media-recorder
+
+react-webcam
+	npm install react-webcam
+
+	Usage
+	import React from "react";
+	import Webcam from "react-webcam";
+
+	export const CamSnap = () => <Webcam />;
+	
+	//Simple camera
+		export const CamSnap = () =>{
+			const webcamRef = React.useRef(null);
+			const capture = () => {
+				const imageSrc = webcamRef.current.getScreenshot(); //	getScreenshot({width: 1920, height: 1080});
+				console.log(imageSrc);
+		        var a = document.createElement("a");
+				a.download = Date.now()+"-Image.jpg";
+				a.href = imageSrc;
+				a.click();
+
+			}
+
+			return (
+			  <>
+				<Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" />
+				<button onClick={capture}>Capture photo</button>
+			  </>
+			);
+		} 
+
+	//Camera with preview
+		export const CamSnap = () =>{
+			const webcamRef = React.useRef(null);
+			const [imgSrc, setImgSrc] = React.useState(null);
+
+			const capture = () => {
+				const imageSrc = webcamRef.current.getScreenshot(); //	getScreenshot({width: 1920, height: 1080});
+				console.log(imageSrc);
+				setImgSrc(imageSrc);
+			}
+
+			return (
+			  <>
+				{(imgSrc)
+					?<><img src={imgSrc} alt=""/> <button onClick={()=>setImgSrc('')}>Take Again</button></>
+					:<><Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" /><button onClick={capture}>Capture photo</button></>
+				}
+			  </>
+			);
+		} 
+	
+	
+	//custom aspect ratio for the image.
+		export const CamSnap = () =>{
+			const webcamRef = React.useRef(null);
+
+			const videoConstraints = {
+				width: 720,
+				height: 720,
+				facingMode: "user",
+				aspectRatio: 1.777777778,
+				frameRate: 30
+			};
+				  
+			const capture = () => {
+				const imageSrc = webcamRef.current.getScreenshot();
+				console.log(imageSrc)
+			}
+
+			return (
+			  <>
+				<Webcam audio={false} height={400} width={400} ref={webcamRef} screenshotFormat="image/jpeg"
+				  videoConstraints={videoConstraints}
+				/>
+				<button onClick={capture}>Capture photo</button>
+			  </>
+			);
+        };
+
+	//Change of camera
+		export const CamSnap = () =>{
+			const webcamRef = React.useRef(null);
+			const [facingMode, setFacingMode] = React.useState();
+
+			const capture = () => {
+				const imageSrc = webcamRef.current.getScreenshot(); //	getScreenshot({width: 1920, height: 1080});
+				console.log(imageSrc);
+			}
+
+			return (
+			<>
+				<button onClick={ () => { setFacingMode({ facingMode: "user" }) }}> User </button>
+				<button onClick={ () => {  setFacingMode({ facingMode: "environment" }) }}> Environment </button>    
+				<Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" videoConstraints={facingMode} />
+				<button onClick={capture}>Capture photo</button>
+			</>
+			);
+		}
+
+	//All options
+		export const Camera8 = () => {
+			const webcamRef = React.useRef(null);
+
+			return(
+				<Webcam 
+					ref={webcamRef}
+					audio={false}
+					forceScreenshotSourceSize={false}	
+					imageSmoothing={true}
+					mirrored={false}
+					minScreenshotHeight={500}
+					minScreenshotWidth={500}
+					screenshotFormat="image/jpeg" //webp|png
+					screenshotQuality={0.94}
+					audioConstraints={{autoGainControl: true,	channelCount: 1, echoCancellation: true,	latency: 1, noiseSuppression: true,	sampleRate: 16000, sampleSize: 16, volume: 50}}
+					videoConstraints={{aspectRatio: 16/9, facingMode: "user", frameRate: 15, height: 720, width: 720, resizeMode: 'crop-and-scale'}}
+					// videoConstraints={false}
+					onUserMedia={(stream)=>{console.log(stream)}}
+					onUserMediaError={(error)=>{console.log(error)}}
+				/>
+			)
+		}
+
+	
+	//Video capture
+		export const CamVideo = () => {
+			const webcamRef = React.useRef(null);
+			const mediaRecorderRef = React.useRef(null);
+			const [capturing, setCapturing] = React.useState(false);
+			const [recorded, setRecorded] = React.useState([]);
+		  
+		   const startCapture = () => {
+				setRecorded([]);
+				setCapturing(true);
+				mediaRecorderRef.current = new MediaRecorder(webcamRef.current.stream, { mimeType: "video/webm" });
+				mediaRecorderRef.current.addEventListener("dataavailable", ({ data }) => {
+					if (data.size > 0) { setRecorded((prev) => prev.concat(data))}
+				});
+				mediaRecorderRef.current.start();
+			}
+			
+			const stopCapture = () => {
+			  mediaRecorderRef.current.stop();
+			  setCapturing(false);
+			}
+
+
+			const handleDownload = () => {
+			  if (recorded.length) {
+				const blob = new Blob(recorded, {type: "video/webm"});
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement("a");
+				// document.body.appendChild(a);
+				a.style = "display: none"; a.href = url;
+				a.download = Date.now()+"-recording.webm";
+				a.click();
+				window.URL.revokeObjectURL(url);
+				setRecorded([]);
+			  }
+			}
+		  
+			return (
+			  <>
+				<Webcam audio={false} ref={webcamRef} />
+				{capturing 
+					? <button onClick={stopCapture}>Stop Recording</button> 
+					: <button onClick={startCapture}>Start Recording</button>
+				}
+				{recorded.length > 0 && 
+				<><button onClick={()=>{ setRecorded([]) }}>Delete Recording</button><button onClick={handleDownload}>Download Recording</button></>
+				}
+			  </>
+			);
+		  };
+
+	//Video and Picture
+		export const Cam = () =>{
+			const webcamRef = useRef(null);
+			const [camerr, setCamerr] = useState(false);
+			const [showCam, setShowCam] = useState(true);
+
+			const [imgSrc, setImgSrc] = useState(null);
+			const [videoMode, setVideoMode] = useState({width: 720, height: 720, facingMode: "user",frameRate: 30});
+			const [audioMode, setAudioMode] = useState(true);
+
+			// if(audioMode===false & video===false){ setVideoMode({width: 720, height: 720, facingMode: "user",frameRate: 30}) }
+
+			// TODO: audio recordding only
+			// FIXME: block recording button when picture clicked and vise versa, use usestate, combine both in a block, hide and show 
+
+			const mediaRecorderRef = useRef(null);
+			const [capturing, setCapturing] = useState(false);
+			const [recorded, setRecorded] = useState([]);
+			const [mediaBlob, setMediaBlob] = useState(null);
+
+			const video={
+				startCapture: () => {
+					setShowCam(true)
+					setRecorded([]);
+					setCapturing(true);
+					mediaRecorderRef.current = new MediaRecorder(webcamRef.current.stream, { mimeType: "video/webm" });
+					mediaRecorderRef.current.ondataavailable = (e) => { if (e.data.size > 0) { setRecorded((prev)=>{return [...prev,e.data]}) } }
+					mediaRecorderRef.current.start();
+				},
+				pauseCapture:()=>{mediaRecorderRef.current.pause()},
+				resumeCapture:()=>{mediaRecorderRef.cureent.resume()},
+				viewCapture:()=>{
+						if (recorded.length) {
+						const blob = new Blob(recorded, {type: "video/webm"}),
+						url = URL.createObjectURL(blob)
+						setMediaBlob(url)
+					}
+					setShowCam(false) 
+				},
+				stopCapture: () => {
+					mediaRecorderRef.current.stop();
+					setCapturing(false); setShowCam(false)
+				},
+				deleteCapture:()=>{ URL.revokeObjectURL(mediaBlob); setRecorded([]); setMediaBlob(null); setShowCam(true)},
+				download:() => {
+					if (recorded.length) {
+					const blob = new Blob(recorded, {type: "video/webm"}),
+					url = URL.createObjectURL(blob),
+					a = document.createElement("a");
+					a.style = "display: none"; a.href = url; 
+					a.download = Date.now()+"-recording.webm"; a.click(); a.remove()
+					URL.revokeObjectURL(url);
+					URL.revokeObjectURL(mediaBlob);
+					setRecorded([]); setMediaBlob(null); setShowCam(true)
+				  }
+				},
+				send:()=>{
+					if(recorded.length){
+					const blob = new Blob(recorded, {type: "video/webm"})
+					axios.post('/url',{video:blob},{withCredentials:true})
+					.then((res)=>{
+						console.log(res); URL.revokeObjectURL(mediaBlob);
+						setRecorded([]); setMediaBlob(null); setShowCam(true)
+					})
+					.catch((err)=>console.log(err.response))
+					}
+				}
+			}
+
+			const picture={
+				capture:() => {
+					const imageSrc = webcamRef.current.getScreenshot(); //	getScreenshot({width: 1920, height: 1080});
+					setImgSrc(imageSrc);
+					setShowCam(false)
+				},
+				captureAgain:()=>{setImgSrc(''); setShowCam(true)},
+				download:()=>{ 
+					var a = document.createElement("a");  
+					a.download = Date.now()+"-Image.jpg"; a.href = imgSrc; a.click(); 
+					setShowCam(true); setImgSrc(null)},
+				send:()=>{
+					if(imgSrc){
+						axios.post('/url',{img:imgSrc},{withCredentials:true})
+						.then((res)=>{console.log(res);setShowCam(true); setImgSrc(null)})
+						.catch((err)=>console.log(err.response))
+					}
+				}
+			}
+
+			return (
+			  <>
+				{camerr ? 'Camera Error: '+camerr :''}
+				{showCam ?
+					<>
+					<div>
+					<button onClick={ () => { setVideoMode((prev)=>{return({...prev, facingMode:'user'})}) }}> User </button>
+					<button onClick={ () => { setVideoMode((prev)=>{return({...prev, facingMode:'environment'})}) }}> Environment </button>
+					<button onClick={ () => { setAudioMode((prev)=>{ return !prev;}) } }>{audioMode?'Switch Off Audio':'Switch On Audio'}</button>
+					{/* {audioMode ? <button onClick={ () => { setVideoMode(false) }}> Switch Off Video </button>: ""} */}
+					</div>
+					<div>
+					<Webcam
+						forceScreenshotSourceSize={false} 
+						audio={audioMode} height={400} width={400} 
+						ref={webcamRef} screenshotFormat="image/jpeg"
+						onUserMedia={(stream)=>{if(stream.active===true){setAudioMode(false)} }}
+						onUserMediaError={(error)=>{setCamerr(error)}}
+						audioConstraints={{autoGainControl: true, echoCancellation: true, noiseSuppression: true, volume: 50}} 
+						videoConstraints={videoMode}
+					/>
+					</div>
+					</>
+					 :" "
+				}
+
+				{imgSrc
+					?<div>
+						<img src={imgSrc} alt=""/>
+						<button onClick={picture.download}>Download</button>
+						<button onClick={picture.captureAgain}>Take Again</button>
+					</div>
+					:<button onClick={picture.capture}>Capture photo</button>
+				}
+				{recorded.length > 0 ||
+					<>
+					{capturing ? <button onClick={video.stopCapture}>Stop Recording</button> 
+						: <button onClick={video.startCapture}>Start Recording</button>}
+					</>
+				}
+				{recorded.length > 0 && 
+					<div>
+					{mediaBlob ? <div><video src={mediaBlob} width={520} height={480} controls/></div> : "" }
+					<button onClick={video.deleteCapture}>Delete Recording</button>
+					<button onClick={video.viewCapture}>View Recording</button>
+					<button onClick={video.download}>Download Recording</button>
+					</div>
+				}
+			  </>
+			);
+		} 
+	
+	
+	Props
+	The props here are specific to this component but one can pass any prop to the underlying video tag eg className, style, muted, etc
+
+	prop						type			default	notes
+	audio						boolean	false	enable/disable audio
+	audioConstraints			object			MediaStreamConstraint(s) for the audio
+	forceScreenshotSourceSize	boolean	false	uses size of underlying source video stream (and thus ignores other size related props)
+	imageSmoothing				boolean	true	pixel smoothing of the screenshot taken
+	mirrored					boolean	false	show camera preview and get the screenshot mirrored
+	minScreenshotHeight			number			min height of screenshot
+	minScreenshotWidth			number			min width of screenshot
+	onUserMedia					function noop	callback for when component receives a media stream
+	onUserMediaError			function noop	callback for when component can't receive a media stream with MediaStreamError param
+	screenshotFormat			string			'image/webp|jpeg|png' 	format of screenshot
+	screenshotQuality			number	0.92	quality of screenshot(0 to 1)
+	videoConstraints			object			MediaStreamConstraints(s) for the video
+
+		
+	audioConstraints
+		autoGainControl: true|false
+		channelCount: 1|2
+		echoCancellation: true|false
+		latency: 0.01|4|9
+		noiseSuppression: true|false
+		sampleRate: 16000|32000|48000  	//khz
+		sampleSize: 16|32		//bits
+		volume: 0-100
+							
+	videoConstraints
+		aspectRatio: 16/9 | 4/3
+		facingMode: user|environment
+		frameRate: 15 - 60
+		height: 720
+		width: 720
+		resizeMode: none|crop-and-scale
+	
+	
+	Methods
+	getScreenshot() - Returns a base64 encoded string of the webcam image
+	getScreenshot({width: 500, height: 500}) - Returns a base64 encoded string of the resized webcam image.
+
+	
+		
+
+
+@wmik/use-media-recorder
+
+	import React from 'react';
+	import useMediaRecorder from '@wmik/use-media-recorder';
+
+	export function Cam() {
+		const { error, status, mediaBlob, stopRecording, getMediaStream, clearMediaStream, pauseRecording, resumeRecording, startRecording, liveStream } = useMediaRecorder({
+			blobOptions: { type: 'video/webm' },  mediaStreamConstraints: { audio: true, video: true }
+		});
+		
+		const [startVideo, setStartVideo] = useState(false)
+		const [showVideo, setShowVideo] = useState()
+		const [startPicture, setStartPicture] = useState(false)
+		const [showPicture, setShowPicture] = useState(false)
+		const [savePicture, setSavePicture] = useState(null)
+		const videoPreviewRef = React.useRef();
+
+		if(status==='idle'){ getMediaStream() }
+		const openCam=()=>{
+			if(status==='ready'){ 
+			  startRecording() 
+			  setTimeout(() => {
+				if (videoPreviewRef.current && liveStream) { videoPreviewRef.current.srcObject = liveStream }
+			  }, 100);
+			}
+		}
+		openCam()
+
+	  const video={
+		takeVideo: ()=>{
+		  stopRecording(); clearMediaStream();
+		  setTimeout(() => { openCam(); setStartVideo(true) }, 200);
+		},
+		saveVideo:()=>{ stopRecording(); setStartVideo(false); 
+		  if(mediaBlob){ setShowVideo(mediaBlob) }
+		  const url = URL.createObjectURL(mediaBlob);
+		  const a = document.createElement("a");
+		  a.style = "display: none"; a.href = url;
+		  a.download = Date.now()+"-recording.webm"; a.click();
+		  window.URL.revokeObjectURL(url);
+		},
+		deleteVideo:()=>{ stopRecording(); clearMediaStream(); setStartVideo(false) },
+		sendVideo:()=>{
+			// axios data:mediaBlob
+			//  .then( clearMediaStream(); setStartVideo(false) )
+		}
+	  }
+
+	  const picture={
+		takePicture: ()=>{
+			setShowPicture(true)
+			setStartPicture(false)
+			// document.getElementById('newImg').remove();
+			var canvas = document.createElement('canvas')
+			var video = document.getElementById('livestreamvid');
+			canvas.width = video.videoWidth;
+			canvas.height = video.videoHeight;
+			canvas.getContext('2d').drawImage(video, 0, 0, video.videoWidth, video.videoHeight);  
+			let image = canvas.toDataURL('image/jpeg');
+			setSavePicture(image)
+		},
+		savePicture:()=>{  
+		  var a = document.createElement("a"); //Create <a>
+		  a.href = savePicture; //Image Base64 Goes here
+		  a.download = Date.now()+"-Image.jpg"; //File name Here
+		  a.click(); //Downloaded file
+		  setStartPicture(false); setShowPicture(false); setSavePicture(null);
+		},
+		deletePicture:()=>{ setStartPicture(false);  setShowPicture(false); setSavePicture(null) },
+		sendPicture:()=>{
+			// axios data:savePicture
+			//  .then( setStartPicture(false); setShowPicture(false); setSavePicture(null) )
+		}
+	  }
+	  // status=idle, acquiring_media, ready, recording, stopping, stopped, failed
+
+		  
+		  
+		
+		return (
+		<>
+		  <h1>Screen recorder</h1>
+		  {error ? `${status} ${error.message}` : status}
+		  
+          { liveStream ? <video ref={videoPreviewRef} width={520} height={480} autoPlay id="livestreamvid" /> : ""}
+		  { mediaBlob ? <video src={URL.createObjectURL(mediaBlob)} width={520} height={480} controls/> : ""}
+		  {/* {audio ? <audio src={URL.createObjectURL(mediaBlob)} controls /> : "" } */}
+
+		{startVideo 
+          ?<>
+           <button type="button" onClick={video.saveVideo} > Save Video </button>
+           <button type="button" onClick={video.deleteVideo} > Stop Video </button>
+           <button type="button" onClick={pauseRecording} > Pause Recording </button>
+           <button type="button" onClick={resumeRecording} > Resume Recording </button>
+           </> 
+          : <button type="button" onClick={video.takeVideo} > Take Video </button>
+        }
+        {showVideo ? <video src={URL.createObjectURL(showVideo)} width={520} height={480} controls/> : "" }      
+
+        {startPicture 
+          ?<>
+           <button type="button" onClick={picture.savePicture} > Save Picture </button>
+           <button type="button" onClick={picture.deletePicture} > Delete Picture </button>          
+          </>
+          : <button type="button" onClick={picture.takePicture} > Take Picture </button>          
+        }
+        {showPicture ? <img src={savePicture} alt=""/> : "" }  
+		  
+	  );
+	}
+
+
+
+		useMediaRecorder (Default export)
+
+		Parameters (MediaRecorderProps)
+		Property				Type					Description
+		blobOptions				BlobPropertyBag			Options used for creating a Blob object.
+		recordScreen			boolean					Enable/disable screen capture.
+		onStart					function				Callback to run when recording starts.
+		onStop					function(blob)			Callback to run when recording stops. Accepts a Blob object as a parameter.
+		onError					function(error)			Callback to run when an error occurs while recording. Accepts an error object as a parameter.
+		onDataAvailable			function				Callback to run when recording data exists.
+		mediaRecorderOptions	object					Options used for creating MediaRecorder object.
+		mediaStreamConstraints*	MediaStreamConstraints	Options used for creating a MediaStream object from getDisplayMedia and getUserMedia.
+
+		Returns (MediaRecorderHookOptions)
+		Property				Type		Description
+		error					Error		Information about an operation failure. Possible exceptions
+		status					string		Current state of recorder. One of idle, acquiring_media, ready, recording, stopping, stopped, failed.
+		mediaBlob				Blob		Raw media data.
+		isAudioMuted			boolean		Indicates whether audio is active/inactive.
+		stopRecording			function	End a recording.
+		getMediaStream			function	Request for a media source. Camera, mic and/or screen access.
+		clearMediaStream		function	Resets the media stream object to null.
+		startRecording			function	Begin a recording. Optional argument timeSlice controls chunk size.
+		pauseRecording			function	Stop without ending a recording allowing the recording to continue later.
+		resumeRecording			function	Continue a recording from a previous pause.
+		muteAudio				function	Disable audio.
+		unMuteAudio				function	Enable audio.
+		liveStream				MediaStream	Real-time MUTED stream of current recording. Muted to prevent audio feedback.
+
+
+	

@@ -1,0 +1,49 @@
+ionic
+
+npm install -g @ionic/cli
+ionic start --type=react
+ionic serve / npm start
+	ionic serve --external --lab --port 6000
+
+	build		Build web assets and prepare your app for any platform targets
+	docs		Open the Ionic documentation website
+	info		Print system/environment info
+	link		Connect your local app to Ionic
+	login		Login with your Ionic ID
+	serve		Start a local dev server for app dev/testing
+	start		Create a new project
+	config get	Print config values
+	config set	Set config values
+	cordova build		Build (prepare + compile) an Ionic project for a given platform
+	cordova compile		Compile native platform code
+	cordova emulate		Emulate an Ionic project on a simulator or emulator
+	cordova platform	Manage Cordova platform targets
+	cordova plugin		Manage Cordova plugins
+	cordova prepare		Copies assets to Cordova platforms, preparing them for native builds
+	cordova requirements	Checks and print out all the requirements for platforms
+	cordova resources	Automatically create icon and splash screen resources
+	cordova run			Run an Ionic project on a connected device
+	git remote			Adds/updates the Ionic git remote to your local Ionic app repository
+
+	--consolelogs, -c	Print app console logs to Ionic CLI
+	--address	Use specific address for the dev server
+	--port, -p	Use specific port for HTTP
+	--livereload-port, -r	Use specific port for live-reload
+	--dev-logger-port	Use specific port for dev server communication
+	--no-devapp	Do not publish DevApp service
+	--local	Disable external network usage
+	--lab, -l	Test your apps on multiple platform types in the browser
+	--platform, -t	Start serve with a specific platform (android, ios)
+
+Run ionic serve within the app directory to see your app in the browser
+	- Run ionic capacitor add to add a native iOS or Android project using Capacitor
+	- Generate your app icon and splash screens using cordova-res --skip-config --copy
+	- Explore the Ionic docs for components, tutorials, and more: https://ion.link/docs
+
+set proxy
+	ionic config set -g proxy http://proxy.example.com:8888
+	To configure proxy settings via an environment variable, use one of the following:
+	export HTTP_PROXY="http://proxy.example.com:8888" # also used by npmexport HTTPS_PROXY="https://proxy.example.com:8888" # also used by npmexport IONIC_HTTP_PROXY="http://proxy.example.com:8888"
+	
+	
+	

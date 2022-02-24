@@ -1,0 +1,57 @@
+
+
+learn react-router-dom 
+	v5
+		BrowserRouter basename="/" children="<></>", /HashRouter basename="/" hashType="slash/noslash/hashbang" children="<></>", /StaticRouter(for serverside), /MemoryRouter
+			Switch
+				Route path= exact component={Component} children={<></>} render=(()=>{}) (used without closing tag)
+		Link to= replace component={Component}, /NavLink to= activeClassName= exact strict
+		Redirect exact from= to=
+		Prompt <Prompt when={true} message={location =>`Are you sure you want to go to ${location.pathname}`}/>
+		useRouteMatch .path, .url,(can also access useParams as .params with route path containing /:param), usually deep nexted links, route = useRouteMatch(); route.url, route.path
+		useParams as object to access route path /:param, const { param } = useParams()
+		useHistory .push(''), .replace(''), .goBack(), .goForward(), go()(can also access useLocation as .location)
+		useLocation .pathname, .key, location=useLocation(), location.pathname, location.key
+		
+		for query parameters
+			<Link to="/account?name=netflix">Netflix</Link>
+			let query = new URLSearchParams(useLocation().search);
+				query.get("name")
+			<Route path="/account"><TestParams /></Route>
+			
+		for 404  <Route path="*"><NoMatch /></Route> //put at end of match code
+	
+	
+	v6 (npm i react-router-dom@next)
+		BrowserRouter basename="/" children="<></>", /HashRouter basename="/" hashType="slash/noslash/hashbang" children="<></>", /StaticRouter(for serverside), /MemoryRouter
+			Routes
+				Route path= exact element={Component} children={<></>} render=(()=>{}) (used without closing tag)
+		Outlet (used in component when route has nested routes) 
+		Link to= replace component={Component}, /NavLink to= activeClassName= exact strict
+		Redirect exact from= to=
+		Prompt <Prompt when={true} message={location =>`Are you sure you want to go to ${location.pathname}`}/>
+		useRouteMatch .path, .url,(can also access useParams as .params with route path containing /:param), usually deep nexted links, route = useRouteMatch(); route.url, route.path
+		useParams as object to access route path /:param, const { param } = useParams()
+		useHistory .push(''), .replace(''), .goBack(), .goForward(), go()(can also access useLocation as .location)
+		useLocation .pathname, .key, location=useLocation(), location.pathname, location.key
+		useNavigate	let navigate = useNavigate(); navigate('/tolink') (NB: supposed to replace useHistory)
+		useRoutes
+			let element = useRoutes([
+			{ path: '/', element: <Home /> },
+			{ path: 'users', element: <Users />,
+			  children: [
+				{ path: '/', element: <UsersIndex /> },
+				{ path: ':id', element: <UserProfile /> },
+				{ path: 'me', element: <OwnUserProfile /> },
+			  ]
+			}
+			]);
+			return element;
+		
+		for query parameters
+			<Link to="/account?name=netflix">Netflix</Link>
+			let query = new URLSearchParams(useLocation().search);
+				query.get("name")
+			<Route path="/account"><TestParams /></Route>
+		
+		for 404  <Route path="*"><NoMatch /></Route> //put at end of match code

@@ -1,0 +1,46 @@
+php artisan
+
+	  db                   Start a new database CLI session
+	  down                 Put the application into maintenance / demo mode
+	  help                 Display help for a command
+	  list                 List commands
+	  migrate              Run the database migrations
+	  optimize             Cache the framework bootstrap files
+	  serve                Serve the application on the PHP development server
+	  up                   Bring the application out of maintenance mode
+	 cache
+	  cache:clear          Flush the application cache
+	  cache:table          Create a migration for the cache database table
+	 config
+	  config:cache         Create a cache file for faster configuration loading
+	  config:clear         Remove the configuration cache file
+	 db
+	  db:seed              Seed the database with records
+	  db:wipe              Drop all tables, views, and types
+	 key
+	  key:generate         Set the application key
+	 make
+	  make:component       Create a new view component class
+	  make:controller      Create a new controller class
+	  make:middleware      Create a new middleware class
+	 migrate
+	  migrate:fresh        Drop all tables and re-run all migrations
+	  migrate:install      Create the migration repository
+	  migrate:refresh      Reset and re-run all migrations
+	  migrate:reset        Rollback all database migrations
+	  migrate:rollback     Rollback the last database migration
+	  migrate:status       Show the status of each migration
+	 route
+	  route:cache          Create a route cache file for faster route registration
+	  route:clear          Remove the route cache file
+	  route:list           List all registered routes
+	 schema
+	  schema:dump          Dump the given database schema
+	 session
+	  session:table        Create a migration for the session database table
+	 view
+	  view:cache           Compile all of the application's Blade templates
+	  view:clear           Clear all compiled view files
+  
+
+

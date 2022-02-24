@@ -1,0 +1,31 @@
+Php
+package registry for php: Packagist
+
+Options:
+  -q, --quiet                    Do not output any message
+  -V, --version                  Display this application version
+  -n, --no-interaction           Do not ask any interactive question
+  -v|vv|vvv, --verbose           Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
+
+Available commands:
+  browse               Opens the package's repository URL or homepage in your browser.
+  create-project       Creates new project from a package into given directory.
+  dumpautoload         Dumps the autoloader.
+  global               Allows running commands in the global composer dir ($COMPOSER_HOME).
+  home                 Opens the package's repository URL or homepage in your browser.
+  info                 Shows information about packages.
+  init                 Creates a basic composer.json file in current directory.
+  install|i            Installs the project dependencies from the composer.lock file if present, or falls back on the composer.json.
+  list                 Lists commands
+  outdated             Shows a list of installed packages that have updates available, including their latest version.
+  reinstall            Uninstalls and reinstalls the given package names
+  remove               Removes a package from the require or require-dev.
+  require              Adds required packages to your composer.json and installs them.
+  run                  Runs the scripts defined in composer.json.
+  search               Searches for packages.
+  selfupdate           Updates composer.phar to the latest version.
+  show                 Shows information about packages.
+  status               Shows a list of locally modified packages.
+  suggests             Shows package suggestions.
+  upgrade|u	           Upgrades your dependencies to the latest version according to composer.json, and updates the composer.lock file.
+  validate             Validates a composer.json and composer.lock.

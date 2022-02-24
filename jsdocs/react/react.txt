@@ -1,0 +1,136 @@
+
+learn react hooks
+	useState 
+		var [state,changeState] = useState('')
+		    setState((prev)=>{  return( prev.filter((item,i)=>{return( item !== value )}))  })		//remove from array 
+
+			var {name, value}=e.target;
+			setState((prev)=>{ return({...prev,[name]:value}) })	//update object
+			
+			setState((prev)=>{ return([...prev,value]) });	// update array
+			
+			setState((prev)=>{ return !prev;});	// change to false|true
+
+	useEffect/useLayoutEffect 
+		useEffect(()=>{},[])
+	useContext 
+		export const Store=createContext({index:value})  (use of state management is better)
+		use as import {Store}
+		var data=useContext(Store) 
+		{data.index} 
+	useReducer (use of state management is better)
+			function reducer(state,action){
+			//use switch statement
+				if (action.type==="increment"){
+					return {count: state.count + action.payload} 
+				}
+			}
+			const [state, dispatch]=useReducer(reducer,{count:0})
+			use as state.count, dispatch({type:'increment', payload: 1})
+			
+	useCallback 
+		var memoized = useCallback(()=>{}, [...deps]) //returns callback func
+	useMemo 
+		var memoized = useMemo(()=>{}, [...deps]) //returns value
+	useRef
+		const input=useRef(null); //React.createRef() on class component
+		input.current
+		input.current.anyactionontarget();
+		<input ref={input} />
+
+
+
+learn advanced react
+
+	memo
+		import { memo } from "react";
+		export const Todos = memo(() => {
+		  return (
+			<>
+			  <h2>My Todos</h2>
+			</>
+		  )
+		})
+		or
+		export default memo(Todos);
+
+		
+	react-error-boundary
+		import { ErrorBoundary } from 'react-error-boundary';
+
+		const ErrorFallback = ({ error, resetErrorBoundary }) => {
+		  return (
+			<div role="alert">
+			  <p>Something went wrong:</p>
+			  <pre>{error.message}</pre>
+			  <button onClick={resetErrorBoundary}>Try again</button>
+			</div>
+		  );
+		};		
+		
+		const Counter = () => {
+		  const [count, setCount] = useState(0);
+		  if (count === 5) {
+			throw new Error('Count is 5. Error Occurred.');
+		  }
+
+		  return (
+			<div className="App">
+			  <ErrorBoundary
+				FallbackComponent={ErrorFallback}
+				onReset={() => setCount(0)} //use onReset to reset what component
+			  >
+				<div>
+				  <div>{count}</div>
+				  <button onClick={() => setCount(count + 1)}>Increment</button>
+				  <button onClick={() => setCount(count - 1)}>Decrement</button>
+				</div>			  
+			  </ErrorBoundary>
+			</div>
+		  );
+		};
+	
+	
+	PropTypes
+		import PropTypes from 'prop-types'
+		function Component(props) {return (<div>Hello, {props.name}</div>)}
+		Component.propTypes = {props.name: PropTypes.string}
+		  PropTypes.any,
+		  PropTypes.bool,
+		  PropTypes.string,
+		  PropTypes.number,
+		  PropTypes.func,
+		  PropTypes.array,
+		  PropTypes.object,
+		  PropTypes.elementType,   
+		  PropTypes.oneOf(['News', 'Photos']),
+		  PropTypes.oneOfType([
+			PropTypes.string,
+			PropTypes.number
+		  ]),
+		  PropTypes.func.isRequired / PropTypes.any.isRequired,
+
+		  
+	Code Spliting
+		using import
+			import("./math").then(math => {console.log(math.add(16, 26));});
+		
+		using React.lazy for lazy loading (currently only supports default exports)
+			export { OtherComponent as default } from "./ManyComponents.js"; //OtherComponent.js
+			
+			const OtherComponent = React.lazy(() => import('./OtherComponent'));
+
+			<Suspense fallback={<div>Loading...</div>}><OtherComponent /></Suspense>
+			// e.g can be used to lazy load routes on react-router-dom
+	
+	Forwarded Ref
+		const FancyButton = React.forwardRef((props, ref) => (
+		  <button ref={ref} className="FancyButton">
+			{props.children}
+		  </button>
+		));
+
+		// You can now get a ref directly to the DOM button:
+		const ref = React.createRef();
+		const ref = React.useRef(null);
+		<FancyButton ref={ref}>Click me!</FancyButton>;

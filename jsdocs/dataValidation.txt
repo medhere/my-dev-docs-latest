@@ -1,0 +1,115 @@
+
+
+learn validator/express-validator
+
+	Validator
+	=========
+	contains(str, seed [, options ])
+	equals(str, comparison)
+	isAfter(str [, date])
+	isAlpha(str [, locale, options])
+	isAlphanumeric(str [, locale, options])
+	isBase32(str)
+	isBase64(str [, options])
+	isBefore(str [, date])
+	isBoolean(str)
+	isDataURI(str)
+	isDate(input [, options])
+	isDecimal(str [, options])
+	isEmail(str [, options])
+	isEmpty(str [, options])
+	isFloat(str [, options])
+	isHash(str, algorithm)
+	isIP(str [, version])
+	isJSON(str [, options])
+	isJWT(str)
+	isLength(str [, options])
+	isLowercase(str)
+	isMD5(str)
+	isMobilePhone(str [, locale [, options]])
+	isNumeric(str [, options])
+	isUppercase(str)
+	isStrongPassword(str [, options])
+	isURL(str [, options])
+	isUUID(str [, version])
+	isWhitelisted(str, chars)
+	matches(str, pattern [, modifiers])
+
+
+	Sanitizers
+	==============
+	blacklist(input, chars)
+	escape(input)
+	ltrim(input [, chars])
+	normalizeEmail(email [, options])
+	rtrim(input [, chars])
+	stripLow(input [, keep_new_lines])
+	toBoolean(input [, strict])
+	toDate(input)
+	toFloat(input)
+	toInt(input [, radix])
+	trim(input [, chars])
+	unescape(input)
+	whitelist(input, chars)
+
+
+learn yup
+	import * as yup from 'yup';
+
+	let schema = yup.object().shape({
+	  name: yup.string().required(),
+	  age: yup.number().required().positive('message').max(10, 'message').integer(),
+	  email: yup.string().email(),
+	  website: yup.string().url(),
+	  createdOn: yup.date().default(function () {
+		return new Date();
+	  }),
+	});
+
+	// check validity
+	schema
+	  .isValid({
+		name: 'jimmy',
+		age: 24,
+	  })
+	  .then(function (valid) {
+		valid; // => true
+      });
+
+	string
+		string.required()
+		string.length(limit: number )
+		string.min(limit: number )
+		string.max(limit: number )
+		string.matches(regex: Regex)
+		string.email()
+		string.url()
+		string.uuid()
+		string.ensure()
+		string.trim()
+		string.lowercase()
+		string.uppercase()
+	number
+		number.min(limit: number)
+		number.max(limit: number)
+		number.lessThan(max: number)
+		number.moreThan(min: number)
+		number.positive()
+		number.negative()
+		number.integer()
+		number.truncate()
+		number.round(type: 'floor' | 'ceil' | 'trunc' | 'round' = 'round')
+	boolean
+	date
+		date.min(limit: Date )
+		date.max(limit: Date )
+	array
+		array.of(type)
+		array.length(length: number )
+		array.min(limit: number )
+		array.max(limit: number )
+		array.ensure()
+	object
+		object.shape({})
+		object.camelCase()
+
