@@ -123,6 +123,17 @@ learn advanced react
 			<Suspense fallback={<div>Loading...</div>}><OtherComponent /></Suspense>
 			// e.g can be used to lazy load routes on react-router-dom
 	
+		import { lazy } from "react"
+		export function lazyWithPreload (factory){
+		  const Component = lazy(factory)
+		  Component.preload = factory
+		  return Component
+		}
+		const Component = lazyWithPreload(() => import(/* webpackChunkName: "" *//* webpackMode: "lazy" *//* webpackPrefetch: true */ './Components'));
+
+
+	
+	
 	Forwarded Ref
 		const FancyButton = React.forwardRef((props, ref) => (
 		  <button ref={ref} className="FancyButton">
@@ -134,3 +145,5 @@ learn advanced react
 		const ref = React.createRef();
 		const ref = React.useRef(null);
 		<FancyButton ref={ref}>Click me!</FancyButton>;
+
+	

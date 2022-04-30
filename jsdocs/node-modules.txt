@@ -8,7 +8,7 @@ for server
 	node-rate-limiter-flexible xss multer jsonwebtoken (fs-extra|fs-jetpack) jimp http-errors nodemailer base64-to-image
 
 for react
-	react-router-dom@next [@mui/material @mui/icons-material|@material-ui/core @material-ui/icons] @emotion/react @emotion/styled @ionic/core ionicons pullstate formik/react-hook-form(react-hook-form-persist) yup react-jwt|jwt-decode react-error-boundary (react-webcam|@wmik/use-media-recorder) react-use-cart materializecss react-materialize react-detect-offline
+	react-router-dom@next [@mui/material @mui/icons-material|@material-ui/core @material-ui/icons] @emotion/react @emotion/styled @ionic/core ionicons pullstate formik/react-hook-form(react-hook-form-persist) yup react-jwt|jwt-decode react-error-boundary (react-webcam|@wmik/use-media-recorder) react-use-cart materializecss react-materialize react-detect-offline	(apexcharts react-apexcharts) react-grid-system react-redux redux-persist (react-materialize materialize-css) photoswipe react-query atlassian.design axios-progress-bar sweetalert2
 
 for next
 	all react + next-routes-extended
@@ -27,4 +27,6 @@ for svelte
 	find for svelte (react-webcam|@wmik/use-media-recorder)
 
 global		
- @capacitor/cli @ionic/cli create-next-app create-react-app degit http-server nodemon npm pm2 reactserve
+ @capacitor/cli @ionic/cli degit http-server nodemon npm pm2 reactserve
+ 
+ 

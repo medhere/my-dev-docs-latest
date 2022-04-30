@@ -53,16 +53,31 @@ en.rakko.tools
 www.textcompare.org
 		
 	
-learn hosting
-	firebase
-	
-learn regex
+
+loader.io
+https://www.addtoany.com/buttons/for/website
+https://contabo.com/en/pricing/
 
 
-learn react-redux
-learn graphql
+https://picsum.photos/1920/1200/?random&gravity=south
+http://placeimg.com/640/480/tech/grayscale
+https://unsplash.it/1200/800
+https://loremipsum.io/
+https://dummyimage.com/
+https://i.pravatar.cc/300
+https://atroposjs.com/
+https://www.freeprivacypolicy.com/free-privacy-policy-generator/
+https://termify.io/
+https://www.privacypolicies.com/privacy-policy-generator/
+https://icongr.am/
+https://www.flaticon.com/
+https://materialdesignicons.com/
+https://web.dev/
 
-
+app.fronty.com
+bubble.io
+devdojo
+https://reactjsexample.com/
 
 
 

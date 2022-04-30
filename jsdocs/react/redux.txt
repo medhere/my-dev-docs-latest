@@ -1,0 +1,65 @@
+redux
+always start react with --template redux or
+npm i @reduxjs/toolkit react-redux
+
+add to index.js
+	import { store } from './app/store';
+	import { Provider } from 'react-redux';
+		<Provider store={store}>
+		  <App />
+		</Provider>
+
+create store.js
+	import { configureStore } from '@reduxjs/toolkit';
+	import { testReducer } from '../testSlice'
+	export const store = configureStore({
+	  reducer: {
+		test: testReducer
+	  },
+	});
+
+create slice with reducers
+	import { createSlice } from '@reduxjs/toolkit';
+	export const testSlice = createSlice({
+	  name: 'test',
+	  initialState: {value: 0, user: 'yes'},
+	  reducers: {
+		increment: (state) => { state.value += 1 },
+		decrement: (state) => { state.value -= 1 },
+		incrementByAmount: (state, action) => { state.value += action.payload },
+		login: (state) => {state.user='yes'},
+		logout: (state) => {state.user='no'}
+	  },
+	})
+
+	export const realCount = (state) => state.test.value
+	export const testUser = (state) => state.test.user
+	export const incrementIfOdd = (amount) => (dispatch, getState) => {
+	  const currentValue = realCount(getState());
+	  if (currentValue % 2 === 1) { dispatch(incrementByAmount(amount)) }
+	};
+	export const { increment, decrement, incrementByAmount, login, logout } = testSlice.actions
+	export const testReducer = testSlice.reducer
+	
+import and use reducers
+	import { useSelector, useDispatch } from 'react-redux';
+	import {increment, decrement, incrementByAmount, incrementIfOdd, login, logout, realCount, testUser} from "./testSlice";
+
+	export function TestUI(){
+		const dispatch = useDispatch();
+		var count = useSelector(realCount);
+		var user = useSelector(testUser);
+
+		return (
+			<div>
+			<p>Count: {count}</p>
+			<p>User: {user}</p>
+			<button onClick={()=>dispatch(increment())}>Increase</button>
+			<button onClick={()=>dispatch(decrement())}>Decrease</button>
+			<button onClick={()=>dispatch(incrementByAmount(2))}>Increase by 2</button>
+			<button onClick={()=>dispatch(incrementIfOdd(2))}>Increase by 2 if odd</button>
+			<button onClick={()=>dispatch(login())}>Sign In</button>
+			<button onClick={()=>dispatch(logout())}>Sign Out</button>
+			</div>
+		)
+	}

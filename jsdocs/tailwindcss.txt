@@ -1,0 +1,69 @@
+tailwind
+	npm install -D tailwindcss postcss autoprefixer
+	npx tailwindcss init -p
+	  content: [
+		"./src/**/*.{js,jsx,ts,tsx}",
+	  ],
+  
+	@tailwind base;
+	@tailwind components;
+	@tailwind utilities;
+		
+	
+
+
+daisyui.com
+npm i daisyui
+require("daisyui") in tailwind plugins
+
+tailwind-elements.com
+npm install tw-elements
+content: ['./src/**/*.{html,js}', './node_modules/tw-elements/dist/js/**/*.js'],
+require('tw-elements/dist/plugin')
+import 'tw-elements';
+
+kutty.netlify.app
+npm install kutty
+plugins: [require("kutty")],
+
+konstaui.com/
+npm i konsta
+
+flowbite.com
+npm i flowbite
+plugins: [require('flowbite/plugin')]
+content: ["./node_modules/flowbite/**/*.js"]
+import 'flowbite';
+
+wickedblocks.dev
+phantomui.com
+tailtemplate.com
+merakiui.com
+www.mambaui.com
+www.floatui.com
+hyperui.dev
+lofiui.co
+windmillui.com/
+www.tailwindawesome.com/
+kitwind.io/products/kometa/
+www.tailwindtoolbox.com
+devdojo.com/tails/app
+	github
+	sofonew638@shopxda.com
+	sofonew
+	poiuy1.1.
+
+treact.owaiskhan.me/
+www.tailwind-kit.com
+tailblocks.cc/
+tailwindcomponents.com/		tailwindcomponents.com/cheatsheet/\
+tailwind.ws/demo/ paid
+shuffle.dev/ paid
+windframe.devwares.com/ paid
+flowbite.com
+maizzle.com/
+
+
+
+to test
+whoobe-one-studio.vercel.app/

@@ -1,5 +1,3 @@
-
-
 learn react-router-dom 
 	v5
 		BrowserRouter basename="/" children="<></>", /HashRouter basename="/" hashType="slash/noslash/hashbang" children="<></>", /StaticRouter(for serverside), /MemoryRouter
@@ -23,35 +21,35 @@ learn react-router-dom
 	
 	
 	v6 (npm i react-router-dom@next)
-		BrowserRouter basename="/" children="<></>", /HashRouter basename="/" hashType="slash/noslash/hashbang" children="<></>", /StaticRouter(for serverside), /MemoryRouter
+		BrowserRouter basename="/" window, /HashRouter basename="/" navigationType="slash/noslash/hashbang" window
 			Routes
-				Route path= exact element={Component} children={<></>} render=(()=>{}) (used without closing tag)
+				Route path= index={true} element={Component} children={<></>} caseSensitive={true}) (used without closing tag)
 		Outlet (used in component when route has nested routes) 
-		Link to= replace component={Component}, /NavLink to= activeClassName= exact strict
-		Redirect exact from= to=
-		Prompt <Prompt when={true} message={location =>`Are you sure you want to go to ${location.pathname}`}/>
-		useRouteMatch .path, .url,(can also access useParams as .params with route path containing /:param), usually deep nexted links, route = useRouteMatch(); route.url, route.path
-		useParams as object to access route path /:param, const { param } = useParams()
-		useHistory .push(''), .replace(''), .goBack(), .goForward(), go()(can also access useLocation as .location)
-		useLocation .pathname, .key, location=useLocation(), location.pathname, location.key
-		useNavigate	let navigate = useNavigate(); navigate('/tolink') (NB: supposed to replace useHistory)
-		useRoutes
-			let element = useRoutes([
-			{ path: '/', element: <Home /> },
-			{ path: 'users', element: <Users />,
-			  children: [
-				{ path: '/', element: <UsersIndex /> },
-				{ path: ':id', element: <UserProfile /> },
-				{ path: 'me', element: <OwnUserProfile /> },
-			  ]
-			}
-			]);
-			return element;
-		
+		Link to= replace={true} element={Component}, /NavLink to= style={} className= caseSensitive={true}
+		Navigate to= replace={true}
+		useParams as object to access route path /:paramname, const { paramname } = useParams()		
+		useLocation location=useLocation(), location.pathname, location.key, location.hash, location.search
+			let from = location.state?.from?.pathname || "/";
+		useNavigate	navigate = useNavigate(); navigate('/tolink') navigate(-2) navigate(1) navigate("../success", { replace: true })
+		useSearchParams	let [searchParams, setSearchParams] = useSearchParams();  setSearchParams(params);
 		for query parameters
 			<Link to="/account?name=netflix">Netflix</Link>
 			let query = new URLSearchParams(useLocation().search);
 				query.get("name")
-			<Route path="/account"><TestParams /></Route>
+			<Route path="/account" element={<TestParams} />
 		
-		for 404  <Route path="*"><NoMatch /></Route> //put at end of match code
+		for 404  <Route path="*" element={<NoMatch />}/> //put at end of match code
+		    <BrowserRouter>
+				<Routes>
+				  <Route path='/'>
+					  <Route path='admin'>
+						  <Route index element={<AdminDashboardPage/>}/>
+						  <Route path='profile' element={<AdminProfilePage/>}/>
+					  </Route>
+					  <Route path='signout' element={<Signout/>}/>
+				  </Route>
+				  <Route path='*' element={<Signout/>}/>
+				</Routes>
+			  </LoadingUI>   
+			</BrowserRouter>    
+		

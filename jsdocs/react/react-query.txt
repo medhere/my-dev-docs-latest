@@ -1,0 +1,102 @@
+import axios from "axios"
+import { useQuery, useQueryClient } from "react-query";
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { ReactQueryDevtools } from "react-query/devtools";
+import { persistQueryClient } from 'react-query/persistQueryClient-experimental'
+import { createWebStoragePersistor } from 'react-query/createWebStoragePersistor-experimental'
+import { loadProgressBar } from 'axios-progress-bar'
+
+
+const REQUEST_URI = ''
+
+export function ReactQuery({children}){
+  loadProgressBar()
+
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+          enabled: false,
+		  retry: 0,
+		  retryDelay: attempt => Math.min(attempt > 1 ? 2 ** attempt * 1000 : 1000, 30 * 1000),
+		  cacheTime: 24 * 60 * 60 * 1000,
+		  onSettled: (data,error) => {data && console.log(data); error && console.log(error)},
+		  //refetchOnMount: 'always',
+		  //refetchOnWindowFocus: 'always',
+		  //refetchOnReconnect: 'always',
+      },
+    },
+  })
+
+  persistQueryClient({ queryClient, persistor: createWebStoragePersistor({ storage: window.sessionStorage }), })
+
+  return(
+    <QueryClientProvider client={queryClient}>
+      {children}
+      <ReactQueryDevtools initialIsOpen={false} position='bottom-right' />
+    </QueryClientProvider>
+  )
+}
+
+
+function XHR(method,url,userdata=null){
+  const token = localStorage.getItem('token') || null;
+  const XHR_OBJECT = {
+      url: `${REQUEST_URI}${url}`,
+      method: method,
+      headers: {
+        'Authorization': token ? `Bearer ${token}` : undefined,
+      },
+      responseType: 'json',
+      params: method === 'get' ? userdata : undefined,
+      data: method !== 'get' ? userdata : undefined,
+      timeout: 10000,
+      onUploadProgress: function (progressEvent) {
+        var {loaded,total}=progressEvent,
+        percent = Math.floor((loaded*100)/total)
+        // console.log(`uploaded: ${loaded}kb of ${total}kb | ${percent}%`)
+        console.log(`${method} request to ${REQUEST_URI}${url}.`)
+      },
+      onDownloadProgress: function (progressEvent) {
+        var {loaded,total}=progressEvent,   
+        percent = Math.floor((loaded*100)/total)
+        // console.log(`downloaded: ${loaded}kb of ${total}kb | ${percent}%`)
+      }
+  }
+  return XHR_OBJECT;
+}
+
+export async function XHR_REQUEST(method,url,userdata=null){
+    return await axios(XHR(method,url,userdata))
+}
+
+export function useXHRRequest(queryName,method='',url='',userdata=null) {
+    return useQuery(queryName, async () => {
+      const { data } = await axios(XHR(method,url,userdata))
+      return data;
+    });
+}
+
+export function useXHRData(name){
+  const queryClient = useQueryClient()
+  return {
+    xhrdata: queryClient.getQueryData(name),
+    xhrquery: queryClient.fetchQuery(name)
+  }
+}
+
+
+import { useIsFetching } from 'react-query'
+const isFetching = useIsFetching()
+ 
+import { useQueryClient } from 'react-query' 
+	const queryClient = useQueryClient()
+
+	var data = queryClient.getQueryData(queryKey)
+	queryClient.setQueryData(queryKey,data) , setQueryData(queryKey, oldData => return ...oldData,newData)
+	await queryClient.refetchQueries() 
+	await queryClient.refetchQueries(queryKey, { stale/active: true, exact: true })
+	queryClient.removeQueries(queryKey, { exact: true }) 
+	queryClient.resetQueries(queryKey, { exact: true })
+	queryClient.isFetching()
+	queryClient.clear()
+	const queryCache = queryClient.getQueryCache().
