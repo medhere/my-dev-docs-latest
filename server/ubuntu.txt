@@ -61,65 +61,6 @@ freenom
 
 
 
-	
-	
-if error, 1st attempt update from home page
-Error after plugin install attempt
-Happens when there is no internet connection
-Likely cause: no internet connection on browser and server
-ping -c 3 google.com to find out why
-namesever not available, follow steps above
-
-	Traceback (most recent call last):
-	  File "/www/server/panel/BTPanel/__init__.py", line 1578, in publicObject
-		return run_exec().run(toObject, defs, get)
-	  File "/www/server/panel/BTPanel/__init__.py", line 1526, in run
-		result = getattr(toObject,get.action)(get)
-	  File "class/panelPlugin.py", line 719, in get_index_list
-		softList = self.get_cloud_list(get)['list']
-	TypeError: 'NoneType' object is not subscriptable
-
-	go to
-	https://console.aapanel.com/api/panel/get_soft_list
-	create file and add contents to
-	/www/server/panel/data/plugin.json
-N.B: On install, copy and save this file, as absent file caused issues
-
-Happens after above error solved, then module install attempted
-KeyError: 'dependnet'
-
-REQUEST_DATE: 2022-01-21 11:17:45
- PAN_VERSION: 6.8.21
-  OS_VERSION: Ubuntu 18.04.1 LTS x86_64(Py3.7.8)
- REMOTE_ADDR: 192.168.56.1
- REQUEST_URI: POST /plugin?action=install_plugin
-REQUEST_FORM: {'sName': 'cloud_dns', 'version': '1', 'type': '0'}
-  USER_AGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.7113.93 Safari/537.36
-
-Traceback (most recent call last):
-  File "/www/server/panel/BTPanel/__init__.py", line 1578, in publicObject
-    return run_exec().run(toObject, defs, get)
-  File "/www/server/panel/BTPanel/__init__.py", line 1526, in run
-    result = getattr(toObject,get.action)(get)
-  File "class/panelPlugin.py", line 167, in install_plugin
-    check_result = self.check_install_limit(get)
-  File "class/panelPlugin.py", line 138, in check_install_limit
-    if not self.check_dependnet(pluginInfo['dependent']): return public.returnMsg(False, 'DEP_PAGE',
-KeyError: 'dependnet'
-
-	go to /www/server/panel/class/panelPlugin.py
-	change all dependent to dependnet
-
-
-
-
-
-
-
-
-user test password test
-aapanel :7800/aapanel
-
 
 
 

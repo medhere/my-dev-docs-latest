@@ -1,33 +1,109 @@
 learn mongo, knex and mysql2
 
 	MONGO
+	var MongoClient = require('mongodb').MongoClient;
+	MongoClient.connect("mongodb://localhost:27017/mydb", function(err, db) {
+	  if (err) throw err;
+	  console.log("Database created!");
+	  db.close();
+	});
+	
+	
+	
+	
+	
+	MONGOOSE
 		const mongoose= require('mongoose');
-		mongoose.connect('mongodb://localhost:27017/userdb',{useNewUrlParser:true,useUnifiedTopology:true,useCreateIndex:true});
+		mongoose.connect('mongodb://localhost:27017/userdb',{useNewUrlParser:true,useUnifiedTopology:true,useCreateIndex:true}, function(err, res) { });
 
-		const userSchema= new mongoose.Schema({
-			name: {type: String,required: [true,'Enter Name']},
-			pass: {type: String,required: [true,'Enter Pass']}, 
-			datetime:{required:[false]}
-		});
+		Schema
+		Types
+			String
+			Boolean
+			Number
+			Date
+			Array
+			Buffer
+			Schema.Types.Mixed
+			Schema.Types.ObjectId
 
-		const users=mongoose.model('user',userSchema);
+			const UserSchema = new mongoose.Schema({
+			  user: {
+				email: String,
+				password: { type: String, trim: true }
+			  },
+			  fullname: {
+				type: String, // Data Type
+				min:6,
+				max:12,
+				required: [true, "Please enter your fullname"], // Required with error
+				trim: true,
+			  },
+			  followersCount: {
+				type: Number,
+				default: 0,
+			  },
+			  followers: [{ type: mongoose.Schema.ObjectId, ref: "User" }], // Array of Object Ids and ref to schema
+			  createdAt: {
+				type: Date,
+				default: Date.now,
+			  },
+			  posts: [ { title: String, url: String, date: Date } ],
+			  drink: {
+				type: String,
+				enum: ['Coffee', 'Tea', 'Water',]
+			  }
+			}		  
+			module.exports = mongoose.model("User", UserSchema);
 
-			var newuser= new users({
+		Mongoose Model Methods
+			find(criteria, [fields], [options], [callback]): find document; callback has error and documents arguments
+			count(criteria, [callback])): return a count; callback has error and count arguments
+			findById(id, [fields], [options], [callback]): return a single document by ID; callback has error and document arguments
+			findByIdAndUpdate(id, [update], [options], [callback]): executes MongoDB’s findAndModify to update by ID
+			findByIdAndRemove(id, [options], [callback]): executes MongoDB’s findAndModify to remove
+			findOne(criteria, [fields], [options], [callback]): return a single document; callback has error and document arguments
+			findOneAndUpdate([criteria], [update], [options], [callback]): executes MongoDB’s findAndModify to update
+			findOneAndRemove(id, [update], [options], [callback]): executes MongoDB’s findAndModify to remove
+			update(criteria, update, [options], [callback]): update documents; callback has error, and count arguments
+			create(doc(s), [callback]): create document object and save it to database; callback has error and doc(s) arguments
+			remove(criteria, [callback]): remove documents; callback has error argument
+			save([callback]): save the document; callback has error, doc and count arguments
+
+		Mongoose Document Methods
+			set(path, val, [type], [options]): set value on the doc’s property
+			get(path, [type]): get the value
+			isModified([path]): check if the property has been modified
+			populate([path], [callback]): populate reference
+			toJSON(options): get JSON from document
+			validate(callback): validate the document
+				.then(data=>{}).catch(err=>{})
+
+			Examples
+			User.find({ author : bob._id })
+			User.find()
+				.where("_id")
+				.in(following.concat([req.user.id]))
+
+			new User({
 				name:'michael',
 				pass:'password',
 				datetime: new Date()
-			});
-			
-			newuser.save((err)=>{
+			}).save((err)=>{
 				console.log(err);
 				var newerr= (err) ? 'saved':'error';
 				res.send(newerr);
 			});
 		
-			users.find((err,data)=>{
+			User.find((err,data)=>{
 				console.log(data);
 			});
 		
+
+
+
+
+
 
 
 	KNEX
