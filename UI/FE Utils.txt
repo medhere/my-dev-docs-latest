@@ -1,0 +1,92 @@
+path reload
+	const { pathname } = useLocation();
+	useEffect(() => {
+
+	}, [pathname])
+
+request	
+	XHR_REQUEST('post','test',multipart)
+		.then((res)=>{
+			Notify('toast','','success');
+		}).catch((err)=>{
+			Notify('alert',err.response.data,'error');
+		})
+
+
+form
+    const { register, handleSubmit, formState:{errors}} = useForm();
+    const onSubmit = (data, e) => { 
+        console.log(data);
+        var multipart=new FormData(e.target)
+            XHR_REQUEST('post','test',multipart)
+            .then((res)=>{
+                Notify('toast','','success');
+            }).catch((err)=>{
+                Notify('alert',err.response.data,'error');
+            })
+    }
+    const onError = (errors, e) => console.log(errors, e); 
+	
+	<form onSubmit={handleSubmit(onSubmit,onError)} >
+	{errors.low && errors.low.type === "required" && (
+          <div className="error">You must enter a score.</div>
+    )}
+	{...register('e',{required:true,value:''})} error={!!errors.e} helperText={errors.e?.message}
+	disable={!isValid || isSubmitting}
+	
+	
+
+
+pagination
+    const [a, setA] = useState()
+	const [apage, setAPage] = useState(1);
+    const handleChange = (event, value) => {
+        getA({page: value})
+    };
+
+    function getA(data=''){
+        XHR_REQUEST('get',`route/${userType.id}`,data)
+        .then((res)=>{
+            setAppointments(res.data)
+            setPage(res.data.current_page);
+        }).catch((err)=>{
+            console.log(err.response)
+			Notify('alert',err.response.data.message,'error');
+        })
+    }
+	
+	function reload(){
+		getA({page: apage})	
+	}
+	
+	const { pathname } = useLocation();
+    useEffect(() => {
+        getA()
+    }, [pathname])	
+	
+	
+	<Table style={{borderSpacing:'0 30px !important'}}>
+	{a !==[] && a?.data.map((items,index)=>{
+		return (
+			<tr key={index}>
+			<td>{index+1} ID:{items.id}</td>
+			<td><button}> View</button></td>
+			</tr>
+		)
+	})}
+	<Pagination count={a?.last_page} page={apage} onChange={handleChange} color="primary"/>
+
+
+confirm	
+	import { useConfirm } from 'material-ui-confirm';
+	const confirm = useConfirm()
+	confirm({title:'', description: `` })
+    .then(() => {
+  
+    })
+    .catch(() => { 
+        // Notify('toast','Action Cancelled!','info');
+    });
+
+
+		

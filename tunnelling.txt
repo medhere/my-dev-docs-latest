@@ -1,0 +1,31 @@
+tunnelling
+
+ngrok
+	ngrok config add-authtoken <token>
+	
+	then
+	ngrok http port
+	ngrok http localhost:80  
+	ngrok http https://localhost:port
+
+using localhost.run
+
+	ssh-keygen -t ed25519 -C "for any localhost"
+		enter key as localhost
+	ssh -R 80:localhost:port localhost.run
+
+	batch file for nodejs and python 
+	ECHO on
+	set /P port="Enter localhost port: "
+	ssh -R 80:localhost:%port% localhost.run
+	PAUSE
+
+	batch file for php
+	ECHO on
+	set /P port="Enter localhost port: "
+	php -S localhost:%port%
+	PAUSE
+	ssh -R 80:localhost:%port% localhost.run
+	PAUSE
+
+

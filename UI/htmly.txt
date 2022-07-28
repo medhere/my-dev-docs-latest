@@ -1,0 +1,19 @@
+system/includes/functions.php
+	function copyright()
+	$credit = 'Powered by <a href="http://www.htmly.com" target="_blank" rel="nofollow">HTMLy</a>';
+config.ini
+	blog info
+themes/gridzone/layout.html.php
+	<div id="credit"><span>Design by <a href="http://alx.media/" rel="nofollow" target="_blank">Alx</a>.</span></div><!--/#credit-->
+	themes/gridzone/img/avatar.png
+	rearrange profile-inner
+system/admin/views/layout.html.php
+	just comment out
+	<?php echo i18n('Proudly_powered_by');?> <a href="https://www.htmly.com" target="_blank">HTMLy</a>
+    <h1><a href="https://www.htmly.com" target="_blank"><img width="200px" src="<?php echo site_url(); ?>system/resources/images/logo-big.png" alt="HTMLy"/></a></h1>
+    <small><?php echo i18n('Admin_panel_style_based_on');?> <a rel="nofollow" target="_blank" href="https://github.com/ColorlibHQ/AdminLTE">AdminLTE</a></small>
+		Login Image
+	system/resources/images/logo-big.png
+	<div class="login-logo">
+    <h1><a href="https://www.htmly.com" target="_blank"><img width="200px" src="<?php echo site_url(); ?>system/resources/images/logo-big.png" alt="HTMLy"/></a></h1>
+	</div>

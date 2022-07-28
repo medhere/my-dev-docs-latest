@@ -1,0 +1,23 @@
+roundmail client
+
+product_name
+name of company webmail
+
+db_dsnw
+MySQL
+localhost
+eutxmksq_mail
+eutxmksq_mail
+J(!2mC=n;H(+
+
+IMAP Settings
+default_host
+localhost
+default_port
+143
+
+smtp_server
+localhost
+smtp_port
+587
+

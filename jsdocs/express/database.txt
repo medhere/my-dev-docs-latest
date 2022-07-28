@@ -1,15 +1,260 @@
-learn mongo, knex and mysql2
-
 	MONGO
-	var MongoClient = require('mongodb').MongoClient;
-	MongoClient.connect("mongodb://localhost:27017/mydb", function(err, db) {
-	  if (err) throw err;
-	  console.log("Database created!");
-	  db.close();
-	});
+		mongod - Start database
+		mongo --host localhost:27017 - Connect to database
+		db - Show name of current database
+		show dbs - Show databases
+		use db - Switch to database db
+		show collections - Display current database collections
+		db.dropDatabase() - drop db
+		db.createCollection('posts') - Create Collection
+		db.collectionname.drop() - Dropping a Collection:
+
+		Insert Row
+		db.posts.insert({
+		  title: 'Post One',
+		  body: 'Body of post one',
+		  category: 'News',
+		  tags: ['news', 'events'],
+		  user: {
+			name: 'John Doe',
+			status: 'author'
+		  },
+		  date: Date()
+		})
+
+		Insert Multiple Rows
+		db.posts.insertMany([
+		  { title: 'Post Two', body: 'Body of post two', category: 'Technology', date: Date() },
+		  { title: 'Post Three', body: 'Body of post three', category: 'News', date: Date() },
+		  { title: 'Post Four', body: 'Body of post three', category: 'Entertainment', date: Date() }
+		])
+
+		Get All Rows
+		db.posts.find()
+
+		Get All Rows Formatted
+		db.posts.find().pretty()
+
+		Find Rows
+		db.posts.find({ category: 'News' })
+
+		Sort Rows
+		# asc
+		db.posts.find().sort({ title: 1 }).pretty()
+		# desc
+		db.posts.find().sort({ title: -1 }).pretty()
+
+		Count Rows
+		db.posts.find().count()
+		db.posts.find({ category: 'news' }).count()
+
+		Limit Rows
+		db.posts.find().limit(2).pretty()
+
+		Chaining
+		db.posts.find().limit(2).sort({ title: 1 }).pretty()
+
+		Foreach
+		db.posts.find().forEach(function(doc) {
+		  print("Blog Post: " + doc.title)
+		})
+
+		Find One Row
+		db.posts.findOne({ category: 'News' })
+
+		Find Specific Fields
+		db.posts.find({ title: 'Post One' }, { title: 1, author: 1 })
+
+		Update Row
+		db.posts.update({ title: 'Post Two' }, { title: 'Post Two', body: 'New body for post 2', date: Date() }, { upsert: true })
+
+		Update Specific Field
+		db.posts.update({ title: 'Post Two' }, { $set: { body: 'Body for post 2', category: 'Technology' } })
+
+		Increment Field ($inc)
+		db.posts.update({ title: 'Post Two' }, { $inc: { likes: 5 } })
+
+		Rename Field
+		db.posts.update({ title: 'Post Two' }, { $rename: { likes: 'views' } })
+
+		Delete Row
+		db.posts.remove({ title: 'Post Four' })
+
+		Sub-Documents
+		db.posts.update({ title: 'Post One' },
+		{
+		  $set: { comments: [
+			  { body: 'Comment One', user: 'Mary Williams', date: Date() },
+			  { body: 'Comment Two', user: 'Harry White', date: Date() }
+			]}
+		})
+
+		Find By Element in Array ($elemMatch)
+		db.posts.find({ comments: { $elemMatch: { user: 'Mary Williams' } } } )
+
+		Add Index
+		db.posts.createIndex({ title: 'text' })
+
+		Text Search
+		db.posts.find({ $text: { $search: "\"Post O\"" } })
+
+		Greater & Less Than
+		db.posts.find({ views: { $gt: 2 } })
+		db.posts.find({ views: { $gte: 7 } })
+		db.posts.find({ views: { $lt: 7 } })
+		db.posts.find({ views: { $lte: 7 } })
+
+		Added
+		==========================
+		db.collectionname.
+
+		Create
+		insert(data) - insert document(s),returns write result
+		insertOne (data, options) - insert one document
+		insertMany(data, options) - insert many documents
+		insertMany([{},{},{}]) - needs square brackets
+
+		Read
+		db.collection.find() - Display documents from collection
+		find(filter, options) - find all matching documents
+		findOne(filter, options) - find first matching document
+
+		Update
+		updateOne(filter, data, options) - Change one document
+		updateMany(filter, data, options) - Change many documents
+		replaceOne(filter, data, options) - Replace document entirely
+
+		Delete
+		deleteOne(filter, options) - Delete one document
+		deleteMany(filter, options) - Delete many documents
+
+		Filters
+		{"key": "value"} - Used for filter arguments to filter collection
+		{key: {$operator: value} } - Operators for querying data
+		{key: {$exists: true}} - Matches all documents containing subdocument key
+		$eq - Matches values that are equal to a specified value.
+		$gt - Matches values that are greater than a specified value.
+		$gte - Matches values that are greater than or equal to a specified value.
+		$in - Matches any of the values specified in an array, syntax:{key:{$in: [array of values] } }
+		$lt - Matches values that are less than a specified value.
+		$lte - Matches values that are less than or equal to a specified value.
+		$ne - Matches all values that are not equal to a specified value.
+		$nin - Matches none of the values specified in an array.
+		$and - Performs AND operation, syntax: {$and: [ {},{} ] }
+		{key: {$op: filter}, {filter}}
+
+		Functions
+		.count() - Counts how many results
+		.sort(filter) - Sort ascend:1 descend: -1	
+			
 	
 	
-	
+	MONGODB JS CLIENT
+		var MongoClient = require('mongodb').MongoClient;
+		var url = "mongodb://localhost:27017/mydb";
+
+		MongoClient.connect(url, function(err, db) {
+		  if (err) throw err;
+		  console.log("Database created!");
+		  db.close();
+		});
+
+		Find a Document
+		coll.findOne({ title: 'Hamlet' });
+
+		Find Multiple Documents
+		coll.find({ year: 2005 });
+
+		Insert a Document
+		coll.insert({ title: 'Jackie Robinson' });
+
+		Insert Multiple Documents
+		coll.insertMany([
+		  { title: 'Dangal', rating: 'Not Rated' },
+		  { title: 'The Boss Baby', rating: 'PG' }
+		 ]);
+
+		Update a Document
+		await coll.updateOne(
+		  { title: 'Amadeus' },
+		  { $set: { 'imdb.rating': 9.5 } }
+		);
+
+		Update Multiple Documents
+		await coll.updateMany(
+		  { year: 2001 },
+		  { $inc: { 'imdb.votes': 100 } }
+		);
+
+		Update Arrays in Documents
+		await coll.updateOne(
+		  { title: 'Cosmos' },
+		  { $push: { genres: 'Educational' } }
+		):
+
+		Replace a Document
+		await coll.replaceOne(
+		  { name: 'Deli Llama', address: '2 Nassau St' },
+		  { name: 'Lord of the Wings', zipcode: 10001 }
+		);
+
+		Delete a Document
+		await coll.deleteOne({ title: 'Congo' });
+
+		Delete Multiple Documents
+		await coll.deleteMany({ title: { $regex: /^Shark.*/ } });
+
+		Bulk Write
+		await coll.bulkWrite([
+		  {
+			insertOne: {
+			  document: {
+				title: 'A New Movie',
+				year: 2022
+			  }
+			}
+		  },
+		  {
+			deleteMany: {
+			  filter: { year: { $lt: 1970 } }
+			}
+		  }
+		]);
+
+		Watch for Changes
+		coll.watch([ { $match: { year: { $gte: 2022 } } } ]);
+
+		Access Data from a Cursor Iteratively
+		const cursor = coll.find();
+		await cursor.forEach(console.dir);
+
+		Access Data from a Cursor as an Array
+		const cursor = coll.find();
+		const results = await cursor.toArray();
+
+		Count Documents
+		await coll.countDocuments({ year: 2000 });
+
+		List the Distinct Documents or Field Values
+		await coll.distinct('year');
+
+		Limit the Number of Documents Retrieved
+		coll.find().limit(2);
+
+		Skip Retrieved Documents
+		collection.find({ title: { $regex: /^Rocky/} }, { skip: 2 });
+
+		Sort the Documents When Retrieving Them
+		coll.find().sort({ year: 1});
+
+		Project Document Fields When Retrieving Them
+		coll.find().project({ _id: 0, year: 1, imdb: 1 });
+
+		Create an Index
+		await coll.createIndex({ title: 1, year: -1 });
+
+		Search Text
+		coll.find({ $text: { $search: 'zissou' } });
 	
 	
 	MONGOOSE
@@ -26,6 +271,24 @@ learn mongo, knex and mysql2
 			Buffer
 			Schema.Types.Mixed
 			Schema.Types.ObjectId
+
+			const bookSchema = new Schema({
+			  title: String,
+			  description: String,
+			  author: [ { type : Schema.Types.ObjectId, ref: 'Author' } ],
+			  reviews: [
+				{
+				  rating: Number,
+				  content: String,
+				  user: { type: Schema.Types.ObjectId, ref: 'User' }
+				}
+			  ],
+			  tags: [String]
+			  published: Date
+			}, {
+			  timestamps: true
+			})
+			mongoose.model('Book', bookSchema)
 
 			const UserSchema = new mongoose.Schema({
 			  user: {
@@ -99,27 +362,187 @@ learn mongo, knex and mysql2
 				console.log(data);
 			});
 		
+			Creation Single
+			new Author({
+			  name: 'Samuel Beckett',
+			  nationality: 'Ireland',
+			  birthday: '1906-04-13',
+			  dead: true
+			}).save()
+			  .then(author => console.log(`Welcome ${author.name}`))
+			  .catch(err => console.error(err))
 
+			Create Many
+			Author.create([
+			  {name: '', nationality: , birthday: },
+			  {}
+			])
 
-
-
-
+			Search
+			Author.find()
 
 
 	KNEX
-		const knex = require('knex')({
-		  client: 'mysql',
-		  connection: {
-			host : '127.0.0.1',
-			port : 3306,
-			user : 'your_database_user',
-			password : 'your_database_password',
-			database : 'myapp_test'
-		  }
-		});
+		Config
+			const knex = require('knex')({
+			client: 'mysql',
+			connection: {
+				host : '127.0.0.1',
+				port : 3306,
+				user : 'your_database_user',
+				password : 'your_database_password',
+				database : 'myapp_test'
+			},
+			useNullAsDefault: true
+			});
+
+			knex init
+				knexfile.js
+				module.exports = {
+
+				development: {
+					client: 'mysql2',
+					connection: {
+					host : '127.0.0.1',
+					port : 3306,
+					user : 'root',
+					password : '',
+					database : 'lydygold'
+					},
+					migrations: {
+					tableName: 'knex_migrations'
+					},
+					useNullAsDefault: true
+				},
+				production:{
+					client: 'mysql2',
+					connection: {
+					host : '127.0.0.1',
+					port : 3306,
+					user : 'root',
+					password : '',
+					database : 'lydygold'
+					},
+					migrations: {
+					tableName: 'knex_migrations'
+					},
+					useNullAsDefault: true
+				}
+
+				};
+
+			const knexConfig = require('../knexfile');
+			const knex = require('knex')(knexConfig[process.env.NODE_ENV])
+
+		Migration
+			npx knex migrate:make create_users_table
+			exports.up = function(knex) {
+			return knex.schema
+				.createTable('users', function (table) {
+				table.increments('id');
+				table.string('name', 255).notNullable();
+				table.string('email', 255);
+				table.timestamps();
+				});
+			};
+
+			exports.down = function(knex) {
+			return knex.schema
+				.dropTable('users');
+			};
+
+			"migrate": "knex migrate:latest --knexfile dknexfile.js"
+
+
 		knex.raw('select * from "books" where "author" = ?', 'Test')
 		knex.raw('select * from ?? where "author" = ?', 'books','Test')
 		knex.raw('select * from users where id = ?', [1]).then(function(resp) { ... });
+		
+		  Identifier
+		  knex({ a: 'table', b: 'table' }).select({
+			aTitle: 'a.title', bTitle: 'b.title'
+		  }).whereRaw('?? = ??', ['a.column_1', 'b.column_2'])
+		  
+		  Select
+		  // attempt knex('table').select('*')
+		  knex('users').where({ email: 'hi@example.com' }).then(rows => )
+		  knex.select('title', 'author', 'year').from('books')
+		  knex.select('*').from('users')
+		  knex('users').count('active','valid')
+		  knex('users').count({ a: 'active', v: 'valid' })
+					   .min('age')
+					   .max('age')
+					   .sum('age')
+					   .avg('age')
+					   .first('active','valid')
+					   .offset(10)
+					   .limit(10)
+		  
+		  Insert
+		  knex('books').insert({title: 'Slaughterhouse Five'})
+		  knex('coords').insert([{x: 20}, {y: 30},  {x: 10, y: 20}])
+		  knex('tableName').insert({email: "ignore@example.com",name: "John Doe"})
+						   .onConflict('email').merge()
+											   .merge(['email', 'name', 'updated_at'])
+		  
+		  Update/Delete
+		  knex('books').where('published_date', '<', 2000)
+					   .update({status: 'archived',thisKeyIsSkipped: undefined})
+		  knex('accounts').where('id', '=', 1)
+						  .increment({balance: 10,times: 1})
+						  .decrement
+		  knex('accounts').where('activated', false)
+						  .del()
+		  knex('accounts').truncate()
+		  
+		  Clauses
+			  .where('id', 1)
+			  .where({ first_name: 'Test',  last_name:  'User'})
+			  .where('columnName', 'like', '%rowlikeme%')
+			  .where(function () { this.where('id', 1).orWhere('id', '>', 10) })
+			  .where((builder) => builder.whereIn('id', [1, 11, 15]).whereNotIn('id', [17, 19]) )
+			  .where(function() {  this.where('id', 1).orWhere('id', '>', 10) } )
+			  .andWhere .orWhere
+			  .whereNot .orWhereNot
+			  .whereIn  .orWhereIn('id', [4, 5, 6])
+			  .whereNotIn  .orWhereNotIn
+			  .whereNull(column) .orWhereNull
+			  .whereExists
+			  .whereNotExists .orWhereNotExists
+			  .whereBetween  .orWhereBetween('votes', [1, 100]) 
+			  .whereNotBetween .orWhereNotBetween('votes', [1, 100]) 
+			  .whereLike('email', '%mail%') whereILike
+			  .andWhereLike('email', '%.com')
+			  .orWhereLike('email', '%name%')
+			  .whereRaw('id = ?', [1])
+			  .join('contacts', 'users.id', '=', 'contacts.user_id')
+			  .distinct('first_name', 'last_name')
+			  .groupBy('count')
+			  .orderBy('name', 'desc')
+			  .orderBy([ { column: 'email' }, { column: 'age', order: 'desc' } ])
+		  
+		Joins
+			.join('accounts', {'accounts.id': 'users.account_id'})
+			.join('contacts', 'users.id', '=', 'contacts.user_id')
+			.join('contacts', 'users.id', 'contacts.user_id')
+			.innerJoin('accounts', 'users.id', 'accounts.user_id')
+			.leftJoin('accounts', 'users.id', 'accounts.user_id')
+			.leftOuterJoin('accounts', 'users.id', 'accounts.user_id')
+			.rightJoin('accounts', 'users.id', 'accounts.user_id')
+			.rightOuterJoin('accounts', 'users.id', 'accounts.user_id')
+			.join('accounts', function() {
+			this
+				.on('accounts.id', '=', 'users.account_id')
+				.orOn('accounts.owner_id', '=', 'users.id')
+				.andOn('accounts.owner_id', '=', 'users.id')
+			})
+
+
+
+		  .toSQL()
+		  .sql
+
+
 	
 	MYSQL2
 		const mysql = require('mysql2');
@@ -160,3 +583,10 @@ learn mongo, knex and mysql2
 	const mysql = require('mysql2/promise');
 	const connection = await mysql.createConnection({host:'localhost', user: 'root', database: 'test'});
 	const [rows, fields] = await connection.execute('SELECT * FROM `table` WHERE `name` = ? AND `age` > ?', ['Morty', 14]);
+
+
+	PRISMAJS
+		DATABASE_URL="mysql://root:@localhost:3306/testdb"
+		npm i prisma @prisma/client && npx prisma init --datasource-provider mysql && npx prisma db pull
+		//TODO: update prisma
+

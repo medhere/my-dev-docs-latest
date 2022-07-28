@@ -53,42 +53,6 @@ learn advanced react
 		})
 		or
 		export default memo(Todos);
-
-		
-	react-error-boundary
-		import { ErrorBoundary } from 'react-error-boundary';
-
-		const ErrorFallback = ({ error, resetErrorBoundary }) => {
-		  return (
-			<div role="alert">
-			  <p>Something went wrong:</p>
-			  <pre>{error.message}</pre>
-			  <button onClick={resetErrorBoundary}>Try again</button>
-			</div>
-		  );
-		};		
-		
-		const Counter = () => {
-		  const [count, setCount] = useState(0);
-		  if (count === 5) {
-			throw new Error('Count is 5. Error Occurred.');
-		  }
-
-		  return (
-			<div className="App">
-			  <ErrorBoundary
-				FallbackComponent={ErrorFallback}
-				onReset={() => setCount(0)} //use onReset to reset what component
-			  >
-				<div>
-				  <div>{count}</div>
-				  <button onClick={() => setCount(count + 1)}>Increment</button>
-				  <button onClick={() => setCount(count - 1)}>Decrement</button>
-				</div>			  
-			  </ErrorBoundary>
-			</div>
-		  );
-		};
 	
 	
 	PropTypes
@@ -111,7 +75,7 @@ learn advanced react
 		  PropTypes.func.isRequired / PropTypes.any.isRequired,
 
 		  
-	Code Spliting
+	Code Spliting/ErrorBoundary
 		using import
 			import("./math").then(math => {console.log(math.add(16, 26));});
 		
@@ -130,6 +94,35 @@ learn advanced react
 		  return Component
 		}
 		const Component = lazyWithPreload(() => import(/* webpackChunkName: "" *//* webpackMode: "lazy" *//* webpackPrefetch: true */ './Components'));
+
+
+		import { lazy, Suspense } from 'react';
+		import { ErrorBoundary } from 'react-error-boundary';
+		
+		const Component = lazy(() => import(/* webpackChunkName: "" *//* webpackMode: "lazy-once" *//* webpackPrefetch: true */ './Components'));
+
+		export default function LoadingUI({children}){
+		  return(
+			<ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => {console.log('app reset')}}>
+			  <Suspense fallback={<div>Loading...</div>}>
+				{children}
+			  </Suspense>
+			</ErrorBoundary>
+		  )
+		}
+
+		function ErrorFallback ({ error, resetErrorBoundary }) {
+		  return (
+			<div className='text-center mx-auto mt-[20vh]'>
+			  <p>Something went wrong:</p><pre>{error.message}</pre>
+			  <button className='btn-primary' onClick={resetErrorBoundary}>Try again</button>
+			</div>
+		  );
+		};		
+		// <LoadingUI></App></LoadingUI>
+
+
+
 
 
 	

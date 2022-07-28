@@ -9,6 +9,15 @@ for server
 
 for react
 	react-router-dom@next [@mui/material @mui/icons-material|@material-ui/core @material-ui/icons] @emotion/react @emotion/styled @ionic/core ionicons pullstate formik/react-hook-form(react-hook-form-persist) yup react-jwt|jwt-decode react-error-boundary (react-webcam|@wmik/use-media-recorder) react-use-cart materializecss react-materialize react-detect-offline	(apexcharts react-apexcharts) react-grid-system react-redux redux-persist (react-materialize materialize-css) photoswipe react-query atlassian.design axios-progress-bar sweetalert2
+	apexcharts react-apexcharts
+	react-grid-system
+	react-redux
+	redux-persist
+	react-materialize materialize-css
+	photoswipe
+	react-query
+	atlassian.design
+
 
 for next
 	all react + next-routes-extended

@@ -1,0 +1,38 @@
+opencart
+
+admin/language/en-gb/common/footer.php
+admin/view/template/common/header.twig  look for logo.png found at admin/view/image, change here, update image
+admin/view/template/common/header.twig  <li><h6 class="dropdown-header">{{ text_help }}</h6></li> comment out all options below
+admin/controller/common/column_left.php OR system\storage\modification\admin\controller\common
+		line 182 // added to block out marketplace menu
+		$marketplace = [];
+catalog/view/template/common/footer.twig  replace all content
+
+templatemonster
+diwedo6102@qqhow.com
+Qwerty123.
+
+opencart
+diwedo6102@qqhow.com
+Qwerty123.
+9898
+
+admin@kmandykids.com.ng
+admin
+admin
+
+Kmandykids
+Plot 29, Cadastral Zone, F13 Kubwa District, Central Market, FCT
+Nigeria
++2348037497694
+
+kmandyk1_shop
+kmandyk1_store
+kmandyk1_store
+^9,mpK9R=iA1
+
+ style="color: black; font-size:25px !important"
+ style="background-color: white"
+ 
+ 
+<p>© Kmandykids | Created By: <a href="https://michael.edhere.com.ng">Edhere Michael</a>  & <a href="https://linkedin.com/in/opeyemi-ayanyemi-970089191">Yemi Ayanyemi</a></p>
