@@ -1,0 +1,16 @@
+apt
+
+install packagename: Install a package.
+remove packagename: Remove (uninstall) a package.
+purge packagename: Remove a package and its configuration files.
+update packagename: Update the repository information.
+upgrade: Update all packages.
+autoremove: Remove libraries and other packages that are no longer required.
+The apt full-upgrade option replaces the apt-get dist-upgrade option.
+
+These are new commands for apt:
+
+apt search: Search for a package name in the repositories. This is the same as apt-cache search
+apt show: Show information about a package. This is the same as apt-cache show.
+apt list option: Shows lists of installed or upgradeable packages.
+apt edit-sources: Directly edits the list of repositories that apt searches in for packages.

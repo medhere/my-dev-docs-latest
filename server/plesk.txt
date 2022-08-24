@@ -1,0 +1,17 @@
+connected enom
+configure nameserver
+	private nameservers
+		ns1.domainame
+		point ip addr new server ip
+		
+
+set hostname to domain name: hostname server.newhostname.com
+set transient: sudo hostnamectl set-hostname --static server.newhostname.com
+install plesk
+choose full features for 16 days
+websites and domains > add domain
+	enter domain name, use any other username than admin to sign up ()
+	issue letsencrypt on panel, select all options (wildcard, mail), reload
+go to mail, create email, login
+	
+	
