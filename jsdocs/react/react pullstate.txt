@@ -41,7 +41,45 @@ learn pullstatejs
 		);
 		stopReaction();
 
-	pullstate persist
+
+	persist pullstate
+		import {Store, registerInDevtools} from 'pullstate';
+		import AsyncStorage from '@react-native-async-storage/async-storage';
+
+		export const authStore = new Store({
+		user: {},
+		});
+
+		authStore.subscribe( s => s, store => { localStorage.setItem('authStore', JSON.stringify(store)) }, );  //AsyncStorage.setItem for react-native
+
+		export const getAuthStore = async () => {
+			try {
+			const store = localStorage.getItem('authStore');  //await AsyncStorage.getItem //for react-native
+			if (dataStore !== null) { authStore.replace(JSON.parse(store)) }
+			} catch (e) {
+			console.log('Error Getting Stored data: '+e);
+			}
+		};
+
+			Loading example using jwt
+			const nav = useNavigate();
+
+			useEffect(() => {
+				localStorage.getItem('authStore') !== null && getAuthStore()
+				const auth = localStorage.getItem('auth');
+				if (auth === null || isExpired(isExpired(auth)) === true) {
+				nav('/signin')      
+				}
+			}, [])
+
+
+	Get pullstate without hook
+
+	Store.getRawState().state
+	.replace({...enter previous store state as obj})
+
+
+	pullstate persist 2
 		  try {
 			  const value = await localStorage.getItem('userData');
 			  if (value !== null) {

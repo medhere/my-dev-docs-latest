@@ -33,6 +33,11 @@
         console.log(i+' : '+x.num+' - '+ x.val)		
 	});
 
+//loop over objects
+	Object.entries(object_variable).forEach(([key, value]) => {
+		console.log(`${key}: ${value}`)
+	});
+
 // arrays in objects
 	var carmodel={
 		year:[2002,2004,2005],

@@ -114,4 +114,30 @@ REACT-HOOK-FORM
 		const { register, handleSubmit, formState } = useForm({
 			resolver: yupResolver(schema)
 		});
+
+	Validate field against another
+	const password = useRef({});
+		  password.current = watch("password", "");
+		{...register('password',{required: true, minLength: 6 })}
+		{...register('password_confirmation',{ validate: value => value === password.current || "The new passwords do not match" })}
+		
+	Handle errors
+	@hookform/error-message
+	import { ErrorMessage } from '@hookform/error-message';
+		<ErrorMessage errors={errors} name="anyfieldname" as={<div style={{ color: 'red' }} />} />
+		<ErrorMessage errors={errors} name="singleErrorInput" render={({ message }) => <p>{message}</p>} />
+		<ErrorMessage errors={errors} name="name" message="This is required" />
+		<ErrorMessage errors={errors} name="multipleErrorInput" 
+			render={
+				({ messages }) => messages && Object.entries(messages).map(([type, message]) => ( <p key={type}>{message}</p> ))
+			}
+		 />
+		 
+	Set error-message on server validatejs
+		Object.entries(err.response.data).forEach(([key, value]) => {
+			setError(key,{message:value})
+		});
+		errorBoolean={!!errors.password} errorText={errors.password?.message}
+
+
 	
