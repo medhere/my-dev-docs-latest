@@ -42,9 +42,16 @@ en.rakko.tools
 www.textcompare.org
 loader.io
 https://www.addtoany.com/buttons/for/website
+https://fineuploader.com/demos.html
+https://popmotion.io/
+https://mojs.github.io/
+http://velocityjs.org/
+https://introjs.com/
+css.glass
 
 
 
+ezgif.com
 picsum.photos/1920/1200/?random&gravity=south
 placeimg.com/640/480/tech/grayscale
 unsplash.it/1200/800
