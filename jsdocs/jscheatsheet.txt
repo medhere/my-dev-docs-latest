@@ -242,6 +242,21 @@
 	try{} catch{} finally{}
 	
 
+//convert callback to async await
+	async function readMyFile(filePath) {
+	return new Promise(async(resolve, reject) => {
+		fileReader.readMyFile(filePath, function (err, data) {
+		if (err) {
+			reject(err);
+		}
+		resolve(data);
+		});
+	});
+	}
+
+	await readMyFile
+
+
 //exports/imports
 	nodejs
 		module.exports={testapp};

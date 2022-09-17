@@ -29,9 +29,16 @@ Register Custom Validation Rules
 	name {String} - The name of the rule.
 	callbackFn {Function} - Returns a boolean to represent a successful or failed validation.
 	errorMessage {String} - An optional string where you can specify a custom error message. :attribute inside errorMessage will be replaced with the attribute name.
-	Validator.register('telephone', function(value, requirement, attribute) { // requirement parameter defaults to null
-	  return value.match(/^\d{3}-\d{3}-\d{4}$/);
-	}, 'The :attribute phone number is not in the format XXX-XXX-XXXX.');
+	e.g
+		Validator.register('telephone', function(value, requirement, attribute) { // requirement parameter defaults to null
+		return value.match(/^\d{3}-\d{3}-\d{4}$/);
+		}, 'The :attribute phone number is not in the format XXX-XXX-XXXX.');
+		use as |telephone
+		const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]/;
+		Validator.register('strict', value => passwordRegex.test(value),
+		'password must contain at least one uppercase letter, one lowercase letter and one number');
+		use as |strict
+
 
 
 Rules

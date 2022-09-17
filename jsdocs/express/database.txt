@@ -463,64 +463,71 @@
 			aTitle: 'a.title', bTitle: 'b.title'
 		  }).whereRaw('?? = ??', ['a.column_1', 'b.column_2'])
 
-		  Select
-		  // attempt knex('table').select('*')
-		  knex('users').where({ email: 'hi@example.com' }).then(rows => )
-		  knex.select('title', 'author', 'year').from('books')
-		  knex.select('*').from('users')
-		  	.select('users.id as user_id')
-		  knex('users').count('active','valid')
-		  knex('users').count({ a: 'active', v: 'valid' })
-					   .min('age')
-					   .max('age')
-					   .sum('age')
-					   .avg('age')
-					   .first('active','valid')
-					   .offset(10)
-					   .limit(10)
-					
-		  Insert
-		  knex('books').insert({title: 'Slaughterhouse Five'})
-		  knex('coords').insert([{x: 20}, {y: 30},  {x: 10, y: 20}])
-		  knex('tableName').insert({email: "ignore@example.com",name: "John Doe"})
-						   .onConflict('email').merge()
-											   .merge(['email', 'name', 'updated_at'])
-		  
-		  Update/Delete
-		  knex('books').where('published_date', '<', 2000)
-					   .update({status: 'archived',thisKeyIsSkipped: undefined})
-		  knex('accounts').where('id', '=', 1)
-						  .increment({balance: 10,times: 1})
-						  .decrement
-		  knex('accounts').where('activated', false)
-						  .del()
-		  knex('accounts').truncate()
-		  
-		  Clauses
-			  .where('id', 1)
-			  .where({ first_name: 'Test',  last_name:  'User'})
-			  .where('columnName', 'like', '%rowlikeme%')
-			  .where(function () { this.where('id', 1).orWhere('id', '>', 10) })
-			  .where((builder) => builder.whereIn('id', [1, 11, 15]).whereNotIn('id', [17, 19]) )
-			  .where(function() {  this.where('id', 1).orWhere('id', '>', 10) } )
-			  .andWhere .orWhere
-			  .whereNot .orWhereNot
-			  .whereIn  .orWhereIn('id', [4, 5, 6])
-			  .whereNotIn  .orWhereNotIn
-			  .whereNull(column) .orWhereNull
-			  .whereExists
-			  .whereNotExists .orWhereNotExists
-			  .whereBetween  .orWhereBetween('votes', [1, 100]) 
-			  .whereNotBetween .orWhereNotBetween('votes', [1, 100]) 
-			  .whereLike('email', '%mail%') whereILike
-			  .andWhereLike('email', '%.com')
-			  .orWhereLike('email', '%name%')
-			  .whereRaw('id = ?', [1])
-			  .join('contacts', 'users.id', '=', 'contacts.user_id')
-			  .distinct('first_name', 'last_name')
-			  .groupBy('count')
-			  .orderBy('name', 'desc')
-			  .orderBy([ { column: 'email' }, { column: 'age', order: 'desc' } ])
+		Select
+			knex('users').where({ email: 'hi@example.com' }).then(rows => )
+			knex.select('*').from('users')
+			knex.select('title', 'author', 'year').from('books')
+			.select('users.id as user_id')
+			.count('active','valid')
+			.count({ a: 'active', v: 'valid' })
+			.min('age')
+			.max('age')
+			.sum('age')
+			.avg('age')
+			.first('active','valid')
+			.offset(10)
+			.limit(10)
+		
+		Insert
+			knex('books').insert({title: 'Slaughterhouse Five'})
+			knex('coords').insert([{x: 20}, {y: 30},  {x: 10, y: 20}])
+			knex('tableName').insert({email: "ignore@example.com",name: "John Doe"})
+				.onConflict([column1, column2, ...])
+					.ignore()
+					.merge() 
+					.merge(['email', 'name', 'updated_at'])
+			
+		Update/Delete
+			knex('books').where('published_date', '<', 2000)
+						.update({status: 'archived',thisKeyIsSkipped: undefined})
+			knex('accounts').where('id', '=', 1)
+							.increment({balance: 10,times: 1})
+							.decrement
+							.del()
+							.truncate()
+		
+		Clauses
+			.where('id', 1)
+			.where({ first_name: 'Test',  last_name:  'User'})
+			.where('columnName', 'like', '%rowlikeme%')
+				.where((builder) => builder.whereIn('id', [1, 11, 15]).whereNotIn('id', [17, 19]) )
+			.andWhere .orWhere
+			.whereNot .orWhereNot
+			.whereIn  .orWhereIn('id', [4, 5, 6])
+			.whereNotIn  .orWhereNotIn
+			.whereNull(column) .orWhereNull
+			.whereExists
+			.whereNotExists .orWhereNotExists
+			.whereBetween  .orWhereBetween('votes', [1, 100]) 
+			.whereNotBetween .orWhereNotBetween('votes', [1, 100]) 
+			.whereLike('email', '%mail%') whereILike
+			.andWhereLike('email', '%.com')
+			.orWhereLike('email', '%name%')
+			.whereRaw('id = ?', [1])
+			.join('contacts', 'users.id', '=', 'contacts.user_id')
+			.distinct('first_name', 'last_name')
+			.groupBy('count')
+			.orderBy('name', 'desc')
+			.orderBy([ { column: 'email' }, { column: 'age', order: 'desc' } ])
+			.having('count', '>', 100)
+			.havingIn('id', [5, 3, 10, 17])
+			.havingNotIn('id', [5, 3, 10, 17])
+			.havingNull(column)
+			.havingNotNull(column)
+			.havingBetween('id', [5, 10])
+			.havingNotBetween('id', [5, 10])
+			.havingRaw('count > ?', [100])
+
 		  
 		Joins
 			.join('accounts', {'accounts.id': 'users.account_id'})
@@ -543,7 +550,33 @@
 			])
 			.intersect([
 				knex.select('*').from('users').whereNull('first_name')
-			])
+			])  
+
+		Transactions
+			try {
+			await knex.transaction(async trx => {   
+				const ids = await trx('catalogues').insert({name: 'Old Books'})
+				const inserts = await trx('books').insert(books)
+				//or
+				const new = await knex('books').insert(books).transacting(trx)	
+				console.log(inserts.length + ' new books saved.')
+			})
+			} catch (error) {
+			console.error(error);
+			}
+
+			try{
+				const trx = await knex.transaction();
+				const result1 = await trx(tableName).select();
+				await knex(tableName).insert({ id: 1, value: 1 });
+				const result2 = await trx(tableName).select();
+				trx.isCompleted(); // false
+				await trx.commit();
+				trx.isCompleted(); // true
+			}
+			catch(err){
+				await trx.rollback();
+			}
 
 		Special
 			knex.raw('CURRENT_TIMESTAMP') or knex.fn.now()
@@ -551,6 +584,7 @@
 		  .toString()
 		  .toSQL()
 		  .sql
+
 
 		Knex Paginator
 			Server
