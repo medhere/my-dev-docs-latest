@@ -133,42 +133,47 @@ learn advanced react
 		const ref = React.useRef(null);
 		<FancyButton ref={ref}>Click me!</FancyButton>;
 
-	Forward ref example, call child function in parent
-		import {forwardRef, useImperativeHandle, useRef} from 'react';
+	Calling Functions
+		call parent function from child
+			const Parent = () =>{
+				funct test(){}
+				
+				return(<Child triggerProp={test}/>)
+			}
 
-		const Child = forwardRef((props, ref) => {
-		useImperativeHandle(ref, () => ({
-			childFunction1() {
-			console.log('child function 1 called');
-			},
-			childFunction2() {
-			console.log('child function 2 called');
-			},
-		}));
+			const Child = ({triggerProp}) =>{
 
-		return (
-			<div>
-			<h2>child content</h2>
-			</div>
-		);
-		});
+				return(<>child component <button onClick={()=>triggerProp()}></button></>)
+			}
 
-		export default function Parent() {
-		const childRef = useRef(null);
 
-		const handleClick = () => {
-			childRef.current.childFunction1();
-
-			childRef.current.childFunction2();
-		};
-
-		return (
-			<div>
-			<Child ref={childRef} />
-
-			<h2>parent content</h2>
-
-			<button onClick={handleClick}>Call child functions</button>
-			</div>
-		);
+	call child function from parent
+		parent component,
+		export function Parent() {
+			const childFnRef = useRef(null);
+			const callChildFn = () => {
+				if (childFnRef?.current) {
+				childFnRef.current("valueOne", "valueTwo", "valueThree");
+				}
+			}
+			return (
+				<div>
+				<h1>Parent component</h1>
+				<Child ref={childFnRef} />
+				<button onClick={callChildFn}>call child fn</button>
+				</div>
+			);
 		}
+
+		child component
+		const Child = forwardRef((props, ref) => {
+			const childFn = (paramOne, paramTwo, paramThree) => {
+				console.log("calling child fn... params are: ", paramOne, paramTwo, paramThree);
+			};
+
+			ref.current = childFn;
+
+			return (
+				<h2>child component</h2>
+			);
+		})

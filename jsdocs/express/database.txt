@@ -594,50 +594,7 @@
 				attachPaginate();
 
 				.paginate({ perPage: 10, currentPage: 2, isFromStart: boolean, isLengthAware: boolean, });
-				.paginate({ ...req.query, isLengthAware: true })
-
-			React
-					import { Pagination } from '@mantine/core';
-					import { IonSelect, IonSelectOption, IonItem, IonLabel } from '@ionic/react';
-					const [pagination, setPagination] = useState({});
-					const [perPage, setPerPage] = useState(5);
-
-					const getUsers = (data) =>{
-						data = data || {currentPage:1, perPage:perPage}
-						setUsers([])
-
-						XHR_REQUEST('get',route, data)
-						.then((res)=>{
-							setUsers(res.data.data)
-							setPagination(res.data.pagination)
-							Notify('toast','Users Fetched','success');
-						}).catch((err)=>{
-							Notify('alert',err.response.data,'error');
-						})
-					}
-					//add to table <td>{pagination?.from+index+1}</td>	
-					
-					<div className='grid grid-cols-1'>
-						<p> Total Records: <b>{pagination?.total || 0}</b> || From: <b>{pagination?.from+1 || 0}</b> To: <b>{pagination?.to || 0}</b> </p>
-						<IonItem className='max-w-[200px] justify-self-center mb-1'>
-							<IonLabel>Select Range</IonLabel>
-							<IonSelect value={perPage} placeholder="Select Range" onIonChange={(e) => setPerPage(e.detail.value)} >
-								<IonSelectOption value={5}>5</IonSelectOption>
-								<IonSelectOption value={10}>10</IonSelectOption>
-								<IonSelectOption value={25}>25</IonSelectOption>
-								<IonSelectOption value={50}>50</IonSelectOption>
-							</IonSelect>
-						</IonItem>
-						<Pagination 
-							className='justify-self-center'
-							total={pagination?.lastPage} page={pagination?.currentPage} 
-							siblings={3} boundaries={3} withEdges
-							onChange={ page => getUsers({currentPage:page, perPage:perPage})} 
-						>
-						</Pagination>
-					</div>
-				
-				
+				.paginate({ ...req.query, isLengthAware: true })				
 				
 	
 	MYSQL2
