@@ -1,7 +1,3 @@
-		react-use-cart
-		react-hook-cart --force
-
-
 	REACT-USE-CART
 		import { CartProvider, useCart } from "react-use-cart";
 

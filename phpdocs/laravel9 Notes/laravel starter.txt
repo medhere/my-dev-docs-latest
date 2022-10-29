@@ -1,0 +1,4 @@
+composer create-project laravel/laravel .
+composer require laravel/breeze --dev
+php artisan breeze:install react
+php artisan migrate

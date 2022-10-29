@@ -38,6 +38,15 @@
 		console.log(`${key}: ${value}`)
 	});
 
+//group array of objects
+	const groupObjects = (array,key) =>{
+        array.reduce((r, a) => {  
+            r[a.key] = [...r[a.key] || [], a]; 
+            return r;
+        }, {})	
+	}
+
+
 // arrays in objects
 	var carmodel={
 		year:[2002,2004,2005],

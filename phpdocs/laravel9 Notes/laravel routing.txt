@@ -20,11 +20,12 @@ Routing
 	Parameters
 		Route::get('/user/{id}', function ($id) {
 			return 'User '.$id;
-		})->where('id', '[0-9]+'); //where is optional
+		})->where('id', '[0-9]+')->where('search', '.*') //where is optional
 		Route::get('/posts/{post}/comments/{comment?}', function ($postId, $commentId = '1') {
 			//
 		})->where(['post' => '[0-9]+', 'comment' => '[a-z]+']);
-			->whereNumber('id')->whereAlpha('name')->whereAlphaNumeric('name');
+			->whereNumber('id')->whereAlpha('name')->whereAlphaNumeric('name')
+			->whereIn('category', ['movie', 'song', 'painting']);
 
 	for default pattern
 		the boot method of your app/Providers/RouteServiceProvider.php
@@ -46,6 +47,13 @@ Routing
 			Route::get($uri, $callback);
 				// both uses first & second middleware...
 		});
+
+
+	for Controllers
+		Route::controller(OrderController::class)->group(function () {
+			Route::get('/orders/{id}', 'show');
+			Route::post('/orders', 'store');
+		});
 	
 	for subdomain
 		Route::domain('{account}.example.com')->group(function () {
@@ -55,9 +63,12 @@ Routing
 		});
 
 	for prefixed routes
-		Route::prefix('admin')->group(function () {
+		Route::prefix('admin.')->group(function () {
 			Route::get($uri, $callback);
 				// "/admin/$uri"
+			Route::get('/users', function () {
+				// Route assigned name "admin.users"...
+			})->name('users');
 		});	
 
 	Missing Model or view
@@ -69,6 +80,13 @@ Routing
 		
 	Fallback/Default 404 route
 		Route::fallback($callback);
+
+	Redirect
+		return redirect()->route('profile');	
+		return to_route('profile');
+
+	Inertia
+		Route::inertia('/about', 'AboutComponent');
 
 	Route Model Binding...  read more on it for eloquent db model
 	
