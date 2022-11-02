@@ -21,7 +21,7 @@ Routing
 		Route::get('/user/{id}', function ($id) {
 			return 'User '.$id;
 		})->where('id', '[0-9]+')->where('search', '.*') //where is optional
-		Route::get('/posts/{post}/comments/{comment?}', function ($postId, $commentId = '1') {
+		Route::get('/posts/{post}/comments/{comment?}', function ($post, $comment = '1') {
 			//
 		})->where(['post' => '[0-9]+', 'comment' => '[a-z]+']);
 			->whereNumber('id')->whereAlpha('name')->whereAlphaNumeric('name')
@@ -70,6 +70,11 @@ Routing
 				// Route assigned name "admin.users"...
 			})->name('users');
 		});	
+
+	for resource routes	
+		Route::resource('photos', PhotoController::class)->only([
+			'index', 'show'
+		]);
 
 	Missing Model or view
 		Facades\Request

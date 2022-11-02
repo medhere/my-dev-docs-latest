@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+<input id="myid" placeholder="my id">
+<input id="myname" placeholder="entr name">
+<button id="setmyid">set my id</button>
+<br>
+<br>
+
+<input id="sendto" placeholder="send to">
+<input id="msg" placeholder="enter msg" value="test msg">
+<button id="sendnewmsg">send a msg</button>
+
+<br>chatui<br>
+<div id="chat"></div>
+
+
+<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+<script
+  src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+  crossorigin="anonymous"></script>
+
+
+<script>
+
+    let sendto = $('#sendto')
+    let msg = $('#msg')
+    var conn
+
+    $('#setmyid').on('click', ()=>{
+        let myid = $('#myid').val()
+        conn = new WebSocket(`ws://10.0.0.229:8080/chat?user=${myid}`);
+
+        conn.onopen = function(e) {
+            console.log("Connection established!");
+        };
+
+        conn.onmessage = async function(e) {
+            console.log(e.data);
+            let {sender_id, receiver_id, message, command, name} = JSON.parse(e.data)
+
+            switch (command) {
+                case 'message':
+                    $('#chat').append(`Message from user ${name}, msg: ${message} <br>`)                    
+                    break;
+                default: break;
+            }
+        };
+        
+    })
+
+
+    function sendmsg(command, message, sender_id, receiver_id){
+        conn.send(
+            JSON.stringify({
+                sender_id:sender_id,
+                receiver_id:receiver_id,
+                command:command,
+                message:message,
+                name: $('#myname').val(),
+                created_at: new Date()
+            })
+        )
+        $('#chat').append(`Message to user ${receiver_id}, msg: ${message} <br>`)
+
+    }
+
+
+    $('#sendnewmsg').on('click', ()=>{
+        sendmsg('message', msg.val(), $('#myid').val(), sendto.val())
+    })
+
+</script>
+
+
+
+</body>
+</html>
+
+

@@ -50,3 +50,17 @@ Middleware
 			Route::get($uri, $callback);
 			Route::get($uri, $callback)->withoutMiddleware([Nameofmiddleware::class]);
 		});
+
+		Controller Middleware
+			class UserController extends Controller
+			{
+				public function __construct(){
+					$this->middleware('auth');
+					$this->middleware('log')->only('index');
+					$this->middleware('subscribed')->except('store');
+					$this->middleware(function ($request, $next) {
+						//inline middleware
+						return $next($request);
+					});
+				}
+			}

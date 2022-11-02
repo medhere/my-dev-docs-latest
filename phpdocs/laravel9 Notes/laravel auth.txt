@@ -9,7 +9,7 @@ User Is Authenticated
 if (Auth::check()) 
 
 Protecting Routes
-Route::get('/flights', function () { })->middleware('auth');
+Route::get('/flights', function () { })->middleware(['auth']);
 
 Redirecting Unauthenticated Users
 modify this behavior by updating the redirectTo function in your application's app/Http/Middleware/Authenticate.php file:
@@ -52,4 +52,5 @@ public function logout(Request $request)
     $request->session()->regenerateToken();
     return redirect('/');
 }
+
 Auth::logoutOtherDevices($currentPassword);

@@ -1,4 +1,12 @@
 composer create-project laravel/laravel .
+OR
+composer global require laravel/installer
+laravel new .
+
 composer require laravel/breeze --dev
+php artisan breeze:install 
+OR 
 php artisan breeze:install react
 php artisan migrate
+    config file config/app.php
+    or .env.example

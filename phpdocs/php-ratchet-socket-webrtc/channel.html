@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+
+
+    <input type="text" id="channel"><button id="join">join channel</button><br>
+    <input type="text" id="msg"><button id="sendmsg">send msg</button>
+
+
+    <script
+  src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+  crossorigin="anonymous"></script>
+
+
+    <script type="text/javascript">
+        var conn = new WebSocket('ws://localhost:8080');
+        
+        conn.onopen = function(e) {
+          console.log("Connection established!");
+        };
+        
+        conn.onmessage = function(e) {
+          console.log(e.data);
+        };
+        
+        function subscribe(channel) {
+            conn.send(JSON.stringify({command: "subscribe", channel: channel}));
+        }
+        
+        function sendMessage(msg) {
+            conn.send(JSON.stringify({command: "message", message: msg}));
+        }
+
+        $('#join').on('click',()=>{
+            let channel = $('#channel').val() === '' ? $('#channel').val() : '1'
+            subscribe(channel)
+        })
+
+        $('#sendmsg').on('click',()=>{
+            let msg = $('#msg').val()
+            sendMessage(msg)
+        })
+
+
+    </script>
+</body>
+</html>

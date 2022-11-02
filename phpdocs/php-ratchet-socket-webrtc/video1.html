@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+
+<input type="text" id="sendto" placeholder="send to" value="3">
+<button id="callbtn">Call</button>
+
+<div id="caller" style="display: none;">
+    <div id="callerid"></div>
+    <button id="answer">answer</button>
+    <button id="reject">reject</button>
+</div>
+<button id="endcall">end call</button>
+
+
+<video id="localvideo" autoplay playinline style="height: 500px; width: 500px; display: non;"></video>
+<video id="remotevideo" autoplay playinline style="height: 500px; width: 500px;"></video>
+
+
+<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+<script
+  src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+  crossorigin="anonymous"></script>
+
+
+<script>
+
+    let sender=2
+    let pc
+    let sendto = $('#sendto')
+    let localstream
+
+    let localvideo= document.querySelector('#localvideo')
+    let remotevideo= document.querySelector('#remotevideo')
+
+    var conn = new WebSocket(`ws://10.0.0.229:8080?user=${sender}`);
+    conn.onopen = function(e) {
+        console.log("Connection established!");
+    };
+
+    conn.onmessage = async function(e) {
+        console.log(e.data);
+        let {sender_id, receiver_id, message, command, name} = JSON.parse(e.data)
+
+        switch (command) {
+            case 'is-client-ready': 
+                if(!pc){ await getconn(); }
+
+                if(pc.iceConnectionState === 'connected'){
+                    sendmsg('client-oncall',null,sender,sendto.val())
+                }else{
+                    console.log('calling user')
+                    $('#caller').show()
+                    $('#callerid').html(`<p> ${name} is calling you! </p>`)
+                }
+                break;
+            case 'client-oncall':
+                console.log('other user on call')
+                console.log(`${name} is on call`);
+                $('#caller').hide()
+                break;
+
+            case 'client-rejected':
+                console.log('rejected call')
+                console.log(`${name} rejected call`);
+                $('#caller').hide()
+                break;
+
+            case 'client-is-ready':
+                console.log('client is ready')
+                console.log(`${name} answered call`)
+                $('#caller').hide()
+
+                createoffer(sendto.val())
+                break;
+
+            case 'client-offer':
+                console.log('client offered to start video call')
+
+                createanswer(sendto.val(), message)
+                break;
+
+            case 'client-answered':
+                console.log('client answered')
+                if(pc.localDescription){
+                    await pc.setRemoteDescription(message)
+                }
+
+                break;
+            case 'client-candidate':
+                console.log('new client-candidate')
+                if(pc.localDescription){
+                    await pc.addIceCandidate(new RTCIceCandidate(message));
+                }
+                 
+                break;
+            
+            case 'client-hangup':
+                console.log('call ended by user')
+                break;
+
+            default:
+                break;
+        }
+    };
+
+
+    const mediaconstraints = { video: true, audio: true }
+
+    function getconn(){
+        if(!pc){ 
+            pc = new RTCPeerConnection({
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' }
+                ]
+            })
+        }
+    }
+
+    async function getcam(){
+        let mediastream;
+
+        try{
+            if(!pc){ await getconn() }
+
+            mediastream = await navigator.mediaDevices.getUserMedia(mediaconstraints)
+            localvideo.srcObject = mediastream
+            localstream = mediastream
+            localstream.getTracks().forEach(track => pc.addTrack(track, localstream))
+
+        }
+        catch(error){ console.log(error) }
+    }
+
+    function sendmsg(command, message, sender_id, receiver_id){
+        conn.send(
+            JSON.stringify({
+                sender_id:sender_id,
+                receiver_id:receiver_id,
+                command:command,
+                message:message,
+                name: 'MIKE',
+                created_at: new Date()
+            })
+
+        )
+    }
+
+    const options = { offerToRecieveVideo: 1, offerToRecieveAudio: 1 }
+
+    async function createoffer(sendto){
+        await sendicecandidate(sendto)
+        await pc.createOffer(options)
+        await pc.setLocalDescription(pc.localDescription)
+        sendmsg('client-offer', pc.localDescription, sender, sendto)
+    }
+
+    async function createanswer(sendto, data){
+        if(!pc){ await getconn() }
+        if(!localstream) { await getcam() }
+
+        await sendicecandidate(sendto)
+        await pc.setRemoteDescription(data)
+        await pc.createAnswer();
+        await pc.setLocalDescription(pc.localDescription)
+        sendmsg('client-answered', pc.localDescription,sender, sendto)
+    }
+
+    function sendicecandidate(sendto){
+        pc.onicecandidate = e =>{
+            if(e.candidate !== null){
+                sendmsg('client-candidate', e.candidate,sender, sendto)
+            }
+        }
+
+        pc.ontrack = e =>{
+            console.log(e.streams[0])
+            remotevideo.srcObject = e.streams[0]
+        }
+    }
+
+
+
+
+
+    $('#callbtn').click(function () {
+        getcam();
+        sendmsg('is-client-ready','i want to start a call',sender,sendto.val());
+    })
+
+    $('#answer').click(function (e) { 
+        e.preventDefault();
+        sendmsg('client-is-ready',null,sender,sendto.val()) 
+        $('#caller').hide()       
+    });
+
+    $('#reject').click(function (e) { 
+        e.preventDefault();
+        sendmsg('client-rejected',null,sender,sendto.val())                
+        $('#caller').hide()
+    });
+
+    $('#endcall').click(function (e) { 
+        e.preventDefault();
+       sendmsg('client-hangup',null,sender,sendto.val())
+       pc.close()
+       pc = null
+       location.reload(true)
+        
+    });
+
+</script>
+
+
+
+</body>
+</html>
+
+

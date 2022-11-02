@@ -31,6 +31,12 @@ request
 			$urlWithQueryString = $request->fullUrl();	//with query string
 			$request->fullUrlWithQuery(['type' => 'phone']);  //append query to uri
 
+		Request Host
+			$request->host();
+			$request->httpHost();
+			$request->schemeAndHttpHost();
+			$ipAddress = $request->ip();
+
 		Retrieving The Request Method
 			$method = $request->method();
 			if ($request->isMethod('post')) {}	//verify http method
@@ -58,18 +64,19 @@ request
 		
 		JSON values
 		$name = $request->input('user.name');
+
+		Others
 		$checkbox = $request->boolean('checkbox');
+		$birthday = $request->date('birthday');
 		
 		Access name filed directly
 		$name = $request->name;
 		
 		Subset
 		$input = $request->only(['username', 'password']);
-		$input = $request->only('username', 'password');
 		$input = $request->except(['credit_card']);
-		$input = $request->except('credit_card');
 	
-		IF input (returns true or false)		
+		IF (returns true or false)		
 			if ($request->has('name')) { }
 			if ($request->has(['name', 'email'])) { }
 			if ($request->hasAny(['name', 'email'])) { }
@@ -90,6 +97,10 @@ request
 			});
 
 			if ($request->missing('name')) { }
+
+		Merge
+			$request->merge(['votes' => 0]);
+			$request->mergeIfMissing(['votes' => 0]);
 		
 		Flashing/saving input to session
 			flash the current input to the session, available during next request to the application:
@@ -120,4 +131,5 @@ request
 
 		$path = $request->photo->storeAs('images', 'filename.jpg');
 		$path = $request->photo->storeAs('images', 'filename.jpg', 'local');	//accepts the path, filename, and disk name
-			
+
+		

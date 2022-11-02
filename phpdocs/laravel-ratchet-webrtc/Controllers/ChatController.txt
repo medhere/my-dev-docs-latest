@@ -1,0 +1,91 @@
+<?php
+
+namespace App\Http\Controllers\v1;
+
+use App\Events\MessageSent;
+use App\Models\ChatMessage;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+
+class ChatController extends Controller
+{
+
+    public function getMessages($sender_id, $receiver_id)
+    {
+        // $sender_id = Auth::user()->id;
+        $messages = DB::table('chat_messages')
+            ->where([
+                ['sender_id', '=', $sender_id],
+                ['receiver_id', '=', $receiver_id],
+            ])
+            ->orWhere([
+                ['sender_id', '=', $receiver_id],
+                ['receiver_id', '=', $sender_id],
+            ])
+            ->get();
+
+        return $messages;
+
+        // broadcast(new MessageSent($messages))->toOthers();
+    }
+
+    public function updateMessage(Request $request){
+        $messages = ChatMessage::where([['sender_id', '=', $request->sender_id], ['receiver_id', '=', $request->receiver_id], ['isread', '=', 0]])->get();
+        foreach($messages as $message){
+            $message->isread=1;
+            $message->save();
+        }
+         
+        return $messages;
+    }
+
+    public function getChatList(Request $request, $id)
+    {
+        
+        // $chatList = DB::select('select distinct sender_id from chat_messages where receiver_id = ?', [$id]);
+        $chatList = DB::table('chat_messages')
+            ->join('users', 'users.id', '=', 'chat_messages.sender_id')
+            ->where('chat_messages.receiver_id', $id)
+            ->distinct('chat_messages.sender_id')
+            ->orderBy('id','desc')
+            ->get(['users.id','users.firstname','users.lastname']);
+        foreach($chatList as $person) {
+            $unread_message_count = DB::table('chat_messages')
+                ->where([
+                    ['sender_id', '=', $person->id],
+                    ['receiver_id', '=', $id],
+                    ['isread', '=', 0]
+                ])
+                ->count();
+            $person->unread_messages = $unread_message_count;
+        }
+           
+
+        // $chatList = ChatMessage::where('receiver_id', $id)->with('previous_user')->get('sender_id');
+        //get userlist from $chatList per sender_id
+
+        return response()->json($chatList, 200);
+    }
+
+    public function video($appointment_id, $sender_name, $receiver_name)
+    {
+        return view('video', compact('appointment_id', 'sender_name', 'receiver_name'));
+    }
+
+    // public function sendMessage(Request $request) {
+    // $chat_message = new ChatMessage;
+    // $chat_message->sender_id = $request->patient_id;
+    // $chat_message->receiver_id = $request->doctor_id;
+    // $chat_message->message = $request->message;
+    // $chat_message->save();
+
+    // $all_messages = DB::table('chat_messages')->where([
+    //     ['sender_id', '=',  $request->sender_id],
+    //     ['receiver_id', '=', $request->receiver_id],
+    // ])->get();
+    // return $all_messages;
+
+    // broadcast(new MessageSent($chat_message))->toOthers();
+    // }
+}

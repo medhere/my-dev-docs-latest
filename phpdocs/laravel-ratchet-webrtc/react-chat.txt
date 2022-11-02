@@ -1,0 +1,97 @@
+react
+import useWebSocket from 'react-use-websocket';
+
+    const userType = useSelector(user);
+    const [msg, setMsg] = useState('');
+    const [sendto, setSendto] = useState('')
+    const [username, setUsername] = useState()
+    const [messageHistory, setMessageHistory] = useState([]);
+    const [users, setUsers] = useState(nouser);
+    const [avatar, setAvatar] = useState(defaultAvatarImage);
+    const [socketUrl, setSocketUrl] = useState('ws://localhost:8081/chat');
+    const [connecting, setConnecting] = useState(1)
+    const { pathname } = useLocation();
+    const messageAlert = useRef()
+    const userinfo = useSelector(userdata)
+    
+    const onChange = event => setMsg(event.target.value);
+
+    const { sendJsonMessage, readyState } = useWebSocket(socketUrl, {
+        retryOnError: true,
+        shouldReconnect: (closeEvent) => true,
+        reconnectAttempts: 360,
+        queryParams: {user: userType.id},
+        share: true,
+        onOpen: (openEvent) => {
+            chatList()
+            dispatch(setonline(1))
+            setConnecting(0)
+        },
+        onMessage: (messageEvent) => {
+            var msg = JSON.parse(messageEvent.data)
+            switch (msg?.command) {
+                case 'message':
+                    if(msg?.sender_id == sendto || msg?.receiver_id == sendto){
+                        setMessageHistory((prev) => [...prev, msg])
+                    }else{
+                        Notify('toast',`You have a new unread message from ${msg?.name}`,'info')
+                        const list = [...users]
+                        list.forEach(user=>{
+                            if(user?.id == msg?.sender_id){
+                                user.unread_messages += 1
+                            }
+                        })
+                        setUsers(list)
+                        speaker(`You have a new unread message from ${msg.name}`)
+                    }
+                    msg.sender_id !== userType.id && messageAlert.current.play()
+                    
+                    break;
+                case 'newchat':
+                    chatList()
+                    Notify('alert',`You have a new chat from ${msg?.name}`,'info')
+                    messageAlert.current.play()
+                    speaker(`You have a new chat from ${msg.name}`)
+                    break;
+                default:
+                    break;
+            }
+        },        
+        onClose: (closeEvent) =>{ dispatch(setonline(0)) }
+    });
+
+    const openConnection = useCallback(
+        () => {
+            setSocketUrl('wss://ws.test.onemedy.com/chat')
+            setConnecting(1)
+        },[]
+    );
+
+    const closeConnection = useCallback( () => setSocketUrl('ws://localhost:8080'),[] );
+   
+    function enterSendMsg(e){ e.key === 'Enter' && sendMsg() }
+
+    function sendMsg(){
+        var sentdata={
+            'sender_id':userType.id,
+            'receiver_id':sendto,
+            'command':'message',
+            'message':msg,
+            'created_at': new Date(),
+            'name':`${(userinfo?.firstname +' '+ userinfo?.lastname).toUpperCase()}`
+        }
+
+        if(sendto === ''){
+            Notify('toast','No Patient Selected!','info')
+        }else if(sendto !== '' && readyState !== 1){
+            Notify('toast','Your message will be sent when the network reconnects!', 'info')
+            sendJsonMessage(sentdata) 
+            setMsg('')
+        }else{
+            sendJsonMessage(sentdata) 
+            setMsg('')
+        }
+
+        bottom.current?.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest"})
+
+    }

@@ -1,0 +1,147 @@
+<?php
+
+namespace App\Http\Controllers\v1;
+
+use App\Models\User;
+use App\Models\Doctor;
+use App\Models\ChatMessage;
+use Ratchet\ConnectionInterface;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Ratchet\MessageComponentInterface;
+
+class ChatSocketController extends Controller implements MessageComponentInterface
+{
+    protected $clients;
+
+    public function __construct()
+    {
+        $this->clients = new \SplObjectStorage();
+    }
+
+    public function onOpen(ConnectionInterface $conn)
+    {
+        $querystring = $conn->httpRequest->getUri()->getQuery();
+        parse_str($querystring, $query);
+
+        // store arbitrary data as str or obj
+        // $conn->data = '';
+
+        if (empty($query['user'])) {
+            $conn->resourceId = 9999999;
+        } else {
+            $conn->resourceId = $query['user'];
+        }
+
+        $this->clients->attach($conn);
+        // echo "New connection! ({$conn->resourceId})\n";
+
+        // Set status to online if connect
+        $user_id = $conn->resourceId;
+        $user = User::where('id', $user_id)->first();
+        if ($user->roles_id == 2) {
+            $doctor = Doctor::where('user_id', $user_id)->first();
+            $doctor->availability = 'offline';
+            $doctor->save();
+        }
+    }
+
+    public function onMessage(ConnectionInterface $from, $msg)
+    {
+        $numRecv = count($this->clients) - 1;
+        // echo sprintf( 'Connection %d sending message "%s" to %d other connection%s' . "\n", $from->resourceId, $msg, $numRecv, $numRecv == 1 ? '' : 's' );
+
+        $data = json_decode($msg, true);
+        $data['isread'] = 0;
+
+        switch ($data['command']) {
+            case 'message':
+                foreach ($this->clients as $client) {
+                    if (
+                        $from !== $client &&
+                        $client->resourceId == $data['receiver_id']
+                    ) {
+                        $data['isread'] = 1;
+                    }
+                }
+
+                $chat_message = new ChatMessage();
+                $chat_message->sender_id = $data['sender_id'];
+                $chat_message->receiver_id = $data['receiver_id'];
+                $chat_message->message = $data['message'];
+                $chat_message->isread = $data['isread'];
+                $chat_message->save();
+
+                //check if new chat
+                // check db if message count = 1, send command
+                $messages = DB::table('chat_messages')
+                    ->where([
+                        ['sender_id', '=', $data['sender_id']],
+                        ['receiver_id', '=', $data['receiver_id']],
+                    ])
+                    ->orWhere([
+                        ['sender_id', '=', $data['receiver_id']],
+                        ['receiver_id', '=', $data['sender_id']],
+                    ])
+                    ->count();
+                //FIXME: chat issues with newchat broadcast to all
+                if ((int) $messages == 1) {
+                    $data['command'] = 'newchat';
+                    $newchat = json_encode($data);
+                    foreach ($this->clients as $client) {
+                        if ( $from !== $client && $client->resourceId == $data['receiver_id'] ) {
+                            $client->send($newchat);
+                        }
+                    }
+                }
+
+                // send message to reciever and to sender as acknowledgment
+                $chatmsg = json_encode($data);
+                foreach ($this->clients as $client) {
+                    if (
+                        $from === $client ||
+                        $client->resourceId == $data['receiver_id']
+                    ) {
+                        $client->send($chatmsg);
+                    }
+                }
+
+                break;
+
+            default:
+                // foreach ($this->clients as $client) {
+                //     if (
+                //         $from !== $client &&
+                //         $client->resourceId == $data['receiver_id']
+                //     ) {
+                //         $client->send($msg);
+                //     }
+                // }
+                break;
+        }
+    }
+
+    public function onClose(ConnectionInterface $conn)
+    {
+        // Set status to offline if disconnect
+        $user_id = $conn->resourceId;
+        $user = User::where('id', $user_id)->first();
+        if ($user->roles_id == 2) {
+            $doctor = Doctor::where('user_id', $user_id)->first();
+            $doctor->availability = 'online';
+            $doctor->save();
+        }
+
+        // The connection is closed, remove it, as we can no longer send it messages
+        $this->clients->detach($conn);
+
+        // echo "Connection {$conn->resourceId} has disconnected\n";
+    }
+
+    public function onError(ConnectionInterface $conn, \Exception $e)
+    {
+        echo "An error has occurred: {$e->getMessage()}\n";
+
+        $conn->close();
+    }
+}

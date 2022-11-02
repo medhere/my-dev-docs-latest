@@ -38,7 +38,7 @@ Response
 		Expire
 			return response('Hello World')->withoutCookie('name');
 		
-		use Illuminate\Support\Facades\Cookie;
+			use Illuminate\Support\Facades\Cookie;
 			Cookie::expire('name');
 		
 		Disable Encryption
@@ -80,6 +80,11 @@ Response
 		reponse/no download
 			return response()->file($pathToFile);
 			return response()->file($pathToFile, $headers);
+	
+	Stream
+		response()->streamDownload(function () {
+			echo 'abcdefgh';
+		}, 'laravel-readme.md');
 
 
 

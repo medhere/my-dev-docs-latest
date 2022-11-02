@@ -1,0 +1,37 @@
+!!
+
+??
+
+? '':''
+
+match ($var){
+	''=>'',
+}
+
+?->
+
+fn
+    $var = fn($a) => 1+$a
+
+use
+    $y=1
+    function () use ($y){ }
+
+return types
+	function foo(): ?int {
+		return bar;
+	}
+	int,float,bool,string,array,object
+	
+read on callable
+
+destructuring
+	foreach ($array as ['id' => $id, 'name' => $name]) { }
+
+	$array = ['a' => 1, 'b' => 2, 'c' => 3];
+	['c' => $c, 'a' => $a] = $array;
+
+	$array = [1, 2, 3]; 
+	list($a, $b, $c) = $array;
+	[$a, $b, $c] = $array;
+	[, , $c] = $array;

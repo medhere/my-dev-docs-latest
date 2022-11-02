@@ -1,14 +1,12 @@
 blade
 	resources/views/*.blade.php
 	resources/views/folder/*.blade.php
-		
 	
 	display data
 		Hello, {{ $name }}.		// display content of name variable from view()
 		The current UNIX timestamp is {{ time() }}.	// use php directly
 		Hello, {!! $name !!}.	// no htmpchar escape		
 		Hello, @{{ name }}.		// not rendered as blade, as js
-		@if()	// no blade directives triggered
 		@verbatim	//multiline no blade statements	
 			<div class="container">
 				Hello, {{ name }}.
@@ -123,129 +121,81 @@ blade
 			@while (true)
 				<p>I'm looping forever.</p>
 			@endwhile	
-	
-			@foreach ($users as $user)
-			@if ($user->type == 1)
-				@continue
-			@endif
-
-			<li>{{ $user->name }}</li>
-
-			@if ($user->number == 5)
-				@break
-			@endif
-			@endforeach
-
-			@foreach ($users as $user)
-				@continue($user->type == 1)
-
-				<li>{{ $user->name }}</li>
-
-				@break($user->number == 5)
-			@endforeach
-
-		The Loop Variable	$loop 
-			@foreach ($users as $user)
-				@if ($loop->first)
-					This is the first iteration.
-				@endif
-
-				@if ($loop->last)
-					This is the last iteration.
-				@endif
-
-				<p>This is user {{ $user->id }}</p>
-			@endforeach
-
-			@foreach ($users as $user)		//for nested loop with loop parent prop
-				@foreach ($user->posts as $post)
-					@if ($loop->parent->first)
-						This is the first iteration of the parent loop.
-					@endif
-				@endforeach
-			@endforeach
-	
-			Property			Description
-			$loop->index		The index of the current loop iteration (starts at 0).
-			$loop->iteration	The current loop iteration (starts at 1).
-			$loop->remaining	The iterations remaining in the loop.
-			$loop->count		The total number of items in the array being iterated.
-			$loop->first		Whether this is the first iteration through the loop.
-			$loop->last			Whether this is the last iteration through the loop.
-			$loop->even			Whether this is an even iteration through the loop.
-			$loop->odd			Whether this is an odd iteration through the loop.
-			$loop->depth		The nesting level of the current loop.
-			$loop->parent		When in a nested loop, the parent's loop variable.
 			
 	Conditional Classes
-		@php
-			$isActive = false;
-			$hasError = true;
-		@endphp
-
 		<span @class([
 			'p-4',
 			'font-bold' => $isActive,
 			'text-gray-500' => ! $isActive,
 			'bg-red' => $hasError,
 		])></span>
-		usage
-		<span class="p-4 text-gray-500 bg-red"></span>
 	
+	Form Attributes
+		@checked($var)
+		@selected($var)
+		@disabled($var)
+		@readonly($var)
+		@required($var)
+
 	Including Subviews
-		//Blade componentscare are better
+		//Blade components are are better
 		<div>@include('shared.errors')</div>
 		@include('view.name', ['status' => 'complete'])	//pass data to included view
 		@includeIf('view.name', ['status' => 'complete'])
 		@includeWhen($boolean, 'view.name', ['status' => 'complete'])
 		@includeUnless($boolean, 'view.name', ['status' => 'complete'])
 		@each('view.name', $jobs, 'job', 'view.empty')	// (view, array or collection, var name, (optional)view if array empty), use the @foreach and @include to inherit parent var
-		
-	Once directive
-		@once		//rendered once
-			@push('scripts')
-				<script></script>
-			@endpush
-		@endonce
-		
+				
 	Raw php
 		@php
 			$counter = 1;
 		@endphp
+
+		@php ($counter = 1)
 	
 	Components
 		Class-based components
 		php artisan make:component nameofcomponent
 		php artisan make:component folder/nameofcomponent
+		php artisan make:component folder.nameofcomponent --view //anonymous component with --view
 			app/View/Components/nameofcomponent.php
 			resources/views/components/nameofcomponent.blade.php
 
-			resources/views/components/nameofcomponent.blade.php
+			Slots, Attributes and Slot Attributes
 				<span class="alert-title">{{ $title }}</span>
 				<div {{ $attributes }} class="alert-{{ $type }}">
 					{{ $slot }}
 					{{ $message }}
+					<p {{$text->attributes}} >
+						{{$text}}
+					</p>
 				</div>
-				
-					using $attributes	//All of the attributes that are not part of the component's constructor 
-						{{ $attributes->merge(['type' => 'button']) }}	//for default, will be replaced
-						{{ $attributes->merge(['class' => 'green']) }}	//for class, will merge
-						@if ($attributes->has('class'))
-							<div>Class attribute is present</div>
-						@endif
-						{{ $attributes->get('class') }}	//retrieve					
-				
-			app/View/Components/nameofcomponent.php		//use camelCase
-				public function __construct($type, $message){
-					$this->type = $type;
-					$this->message = $message;
-				}
-			
+
+				<div {{ $attributes->merge(['class' => $type]) }}> 
+					{{ $message }} 
+				</div> //<x-alert type="error" :message="$message" class="mb-4"/> //> class="mb-4 error"
+
+				<button {{ $attributes->class(['p-4'])->merge(['type' => 'button']) }}> 
+					{{ $slot }} 
+				</button>
+
+				<div {{ $attributes->merge(['data-controller' => $attributes->prepends('profile-controller '.$data-controller)]) }}> 
+					{{ $slot }} 
+				</div>
+
+				@if ($attributes->has('class'))
+					<div>Class attribute is present</div>
+				@endif
+
+				{{ $attributes->get('class') }}	//retrieve					
+
+							
 			usage in blase	//use kebab-case
-				<x-|folder.|nameofcomponent type="1" :message="$message" class="classname"/>	//all other attributes rending in attributes
+				<x-|folder.|nameofcomponent type="1" :message="$message" class="classname"/>	//all other attributes rending in attributes, use : when adding $variables 
 				OR
 				<x-nameofcomponent user-id="1" :message="$message" class="classname">
-					<x-slot name="title"> Server Error </x-slot>	//goes to {{title}}
+					<x-slot:title> Server Error </x-slot> //goes to {{$title}}
+					<x-slot name="title"> Server Error </x-slot>	//goes to {{$title}}
 					<strong>Whoops!</strong> Something went wrong!	//will fit into {{$slot}}
 				</x-nameofcomponent>
 				
@@ -253,7 +203,7 @@ blade
 
 		Anonymous components
 			resources/views/components/nameofcomponent.blade.php
-				@props(['type',''message'])
+				@props(['type','message'])
 				@props(['type' => 'info', 'message'])	//type default to info			
 				<div {{ $attributes }}>
 					{{ $slot }}					
@@ -295,35 +245,6 @@ blade
 		Dynamic Components
 			render the component based on a runtime value or variable:
 			<x-dynamic-component :component="$componentName" class="mt-4" />
-	
-	
-	Building Layouts
-		Using Components
-			Defining The Layout Component
-			<!-- resources/views/components/layout.blade.php -->
-			<html>
-				<head>
-					<title>{{ $title ?? 'Todo Manager' }}</title>
-				</head>
-				<body>
-					<h1>Todos</h1>
-					{{ $slot }}
-				</body>
-			</html>
-
-			Applying The Layout Component
-			<!-- resources/views/tasks.blade.php -->
-			<x-layout>
-				<x-slot name="title">
-					Custom Title
-				</x-slot>
-				<h4>{{ $name }}, this is default slot</h4>
-			</x-layout>
-			
-			Route
-			Route::get('/tasks', function () {
-				return view('tasks', ['name' => 'hello']);
-			});
 
 		Using Template Inheritance
 			Defining A Layout
@@ -392,7 +313,7 @@ blade
 						<div class="alert alert-danger">{{ $message }}</div>
 					@enderror
 			
-	Stacks		// read more on stacks
+	Stacks
 		@push('scripts')
 			<script src="/example.js"></script>
 		@endpush

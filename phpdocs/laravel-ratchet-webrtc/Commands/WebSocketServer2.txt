@@ -1,0 +1,62 @@
+<?php
+
+namespace App\Console\Commands;
+
+use Illuminate\Console\Command;
+
+use Ratchet\App;
+
+use Ratchet\Http\HttpServer;
+use Ratchet\Server\IoServer;
+use Ratchet\WebSocket\WsServer;
+
+use App\Http\Controllers\v1\VideoSocketController;
+
+class WebSocketServer2 extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'websocket2';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'This command starts onemedy web socket server on 8082 for video';
+
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return int
+     */
+    public function handle()
+    {
+        $server2 = IoServer::factory(
+            new HttpServer(
+                new WsServer(
+                    new VideoSocketController()
+                )
+            ),
+            8082
+        );
+        $server2->run();
+
+        // $app = new App('10.0.0.229', 8082, '0.0.0.0');
+        // $app->route('/', new VideoSocketController,['*']);
+        // $app->run();
+    }
+}
