@@ -95,29 +95,46 @@ Routing
 
 	Route Model Binding...  read more on it for eloquent db model
 	
+	for webview
+		save in routes/web.php for webview
+
+		use Illuminate\Support\Facades\Route;
+		Route::get('/greeting', function () {
+			return 'Hello World';
+		});
+
+		use App\Http\Controllers\UserController;
+		Route::get('/user', [UserController::class, 'index']);
+
+		
+	for api
+		save in routes/api.php for api at /api
+
+		use Illuminate\Support\Facades\Route;
+		use Illuminate\Support\Facades\Request;
+		Route::get('/', function (Request $request) {
+			return 'test api';
+		});
 
 
-for webview
-	save in routes/web.php for webview
-
-	use Illuminate\Support\Facades\Route;
-	Route::get('/greeting', function () {
-		return 'Hello World';
-	});
-
-	use App\Http\Controllers\UserController;
-	Route::get('/user', [UserController::class, 'index']);
-
-	
-for api
-	save in routes/api.php for api at /api
-
-	use Illuminate\Support\Facades\Route;
-	use Illuminate\Support\Facades\Request;
-	Route::get('/', function (Request $request) {
-		return 'test api';
-	});
+	Cross-Origin Resource Sharing (CORS)
+		Laravel can automatically respond to CORS OPTIONS HTTP requests with values that you configure. All CORS settings may be configured in your application's config/cors.php
 
 
-Cross-Origin Resource Sharing (CORS)
-	Laravel can automatically respond to CORS OPTIONS HTTP requests with values that you configure. All CORS settings may be configured in your application's config/cors.php
+URLs
+url("/posts/{$post->id}");
+url()->current();
+url()->full();
+url()->previous();
+route('post.show', ['post' => 1, 'search' => 'rocket']); //can be used for both route and query params
+action([UserController::class, 'profile'], ['id' => 1]);
+
+use Illuminate\Support\Facades\URL;
+URL::current();
+URL::signedRoute('unsubscribe', ['user' => 1]);
+URL::temporarySignedRoute('unsubscribe', now()->addMinutes(30), ['user' => 1]);
+	to verify
+	if (! $request->hasValidSignature()) {
+        abort(401);
+    }
+

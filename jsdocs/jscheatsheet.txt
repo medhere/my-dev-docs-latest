@@ -46,6 +46,13 @@
         }, {})	
 	}
 
+//delete object from array by id
+	const list = [...array];
+	list.splice(index, 1);
+
+//update value of object key in array
+	const _update = [...array];
+	_update[i][type] = value
 
 // arrays in objects
 	var carmodel={
