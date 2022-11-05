@@ -93,6 +93,9 @@ Routing
 	Inertia
 		Route::inertia('/about', 'AboutComponent');
 
+	Session Blocking
+		->block($lockSeconds = 10, $waitSeconds = 10)
+
 	Route Model Binding...  read more on it for eloquent db model
 	
 	for webview
