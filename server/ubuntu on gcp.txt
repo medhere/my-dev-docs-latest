@@ -7,7 +7,7 @@ google gcloud
 	install SSH for Google Cloud Platform on browser
 	open cmd and gcloud init, or gcloud -h
 
-ip	35.208.129.103 
+ip
 
 ssh
 	gcloud compute ssh earlyfuture-vm --project earlyfuturecloud
@@ -26,7 +26,7 @@ open firewall ports
 
 go to aapanel and get install script
 save entry point url, username and password
-aaPanel Internet Address: http://35.208.129.103:7800/admin
+aaPanel Internet Address: http://:7800/admin
 aaPanel Internal Address: http://10.128.0.2:7800/admin
 username: mememe
 password: mememe
