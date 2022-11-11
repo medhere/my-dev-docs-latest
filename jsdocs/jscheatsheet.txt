@@ -46,6 +46,12 @@
         }, {})	
 	}
 
+//reduce to unique objects in array based on key value
+let arr = array.reduce((r, a) =>
+	r.find((v) => v.item === a.item) ? r : [...r, a], []
+)
+
+
 //delete object from array by id
 	const list = [...array];
 	list.splice(index, 1);
