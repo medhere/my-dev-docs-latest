@@ -40,6 +40,10 @@ Routing
 					// /user/1/profile
 					$url = route('profile', ['id' => 1, 'photos' => 'yes']);
 					// /user/1/profile?photos=yes	
+		get current route
+			Route::currentRouteName()
+		check current route name
+			Route::is('routename')
 
 	for middleware
 		Route::middleware(['first', 'second'])->group(function () {
