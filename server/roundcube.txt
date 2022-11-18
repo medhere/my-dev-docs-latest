@@ -1,7 +1,6 @@
 roundmail client
 
-product_name
-name of company webmail
+config/defaults.inc.php
 
 db_dsnw
 MySQL
@@ -11,13 +10,14 @@ eutxmksq_mail
 J(!2mC=n;H(+
 
 IMAP Settings
-default_host
-localhost
-default_port
-143
+    default_host localhost
+    default_port 143
 
-smtp_server
-localhost
-smtp_port
-587
+SMTP
+    smtp_server localhost
+    smtp_port 587
 
+
+auto_create_user true
+username_domain = '' or user domain name
+product_name = '' or domain name
