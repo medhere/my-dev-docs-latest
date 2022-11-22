@@ -1,5 +1,20 @@
 tmux
 
+quick usage
+
+loginctl enable-linger
+
+tmux new -s sessionname
+while in seesion ctrl+b then d
+tmux ls
+tmux a -t sessionname
+tmux kill-session -t sessionname
+
+f7 to enter scroll mode, q to quite scroll
+ctrl+B and [ or ] to enter scrool mode
+
+
+
 tmux new -s name
 tmux detach (always detach before new session)
 
