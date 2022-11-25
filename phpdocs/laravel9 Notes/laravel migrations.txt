@@ -92,6 +92,9 @@ DB Migrations
 				string('name', 100)
 				text
 				year
+
+			Foreign
+				$table->foreign('user_id')->references('id')->on('users');
 		
 			Table update modifiers
 				->after('column')

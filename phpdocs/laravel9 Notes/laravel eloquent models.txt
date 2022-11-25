@@ -15,7 +15,7 @@ Model settings
 
     protected $attributes = [ 'delayed' => false, ];    //default values
     protected $fillable = ['name'];
-    protected $guarded = [];
+    protected $guarded = ['name'];
     protected $visible = ['first_name', 'last_name'];
     protected $hidden = ['password'];
 
@@ -136,13 +136,17 @@ Relationships
     {
         return $this->hasOne | belongsTo | hasMany(AnotherModel::class);  // uses id to tbl_id column, or $primaryKey
 
-        return $this->hasOne(AnotherModel::class, 'anothermodel_table_key', 'model_table_key');
-        return $this->hasMany(AnotherModel::class, 'anothermodel_table_key', 'model_table_key');
-        return $this->belongsTo(AnotherModel::class, 'model_table_key', 'anothermodel_table_key');
+        ->hasOne(AnotherModel::class, 'anothermodel_table_key', 'model_table_key');
+        ->hasMany(AnotherModel::class, 'anothermodel_table_key', 'model_table_key');
+        ->belongsTo(AnotherModel::class, 'model_table_key', 'anothermodel_table_key');
             ->withDefault();
             ->withDefault([ 'name' => 'Guest Author', ]);
+        
+        ->hasOne(Order::class)->latestOfMany();
+        ->hasOne(Order::class)->oldestOfMany();
+        ->hasOne(Order::class)->oldestOfMany();
 
-        return $this->hasOneThrough | hasManyThrough(Owner::class, Car::class);
+        ->hasOneThrough | hasManyThrough(Owner::class, Car::class);
             ->hasOneThrough | hasManyThrough(
                 Owner::class,
                 Car::class,
@@ -152,6 +156,16 @@ Relationships
                 'id' // Local key on the cars table...
             );
 
+        
     }
 
-    usage Model::querable()->where('id', $id)->with('relationship')
+    Usage 
+        Model::with('relationship')
+        Model::querable()->where('id', $id)->with('relationship')
+
+    Store Records
+    $model->rship()->save($car);
+    $model->rship()->saveMany([
+        $car1, 
+        $car2,
+    ]);
