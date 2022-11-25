@@ -68,60 +68,108 @@ Database
 
 
 					
-	Query Builder					
-	DB::table('tablename')
+	Query Builder
+
+		Raw SQL
+			$users = DB::raw('Select * from tablename where user = ?',['data'])->get()
+				->selectRaw('price * ? as price_with_tax', [1.0825])
+				->whereRaw | orWhereRaw('price > IF(state = "TX", ?, 100)', [200])
+				->havingRaw | orHavingRaw('SUM(price) > ?', [2500])
+				->orderByRaw('updated_at - created_at DESC')
+				->groupByRaw('city, state')
+
+		Select
+		DB::table('tablename')
 			returning query results
 				rows/cols	->get()		foreach ($users as $user) {}, foreach ($users as $name => $user) {}
-				1 row		->first()	$user->email;
+				1 row		->first()	$array->key;
 				1 col 		->value('email');
 				id column	->find(3);
 				col list	->pluck('title');
-				small chunks->chunk(100, function ($users) { });	//return false; to stop chucking
-							->chunkById(100, function ($users) { }); 
-				slow paced	->lazy()->each(function ($user) {});
+				slow paced	->lazy()
 							->lazyById()->each(function ($user) {};
 							->exists()	//with if statement
 							->doesntExist()	//with if statement
-							->distinct()->get();
-							->latest()->get();	//order by date
-							->oldest()->get();	//order by date
-							->inRandomOrder()->get();	//get random order
-							->where('user','','value')->get();
-							->whereDate('created_at', '2016-12-31')->get();
-							->whereMonth('created_at', '12')->get();
-							->whereDay('created_at', '31')->get();
-							->whereYear('created_at', '2016')->get();
-							->whereTime('created_at', '=', '11:20:45')->get();
-							->offset(10)->limit(5)->get(); SAME AS ->skip(10)->take(5)->get();	//used for pagination
-							
-			Other queries
-				insert
-					->insert([email' => 'kayla@example.com','votes' => 0]);
-					->insert([
-						['email' => 'picard@example.com', 'votes' => 0],
-						['email' => 'janeway@example.com', 'votes' => 0],
-					]); 
-					->insertOrIgnore([
-						['id' => 1, 'email' => 'sisko@example.com'],
-						['id' => 2, 'email' => 'archer@example.com'],
-					]);													
-					insert or update	
-					->upsert([
-						['departure' => 'Oakland', 'destination' => 'San Diego', 'price' => 99],
-						['departure' => 'Chicago', 'destination' => 'New York', 'price' => 150]
-					], ['departure', 'destination'], ['price']);	// fields that should be updated
-				
-				update
-					->where('id', 1)->update(['votes' => 1]);
-					->updateOrInsert(
-						['name' => 'John'],	//where
-						['votes' => '2']	//update or insert all with where
-					);
-				delete
-					->where('votes', '>', 100)->delete();
-		Raw SQL
-		$users = DB::raw('Select * from tablename where user = ?',['data'])->get()
+							->distinct()
+							->inRandomOrder()	//get random order
+		Where							
+			->where | orWhere('user','','value')->get();
+			
+			->whereBetween | orWhereBetween | whereNotBetween | orWhereNotBetween('column', [1, 100])
+			->whereIn | whereNotIn | orWhereIn | orWhereNotIn('column', [1, 2, 3])
+			->whereNull | whereNotNull | orWhereNull | orWhereNotNull('column')
+
+			->whereDate('created_at', '2016-12-31')->get();
+			->whereMonth('created_at', '12')->get();
+			->whereDay('created_at', '31')->get();
+			->whereYear('created_at', '2016')->get();
+			->whereTime('created_at', '=', '11:20:45')->get();
+
+			->where(function ($query) {
+               $query->where('votes', '>', 100)
+                     ->orWhere('title', '=', 'Admin');
+           	})
+
+		Ordering
+			->orderBy('name', 'desc')
+			->orderBy('email', 'asc')
+			->latest()	//order by date
+			->oldest()	//order by date
+ 
+		Grouping and Having
+			->groupBy('account_id')
+			->having('account_id', '>', 100)
+			->havingBetween('number_of_orders', [5, 15])
+			->havingBetween('number_of_orders', [5, 15])
+
+		Limit & Offset
+			->offset(10)->limit(5)->get(); SAME AS ->skip(10)->take(5)->get();	//used for pagination
 		
+		Aggregates
+			->count()
+			->max('columnname')
+			->min('columnname')
+			->avg('columnname')
+			->sum('columnname')					
+
+		Joins
+			->join('contacts', 'users.id', '=', 'contacts.user_id')
+			->leftJoin('posts', 'users.id', '=', 'posts.user_id')
+			->rightJoin('posts', 'users.id', '=', 'posts.user_id')
+				->select('users.*', 'contacts.phone', 'orders.price')
+
+		Union
+			->union(query)
+
+		Insert
+			->insert([email' => 'kayla@example.com','votes' => 0]);
+			->insert([
+				['email' => 'picard@example.com', 'votes' => 0],
+				['email' => 'janeway@example.com', 'votes' => 0],
+			]); 
+			->insertOrIgnore([
+				['id' => 1, 'email' => 'sisko@example.com'],
+				['id' => 2, 'email' => 'archer@example.com'],
+			]);													
+			insert or update	
+			->upsert([
+				['departure' => 'Oakland', 'destination' => 'San Diego', 'price' => 99],
+				['departure' => 'Chicago', 'destination' => 'New York', 'price' => 150]
+			], ['departure', 'destination'], ['price']);	// fields that should be updated
+		
+		Update
+			->where('id', 1)->update(['votes' => 1]);
+			->updateOrInsert(
+				['name' => 'John'],	//where
+				['votes' => '2']	//update or insert all with where
+			);
+
+		Delete
+			->where('votes', '>', 100)->delete();
+
+		Querying Relationships
+			whereBelongsTo($user)->get();
+
 		Pagination
 				->paginate(15);		//add page as field in request, increase by 1 for each page, or send page number directly		
 				->paginate( $perPage = 15, $columns = ['*'], $pageName = 'users' );
@@ -175,104 +223,4 @@ Database
 				$results->setCursorName()	Set the query string variable used to store the cursor.
 				$results->url($cursor)		Get the URL for a given cursor instance.
 
-	DB Migrations
-		Make migration file
-			php artisan make:migration nameoftable
-				database/migrations/2021_12_03_104056_nameoftable.php
-		
-		Merge migrations into a single SQL file
-			php artisan schema:dump
-			php artisan schema:dump --prune		// Dump db schema and prune all migrations
-				database/schema/
-		
-		Migration Structure
-		A migration class contains two methods: up and down. The up method is used to add new tables, columns, or indexes to your database, while the down method should reverse the operations performed by the up method.
-			
-			protected $connection = 'mysql';	//name of dbconn
-			public function up()
-			{
-			
-				Schema::connection('mysql2')->create('users', function (Blueprint $table) {
-					$table->id();
-				});
-				
-				Schema::create('tablename', function (Blueprint $table) {	//uses default dbconn
-					$table->engine = 'InnoDB';	//optional
-					$table->id();
-					$table->string('name');
-					$table->string('user');
-					$table->[index]('user');
-					$table->timestamps();
-				});
-				
-				Schema::table('tablename', function (Blueprint $table) {	//update
-					$table->integer('votes');	//add new col
-					$table->char('votes',100)->change();	//update attr	
-					$table->renameColumn('fromcolname', 'tocolname');
-					$table->dropColumn('votes');
-					$table->dropColumn(['votes', 'avatar', 'location']);
-					$table->integer('votes')->[modifier]();
-
-					OR
-					
-					$table->after('password', function ($table) {		//add after col
-						$table->string('address_line1');
-						$table->string('address_line2');
-						$table->string('city');
-					});
-					
-				});
-				
-				Schema::rename($fromtablename, $totablename);
-								
-			}
-			
-			public function down()
-			{
-				Schema::drop('tablename');
-				Schema::dropIfExists('tablename');
-
-			}
-
-			Index
-				$table->primary('id');			//primary key.
-				$table->primary(['id', 'parent_id']);
-				$table->unique('email');	//	Adds unique.
-				$table->unique('email', 'unique_email');
-				$table->index('state');
-		
-			Columns types
-				binary		//BLOB
-				boolean
-				char('name', 1000)
-				id()	//for auto-incrementing primary key as id or 'colname'
-				increments('id')	//for auto-incrementing primary key
-				integer
-				longText
-				string('name', 100)
-				text
-				year
-		
-			Table update modifiers
-				->after('column')
-				->autoIncrement()
-				->default($value)
-				->nullable($value = true)
-				->unique()
-
-			Index modifiers
-				->dropPrimary('users_id_primary');	Drop a primary key from the "users" table.
-				->dropUnique('users_email_unique');	Drop a unique index from the "users" table.
-				->dropIndex('geo_state_index');	Drop a basic index from the "geo" table.
-
-		
-		Check migrations
-			php artisan migrate
-			php artisan migrate:status
-
-		Rolling Back
-			php artisan migrate:rollback	//last migration
-			php artisan migrate:reset		//all migrations
-			php artisan migrate:refresh		//rollback all and migrate
-			php artisan migrate:fresh		//drop all tables and migrate
-			
+	

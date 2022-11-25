@@ -159,11 +159,13 @@ Validation
 		digits:value		//must have exact length of value
 		digits_between:min,max
 		dimensions		//'avatar' => 'dimensions:min_width=100,min_height=200'		min_width, max_width, min_height, max_height, width, height, ratio(3/2,1.5)
-		Since this rule requires several arguments, you may use the Rule::dimensions method to fluently construct the rule:
+						Since this rule requires several arguments, you may use the Rule::dimensions method to fluently construct the rule:
 		distinct	//When validating arrays, the field under validation must not have any duplicate values:
-			'foo.*.id' => 'distinct'
-			'foo.*.id' => 'distinct:strict'
-			'foo.*.id' => 'distinct:ignore_case'
+					'foo.*.id' => 'distinct'
+					'foo.*.id' => 'distinct:strict'
+					'foo.*.id' => 'distinct:ignore_case'
+		doesnt_start_with:foo,bar,...
+		doesnt_end_with:foo,bar,...
 		email
 			'email' => 'email:rfc,dns'
 				rfc: RFCValidation
@@ -177,6 +179,9 @@ Validation
 		exclude_unless:anotherfield,value
 			exclude_unless:name,null	
 		exclude_without:anotherfield
+		exclude_without:anotherfield
+		exists:table,column
+			exists:dbconnection.table,column
 		file
 		filled
 		gt:field	//must be greater than the given field. The two fields must be of the same type. Strings, numerics, arrays, and files
@@ -192,12 +197,15 @@ Validation
 		json
 		lt:field	//less than the given field. The two fields must be of the same type. Strings, numerics, arrays
 		lte:field	//less than or equal to the given field.
+		lowercase:field
 		max:value	//less than or equal to a maximum value. Strings, numerics, arrays, and files are evaluated in the same fashion as the size rule.
+		max_digits:value
 		mimetypes:text/plain,...
 			'video' => 'mimetypes:video/avi,video/mpeg,video/quicktime'
 		mimes:foo,bar,...
 			'photo' => 'mimes:jpg,bmp,png'
 		min:value	//must have a minimum value. Strings, numerics, arrays, and files
+		max_digits:value
 		multiple_of:value	//The field must be a multiple of value.
 		not_in:foo,bar,...	//must not be included in the given list of values, often requires you to implode an array
 				Rule::notIn(['sprinkles', 'cherries']),
@@ -205,6 +213,7 @@ Validation
 			'email' => 'not_regex:/^.+$/i'.
 		nullable	//The field under validation may be null.
 		numeric
+		password	//must match the authenticated user's password.
 		present		//The field must be present in the input data but can be empty.
 		prohibited	//The field must be empty or not present.
 		prohibited_if:anotherfield,value,...
@@ -227,10 +236,10 @@ Validation
 			'image' => 'file|size:512';
 		starts_with:foo,bar,...
 		string
+		sometimes	//validating field only when Present
 		timezone
 		url
 		uuid
-		sometimes	//validating field only when Present
 	
 	Validating Passwords
 		use Illuminate\Support\Facades\Validator;

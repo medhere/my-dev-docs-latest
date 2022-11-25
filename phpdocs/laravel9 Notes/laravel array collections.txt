@@ -1,0 +1,115 @@
+Create collection
+    $collection = collect([1, 2, 3]);
+    $collection = collect([
+        ['foo' => 10],
+        ['foo' => 10],
+        ['foo' => 20],
+        ['foo' => 40]
+    ])
+    $collection = collect([
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9],
+    ]);
+
+
+Methods
+    ->all() //always use after
+    ->avg('foo');
+    ->chunk(4);
+    ->collapse();
+    ->concat(['Jane Doe'])
+    ->contains | doesntContain(function ($value, $key) {
+        return $value > 5;
+    });
+    ->contains | doesntContain('Desk');
+    ->contains | doesntContain('product', 'Bookcase');
+    ->count();
+    ->countBy();
+    ->crossJoin(['a', 'b']);
+    ->crossJoin(['a', 'b']);
+    ->dd() OR ->dump()
+    ->diff([2, 4, 6, 8]);
+    ->diffAssoc([
+        'color' => 'yellow',
+        'type' => 'fruit',
+    ]);
+    ->diffKeys([
+        'two' => 2,
+        'four' => 4,
+    ]);
+    ->duplicates();
+    ->duplicates('key');
+    ->each(function ($item, $key) {
+        //
+    });
+    ->every(function ($value, $key) {
+        return $value > 2;
+    });
+    ->except(['key1', 'key2']);
+    ->filter(function ($value, $key) {
+        return $value > 2;
+    });
+    ->filter()
+    ->first | firstOrFail(function ($value, $key) {
+        return $value > 2;
+    });
+    ->first();
+    ->firstWhere('key', 'value');
+    ->firstWhere('key', '>=', value);
+    ->forget('key');
+    ->get('key');
+    ->get('key', value);
+    ->groupBy('key');
+    ->implode('key', ', ');
+    >implode('-');
+    ->isEmpty(); ->isNotEmpty();
+    ->keyBy('key');
+    ->keys();
+    ->lazy()
+        ->where('country', 'FR')
+        ->where('balance', '>', '100')
+        ->count();
+    ->map(function ($item, $key) {
+        return $item * 2;
+    });
+    ->merge(['price' => 200, 'discount' => false]);
+    ->merge(['Bookcase', 'Door']);
+    ->only(['product_id', 'name']);
+    ->pluck('name');
+    ->pluck('key.subkey');
+    ->pull('name');
+    ->random();
+    ->reverse();
+    ->search(4);
+    ->search(function ($item, $key) {
+        return $item > 5;
+    });
+    ->shuffle();
+    ->slice(4, 2);
+    ->sort(); sortDesc()
+    ->sortBy('key', SORT_NATURAL); sortByDesc()
+    ->sortBy([
+        ['key1', 'asc'],
+        ['key2', 'desc'],
+    ]);
+    ->sortBy([
+        fn ($a, $b) => $a['key1'] <=> $b['key1'],
+        fn ($a, $b) => $b['key2'] <=> $a['key2'],
+    ]);
+    ->splice(2, 1);
+    ->split(3);
+    ->sum('key');
+    ->toArray();
+    toJson()
+    ->transform(function ($item, $key) {
+        return $item * 2;
+    });
+    ->unique(); ->unique('key');
+    ->where('key', 100), where(key', '!=', null);
+    ->whereBetween('key', [100, 200]);
+    ->whereIn('key', [150, 200]);
+    ->whereNotBetween('key', [100, 200]);
+    ->whereNotIn
+    ->whereNotNull('key)
+    ->whereNull()

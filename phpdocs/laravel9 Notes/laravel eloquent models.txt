@@ -1,0 +1,155 @@
+php artisan make:model Model -mfsc
+php artisan model:show Model
+    Model -> models table
+    AirTraffic -> air_traffics table
+
+Model settings
+    protected $table = 'my_flights';    //for a diff table
+
+    protected $primaryKey = 'flight_id';    //for diff primary key
+    public $incrementing = false;   //primary key not incrementing
+    protected $keyType = 'string';  //primary key not integer
+
+    public $timestamps = false;     //stop timestamps
+    protected $connection = 'sqlite';   //change db connection
+
+    protected $attributes = [ 'delayed' => false, ];    //default values
+    protected $fillable = ['name'];
+    protected $guarded = [];
+    protected $visible = ['first_name', 'last_name'];
+    protected $hidden = ['password'];
+
+    protected $casts = [ 'joined_at' => 'datetime:Y-m-d H:00', ];
+    cast types
+        array
+        AsStringable::class
+        AsArrayObject::class
+        AsCollection::class
+        boolean
+        collection
+        date
+        datetime:Y-m-d
+        immutable_date
+        immutable_datetime
+        decimal:<precision>
+        double
+        encrypted
+        encrypted:array
+        encrypted:collection
+        encrypted:object
+        float
+        integer
+        object
+        real
+        string
+        timestamp
+
+Selecting
+  // use query builder
+    Model::all()
+    ::where('active', 1)->get();
+
+    find
+    ::find(1);    //primary key
+    ::where('active', 1)->first();
+    ::firstWhere('active', 1);
+
+    find or fail
+    ::findOr | firstOr(1, function () { });
+    ::findOrFail(1);
+    ::where('active', '>', 3)->firstOrFail();
+
+    find or create
+    ::firstOrCreate([ 'name' => 'myname' ]);     //create if not found
+
+    aggregates
+    count(), max('columnname'), min('columnname'), avg('columnname'), and sum('columnname')
+
+Collections
+    $data = Model::all()
+    $data->collectiontype(...);
+    $data->all();
+    $data->contains(1);
+    $data->except([1, 2, 3]);
+    $data->makeVisible(['address', 'phone_number']);
+    $data->makeHidden(['address', 'phone_number']);
+    $data->unique();
+
+
+Lazy Select
+    ::lazy()
+
+Subqueries
+    select
+    Model1::addSelect(['key' => Model2::select('name')->limit(1)])->get()
+    order
+    Model1::orderByDesc( )->get()
+
+Insert
+    $data = new Model;
+    $data->name = 'data';
+    $data->save();
+
+    ::create([ 'name' => 'myname' ]);
+
+Update
+    $data = Model::find(1);
+    $data->name = 'myname';
+    $data->save();
+
+    Model::where('active', 1)->update(['delayed' => 1]);
+
+Upsert
+    ::updateOrCreate(
+        ['departure' => 'Oakland', 'destination' => 'San Diego'], //if this found
+        ['price' => 99, 'discounted' => 1]  //update this, or create all
+    );
+
+    ::upsert(
+        [
+            ['departure' => 'Oakland', 'destination' => 'San Diego', 'price' => 99],    //if this found
+            ['departure' => 'Chicago', 'destination' => 'New York', 'price' => 150]
+        ], 
+        ['departure', 'destination'], //check if this is present, is primary or unique
+        ['price']   //update this or create all
+    );
+
+Delete
+    $data = Model::find(1);
+    $data->delete();
+
+    ::destroy(1); //by id
+    ::destroy(1, 2, 3);
+    ::where('active', 0)->delete();
+
+    Model::truncate();
+
+Soft Delete
+    use SoftDeletes; // for deleted_at, and $table->softDeletes();
+
+    $flight->trashed();  //if soft deleted
+    $flight->restore();     //restore soft deleted
+    $flight->forceDelete(); //force delete
+
+Relationships
+    public function name()
+    {
+        return $this->hasOne | belongsTo | hasMany(AnotherModel::class);  // uses id to tbl_id column, or $primaryKey
+        return $this->hasOne | belongsTo | hasMany(AnotherModel::class, 'foreign_key'); //uses new column
+        return $this->hasOne | belongsTo | hasMany(AnotherModel::class, 'foreign_key', 'local_key');
+            ->withDefault();
+            ->withDefault([ 'name' => 'Guest Author', ]);
+
+        return $this->hasOneThrough | hasManyThrough(Owner::class, Car::class);
+            ->hasOneThrough(
+                Owner::class,
+                Car::class,
+                'mechanic_id', // Foreign key on the cars table...
+                'car_id', // Foreign key on the owners table...
+                'id', // Local key on the mechanics table...
+                'id' // Local key on the cars table...
+            );
+
+    }
+
+    usage Model::querable()->where('id', $id)->with('relationship')
