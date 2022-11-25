@@ -60,7 +60,7 @@ Database
 				DB::transaction(function () {
 					DB::update('update users set votes = 1');
 					DB::delete('delete from posts');
-				}, number);		//number is optional, retries on deadlock
+				}, 10);		//number is optional, retries on deadlock
 			Manual
 				DB::beginTransaction();
 				DB::rollBack();
@@ -69,7 +69,6 @@ Database
 
 					
 	Query Builder
-
 		Raw SQL
 			$users = DB::raw('Select * from tablename where user = ?',['data'])->get()
 				->selectRaw('price * ? as price_with_tax', [1.0825])
@@ -163,9 +162,14 @@ Database
 				['name' => 'John'],	//where
 				['votes' => '2']	//update or insert all with where
 			);
+			->increment('votes', 5);
+			->increment('votes', 1, ['name' => 'John']); //with extra updated fields
+			->decrement('votes');
+			->decrement('votes', 5);
 
 		Delete
 			->where('votes', '>', 100)->delete();
+			->truncate();
 
 		Querying Relationships
 			whereBelongsTo($user)->get();
