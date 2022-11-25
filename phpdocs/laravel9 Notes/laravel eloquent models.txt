@@ -135,13 +135,15 @@ Relationships
     public function name()
     {
         return $this->hasOne | belongsTo | hasMany(AnotherModel::class);  // uses id to tbl_id column, or $primaryKey
-        return $this->hasOne | belongsTo | hasMany(AnotherModel::class, 'foreign_key'); //uses new column
-        return $this->hasOne | belongsTo | hasMany(AnotherModel::class, 'foreign_key', 'local_key');
+
+        return $this->hasOne(AnotherModel::class, 'anothermodel_table_key', 'model_table_key');
+        return $this->hasMany(AnotherModel::class, 'anothermodel_table_key', 'model_table_key');
+        return $this->belongsTo(AnotherModel::class, 'model_table_key', 'anothermodel_table_key');
             ->withDefault();
             ->withDefault([ 'name' => 'Guest Author', ]);
 
         return $this->hasOneThrough | hasManyThrough(Owner::class, Car::class);
-            ->hasOneThrough(
+            ->hasOneThrough | hasManyThrough(
                 Owner::class,
                 Car::class,
                 'mechanic_id', // Foreign key on the cars table...
