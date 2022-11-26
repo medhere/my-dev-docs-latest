@@ -137,7 +137,10 @@ REACT-HOOK-FORM
 		Object.entries(err.response.data).forEach(([key, value]) => {
 			setError(key,{message:value})
 		});
+		
 		errorBoolean={!!errors.password} errorText={errors.password?.message}
+
+		{!!errors.password && errors?.password?.message}
 
 
 	
