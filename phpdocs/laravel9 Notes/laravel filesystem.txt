@@ -54,6 +54,8 @@ Filesystem
 
 		$path = $request->file('avatar')->storeAs('avatars', 'photo.jpg');	//use a name
 		$path = Storage::putFileAs('avatars', $request->file('avatar'), 'photo.jpg');	//use a name
+
+		$path = Storage::disk('diskname')->putFileAs('foldername', $request->image, 'imagename.'.$request->image->extension);	//use a name
 		
 		$path = $request->file('avatar')->store('avatars/photo.jpg', 'local');	//select disk
 		$path = $request->file('avatar')->storeAs('avatars', 'photo.jpg', 'local');	//select disk
