@@ -82,6 +82,7 @@ DB Migrations
 				binary('name')	//BLOB
 				boolean()
 				char('name', 1000)
+				decimal('quantity', 18, 2)
                 datetime()
                 date()
 				id()	//for auto-incrementing primary key as id or 'colname'
