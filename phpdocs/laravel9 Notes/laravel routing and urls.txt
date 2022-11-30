@@ -129,19 +129,19 @@ Routing
 
 
 URLs
-url("/posts/{$post->id}");
-url()->current();
-url()->full();
-url()->previous();
-route('post.show', ['post' => 1, 'search' => 'rocket']); //can be used for both route and query params
-action([UserController::class, 'profile'], ['id' => 1]);
+	url("/posts/{$post->id}");
+	url()->current();
+	url()->full();
+	url()->previous();
+	route('post.show', ['post' => 1, 'search' => 'rocket']); //can be used for both route and query params
+	action([UserController::class, 'profile'], ['id' => 1]);
 
 use Illuminate\Support\Facades\URL;
-URL::current();
-URL::signedRoute('unsubscribe', ['user' => 1]);
-URL::temporarySignedRoute('unsubscribe', now()->addMinutes(30), ['user' => 1]);
-	to verify
-	if (! $request->hasValidSignature()) {
-        abort(401);
-    }
+	URL::current();
+	URL::signedRoute('unsubscribe', ['user' => 1]);
+	URL::temporarySignedRoute('unsubscribe', now()->addMinutes(30), ['user' => 1]);
+		to verify
+		if (! $request->hasValidSignature()) {
+			abort(401);
+		}
 
