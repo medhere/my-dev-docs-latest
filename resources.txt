@@ -125,9 +125,12 @@ www12.lunapic.com/editor/
 onlinepngtools.com
 astro.build/
 reactjsexample.com
+https://smalldev.tools/
+https://ahooks.js.org/
 usehooks.com/
 devhints.io/
 flaviocopes.com
+
 
 
 UI Frameworks
