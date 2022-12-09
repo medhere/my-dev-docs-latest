@@ -1,4 +1,8 @@
 php artisan  
+	call a command 
+		Artisan::call('migrate:fresh --seed')
+
+
 	about                  Display basic information about your application
 	clear-compiled         Remove the compiled class file
 	completion             Dump the shell completion script
@@ -125,3 +129,5 @@ php artisan
 	view
 	view:cache             Compile all of the application's Blade templates
 	view:clear             Clear all compiled view files
+
+
