@@ -47,18 +47,25 @@ Response
 				'cookie_name',
 			];
 	
+	
+
+
 	Redirect
 		return redirect('home/dashboard');
-		return back()->withInput();	//if form data stored in session
 		return redirect()->route('login');	//to named route
 		return redirect()->route('profile', ['id' => 1]);	// /profile/{id}
 		
 		use App\Http\Controllers\Nameofcontroller;
 		return redirect()->action([Nameofcontroller::class, 'index']);
 		return redirect()->action([Nameofcontroller::class, 'profile'], ['id' => 1]);	//with route parameters
-		
+
 		return redirect()->away('https://www.google.com');	//outside domain
-		return redirect('dashboard')->with('status', 'Profile updated!');	//flash session data
+
+		with flash data
+			return back()->withInput();	//if form data stored in session
+			return redirect('dashboard')->with('status', 'Profile updated!');	//flash session data
+			return back()->with('status', 'Profile updated!');
+
 			display flashed data in blade
 				@if (session('status'))
 					<div class="alert alert-success">
