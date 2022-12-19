@@ -2,11 +2,32 @@ Filesystem
 	Config
 		config/filesystems.php
 		use Illuminate\Support\Facades\Storage;
+
+		'local' => [
+			'driver' => 'local',
+			'root' => storage_path('app'),
+			'read-only' => true,
+			'url' => env('APP_URL').'/storage',
+			'visibility' => 'public',
+			'permissions' => [
+				'file' => [
+					'public' => 0644,
+					'private' => 0600,
+				],
+				'dir' => [
+					'public' => 0755,
+					'private' => 0700,
+				],
+			],
+		],
+
+
 	
 	The Local Driver
 		stroes at storage/app directory. Therefore, the following method would write to storage/app/example.txt:
 			Storage::disk('local')->put('example.txt', 'Contents');
 			Storage::put('avatars/1', $content);		// store to default disk
+			Storage::put('avatars/1', $content, 'public|private');		// store to default disk
 	
 	On-Demand Disks
 		create disk and use
@@ -44,9 +65,12 @@ Filesystem
 		Storage::deleteDirectory($directory);		//remove a directory and all of its files
 
 		use Illuminate\Http\File;
-		$path = Storage::putFile('photos', new File('/path/to/photo'));	// Automatically generate a unique ID for filename...
-		$path = Storage::putFileAs('photos', new File('/path/to/photo'), 'photo.jpg');	// Manually specify a filename...	
+		$path = Storage::putFile('photos', new File('/path/to/photo', 'public'));	// Automatically generate a unique ID for filename...
+		$path = Storage::putFileAs('photos', new File('/path/to/photo'), 'photo.jpg', 'public');	// Manually specify a filename...	
 
+	File Visibility
+		$visibility = Storage::getVisibility('file.jpg'); 
+		Storage::setVisibility('file.jpg', 'public');
 
 	File Uploads
         $path = $request->file('avatar')->store('avatars');	//uuid for name
