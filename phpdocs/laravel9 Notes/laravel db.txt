@@ -80,11 +80,12 @@ Database
 		Select
 		DB::table('tablename')
 			returning query results
-				rows/cols	->get()		foreach ($users as $user) {}, foreach ($users as $name => $user) {}
-				1 row		->first()	$array->key;
-				1 col 		->value('email');
-				id column	->find(3);
-				col list	->pluck('title');
+				retrieve data			
+					rows/cols	->get()		foreach ($users as $user) {}, foreach ($users as $name => $user) {}
+					1 row		->first()	$array->key;
+					id column	->find(3);
+					col list	->pluck('title');
+					1 col 		->value('email');
 				slow paced	->lazy()
 							->lazyById()->each(function ($user) {};
 							->exists()	//with if statement
