@@ -78,14 +78,28 @@ Methods
     ->only(['product_id', 'name']);
     ->pluck('name');
     ->pluck('key.subkey');
+    ->pop()
+    ->prepend()
     ->pull('name');
-    ->random();
+    ->push()
+    ->put('key','value')
+    ->random() ->random(3);
+    ->range(3, 6);
+    ->reduce(function ($carry, $item) {
+        return $carry + $item;
+    });
+    ->reject(function ($value, $key) {
+        return $value > 2;
+    });
+    ->replace([numerickey => 'Victoria']);
     ->reverse();
     ->search(4);
     ->search(function ($item, $key) {
         return $item > 5;
     });
+    ->shift() ->shift(3)
     ->shuffle();
+    ->skip() ->skip(4)
     ->slice(4, 2);
     ->sort(); sortDesc()
     ->sortBy('key', SORT_NATURAL); sortByDesc()
@@ -101,7 +115,7 @@ Methods
     ->split(3);
     ->sum('key');
     ->toArray();
-    toJson()
+    ->toJson()
     ->transform(function ($item, $key) {
         return $item * 2;
     });
