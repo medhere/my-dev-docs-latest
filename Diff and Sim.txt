@@ -33,7 +33,7 @@ Route Params/Response
 String Literals
 	Python	"{var} {func()}" 
 	JS		"${var}"
-	Laravel	"$var {$func(var)}"
+	Laravel/PHP	"$var {$func(var)}"
 
 
 Templating/Layouts/Props

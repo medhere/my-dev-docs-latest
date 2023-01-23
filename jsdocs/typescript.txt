@@ -1,0 +1,245 @@
+types
+        Casts
+    :boolean = true
+    :number = 1
+    :bigint = 111111111111111n
+    :string = ''
+    :any
+    :unknown
+    :never
+    :undefined = undefined
+    :null = null
+        Array
+    :Array<number> = [...]
+    :ReadonlyArray<string> = [...]
+    :string|number|any[] = [...]
+    :readonly string|number|any[] = [...]
+    :number [][] = [[],[],...]
+        Array Tuple
+    :[number, number, string] = [1,1,'']
+    :[x: number, y: number] = [1,1]
+    :readonly [number, number, string] = [1,1,'']
+        Object
+    :object[]
+    :{ key1: string, key2?: number } = {key1:'', key2:1} //? for optional
+    :{ [key: string]: number } = {'abc':123}
+        Function
+    :void //functions return type for no returns
+
+Type Aliases
+    type CarYear = number
+    const car:CarYear = 1
+
+    type Rectangle = {
+        readonly height: number;
+        width?: number;
+    }
+
+    type Circle = Rectangle & { ... }
+
+Interface
+    interface Rectangle {
+        height?: number;
+        readonly width: number;
+        area: ()=> string; //returns string
+        area(): string
+    }
+    const shape:Rectangle = {height:1, width:2}
+
+    interface ColoredRectangle extends Rectangle {
+        color: string
+    }
+    const shape:ColoredRectangle = {height:1, width:2, color:''}
+
+Union and Intersections
+    : string | number
+    : (string | number)[]
+    : 'value' | 'value' | 'value'
+    : Typealiase | Typealiase
+    : string & number
+
+Enum
+    const enum CardinalDirections {
+        North = 'North',
+        East = "East",
+        South = "South",
+        West = "West"
+    };
+    console.log(CardinalDirections.North);
+
+Functions
+    function multiply(a: number, exponent: number = 10, b?: number, ...rest: string|number|any[] ): void { ... }
+    function divide({ dividend, divisor }: { dividend: number, divisor: number }) { ... } //named params
+
+    type Negate = (value: number) => number;
+        const negateFunction: Negate = (value) => value * -1;
+
+Casting or Type Assertion (as or <>)
+    let x: unknown = 'hello';
+    (x as string).length;
+    (<string>x).length;
+
+Class
+    class User {
+        constructor(
+            public name: string,
+            private phone: number
+        ){ ... }
+    }
+
+    class Person {
+        name1: string = '';
+        public name2: string;
+        private name3: string;
+        protected name4: string;
+        public|private|protected readonly name5: string;
+
+        public constructor(name1: string, private name2: string) {
+            this.name1 = name1;
+        }
+
+        public getName(): string {
+            return this.name;
+        }
+    }
+
+    const person = new Person();
+    person.name = "Jane";
+
+Class Inheritance
+    interface Shape {
+        getArea: () => number;
+    }
+
+    class Rectangle implements Shape {
+        public constructor(width: number, height: number) {}
+        public getArea(): number {
+            return this.width * this.height;
+        }
+
+        public toString(): string {
+            return `Rectangle[width=${this.width}, height=${this.height}]`;
+        }
+    }
+
+    class Square extends Rectangle {
+        public constructor(width: number) {
+            super(width, width);
+        }
+        // getArea gets inherited from Rectangle
+
+        // this toString replaces the toString from Rectangle
+        public override toString(): string {
+            return `Square[width=${this.width}]`;
+        }
+    }
+
+
+Generics
+    Type Aliases
+        type Wrapped<T> = T; 
+            Default
+        type Wrapped<T = string> = T; // = string is default casts
+            extends (fixed)
+        type Wrapped<T extends string | number> = T; // extends forces fixed casts
+        type Add<T> = (a: T, b: T) => T
+        
+        const wrappedValue: Wrapped<number> = 10;
+
+    Interface
+        interface Wrapped<T> { 
+            height: T,
+            width: T 
+        };
+        
+        const wrappedValue: Wrapped<number> = { height: 10, width:10 };
+
+    Function
+        function createPair<S, T extends Interface>(v1: S, v2: T): [S, T] {
+            return [v1, v2];
+        }
+        createPair<string, number>('hello', 42); // ['hello', 42]
+
+    Class
+        class NamedValue<T> {
+            private _value: T | undefined;
+
+            constructor(private name: string) { ... }
+
+            public setValue(value: T) {
+                this._value = value;
+            }
+
+            public toString(): string {
+                return `${this.name}: ${this._value}`;
+            }
+        }
+
+        let value = new NamedValue<number>('myNumber');
+        value.setValue(10);
+        value.toString(); // myNumber: 10
+
+Utility Types
+    interface Point {
+        x: number,
+        y?: number,
+        z: number
+    }
+
+    : Partial<Point>  // Partial allows x y z to be optional
+    : Required<Point>   // Required forces x y z to be defined
+    : Record<string, number> is equivalent to { [key: string]: number }
+        :  Record<"key1" | "key2", number>
+            // {
+            //   key1: number;
+            //   key2: number;
+            // }
+        : Record<'key1' | 'key2' | 'key3' ,
+                    { id: string, title: string }
+                >;
+    : Omit<Point, 'x' | 'y'> // Omit removes x y
+    : Pick<Point, 'y' | 'z'> // Pick only y z 
+    : Readonly<Point>
+
+    type Cast = string | number | boolean
+        : Exclude<Cast, string> // remove string from union
+
+    type PointGenerator = () => { x: number; y: number; };
+        : ReturnType<PointGenerator> = { x: 10, y: 20 };
+    type Response = ReturnType<typeof axios>
+        function callAPI(): Response{
+            return axios("url")
+        }
+
+    type PointPrinter = (p: { x: number; y: number; }) => void;
+    : Parameters<PointPrinter>[0] = { x: 10, y: 20 };
+
+keyof
+
+    // `keyof Point` here creates a union type of x and y
+    interface Point {
+        x: string;
+        y: number;
+    }
+    function printPointProperty(line: Point, key: keyof Point) {
+        console.log(`Printing Point key ${line}: ${line[key]}`);
+    }
+    printPointProperty({ x: "Max", y: 27 }, "name"); // Printing Point key x: "Max"
+
+
+    // `keyof StringMap` resolves to `string` here
+    type StringMap = { [key: string]: unknown };
+    function createStringPair(property: keyof StringMap, value: string): StringMap {
+        return { [property]: value };
+    }
+
+typeof
+    let s = "hello";
+    let n: typeof s;
+        //let n: string
+
+instanceof
+    if (x instanceof Interface)
+
+in
+    if('string' in type)
