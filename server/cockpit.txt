@@ -1,0 +1,11 @@
+cockpit Installation
+
+apt update
+apt install cockpit -y
+systemctl start cockpit
+systemctl status cockpit
+
+ufw allow 9000/tcp
+https://ip:9090
+
+install applications: cockpit-navigator
