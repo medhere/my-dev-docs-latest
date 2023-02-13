@@ -72,6 +72,7 @@ Database
 		Raw SQL
 			$users = DB::raw('Select * from tablename where user = ?',['data'])->get()
 				->selectRaw('price * ? as price_with_tax', [1.0825])
+				->select(DB::raw('sum(order_lines.quantity*order_lines.per_qty) AS total_sales'))
 				->whereRaw | orWhereRaw('price > IF(state = "TX", ?, 100)', [200])
 				->havingRaw | orHavingRaw('SUM(price) > ?', [2500])
 				->orderByRaw('updated_at - created_at DESC')
