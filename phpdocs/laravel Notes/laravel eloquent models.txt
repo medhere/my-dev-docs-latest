@@ -47,7 +47,9 @@ Model settings
 Selecting
   // use query builder
     Model::all()
+            all(['column1','column2'])
     ::where('active', 1)->get();
+                        ->get(['column1','column2']);
 
     find
     ::find(1);    //primary key

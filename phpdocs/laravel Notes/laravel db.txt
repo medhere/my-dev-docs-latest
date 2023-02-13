@@ -82,6 +82,7 @@ Database
 			returning query results
 				retrieve data			
 					rows/cols	->get()		foreach ($users as $user) {}, foreach ($users as $name => $user) {}
+								->get(['column1','column2'])
 					1 row		->first()	$array->key;
 					id column	->find(3);
 					col list	->pluck('title');
