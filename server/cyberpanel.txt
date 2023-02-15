@@ -173,3 +173,55 @@ Extra Settings
                             Enable csf and lfd if previously disabled
                      -v,  --version
                             Show csf version
+
+       Nameserver setup
+              buy domain
+              create personal dns server or glue record 
+                     point ns1.domain and ns2.domain to server IP
+              switch domain name servers to new ns1 and ns2 servers
+              create new website account for domain on server
+
+              create NS records by
+              1. Create Nameserver and set ns1.doamin and ns2.domain to server ip
+              2. go to zones/records, 
+              add A record as 
+                     ns1.domain > server ip
+                     ns2.domain > server ip
+              add ns records as 
+                     domain > ns1.domain
+                     domain > ns2.domain
+              wait for propergation
+
+
+       Change mail server port to 2525 Cyberpanel
+              There you can issue SSL for MailServer.
+              Go to https:/:8090/manageSSL/sslForMailServer
+
+              Create email acct
+              https://:8090/email/createEmailAccount
+
+              listen on non-standard SMTP port such as 2525.
+              Open /etc/postfix/master.cf, and 
+                     just after 
+                            smtp inet n – n – – smtpd 
+                     paste:
+                            2525 inet n - n - - smtpd
+
+              Then
+              netstat -lntu
+
+              configure your web application to send emails via this mail server.
+
+              Option	Value
+              SMTP Host	Domain for which you issued MailServer SSL.
+              SMTP User	Email that you just created.
+              SMTP Password	Password for the above email.
+              SMTP Port	2525
+
+
+       Edit Login
+              This is the path to edit: /usr/local/CyberCP/loginSystem/templates/loginSystem/
+              Inside this path, you will find login.html
+              Edit this file to make changes to the login screen.
+
+
