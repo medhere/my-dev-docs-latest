@@ -224,8 +224,12 @@ Extra Settings
 
 
        Edit UI
+              Login
               This is the path to edit: /usr/local/CyberCP/loginSystem/templates/loginSystem/login.html
               Edit this file to make changes to the login screen.
+
+              Dashboard
+              /usr/local/CyberCP/baseTemplate/templates/baseTemplate/index.html
 
 
 
