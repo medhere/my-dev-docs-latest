@@ -26,6 +26,9 @@ Installation
 		Panel and openlitespeed username: admin                              
 		Panel and openlitespeed password: 1234567
 
+       To Restart
+       systemctl restart lscpd
+
 Extra Settings
 	docker -> install
 	mail settings
