@@ -6,6 +6,8 @@ Installation
 	In a web browser, you can view:
 	* CyberPanel: https://35.209.222.125:8090
 	* openlitespeed: https://35.209.222.125:7080
+              cd /usr/local/lsws/admin/misc
+              sudo ./admpass.sh to reset username and password
 	* phpMyAdmin: https://35.209.222.125:8090/dataBases/phpMyAdmin
 	* Rainloop:   https://35.209.222.125:8090/rainloop
 	On the server:
@@ -38,7 +40,7 @@ Extra Settings
 			login with system root and password login
               
 		CSF (CONFIGSERVER SECURITY AND FIREWALL) -> install (reroutes firewall option)
-              (csf uses iptables underneath, normal cyberpanel uses firewalld)
+              (csf uses iptables underneath, normal cyberpanel uses firewalld (firewall-cmd))
 			use in cmd - 
                      csf -h
                      -h,  --help
@@ -207,6 +209,8 @@ Extra Settings
                      paste:
                             2525 inet n - n - - smtpd
 
+              sudo postfix reload
+
               Then
               netstat -lntu
 
@@ -219,9 +223,10 @@ Extra Settings
               SMTP Port	2525
 
 
-       Edit Login
-              This is the path to edit: /usr/local/CyberCP/loginSystem/templates/loginSystem/
-              Inside this path, you will find login.html
+       Edit UI
+              This is the path to edit: /usr/local/CyberCP/loginSystem/templates/loginSystem/login.html
               Edit this file to make changes to the login screen.
+
+
 
 
