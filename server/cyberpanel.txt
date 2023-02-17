@@ -227,6 +227,7 @@ Extra Settings
 
 
        Edit UI
+       restart after changes
               Login
               This is the path to edit: /usr/local/CyberCP/loginSystem/templates/loginSystem/login.html
               Edit this file to make changes to the login screen.
