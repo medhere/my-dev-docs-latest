@@ -1,0 +1,70 @@
+Set Up Cache Database
+    Schema::create('cache', function (Blueprint $table) {
+        $table->string('key')->unique();
+        $table->text('value');
+        $table->integer('expiration');
+    });
+
+Select Store
+Cache::store('redis')->
+
+Retrieve
+    $value = Cache::get('key');
+    $value = Cache::get('key', 'default');
+    $value = Cache::get('key', function () {
+        return DB::table(/* ... */)->get();
+    });
+
+Check
+    if (Cache::has('key')) {
+        // ...
+    }
+
+Increment and Decrement
+    Cache::increment('key');
+    Cache::increment('key', $amount);
+    Cache::decrement('key');
+    Cache::decrement('key', $amount);
+
+Retrieve and Store
+    $value = Cache::remember('users', $seconds, function () {
+        return DB::table('users')->get();
+    });
+
+Retrieve and Delete
+    $value = Cache::pull('key');
+
+Save
+    Cache::put('key', 'value', $seconds = 10);
+    Cache::put('bar', 'baz', 600); // 10 Minutes
+    Cache::put('key', 'value', now()->addMinutes(10));
+
+Store If Not Present
+    Cache::add('key', 'value', $seconds);
+
+Storing Items Forever
+    Cache::forever('key', 'value');
+
+Delete
+    Cache::forget('key');
+    Cache::flush();
+
+Helpers
+    $value = cache('key');
+    cache(['key' => 'value'], $seconds);
+    cache()->remember('users', $seconds, function () {
+        return DB::table('users')->get();
+    });
+
+Cache
+    Storing Tagged Cache Items
+    Cache::tags(['people', 'artists'])->put('John', $john, $seconds);    
+    Cache::tags(['people', 'authors'])->put('Anne', $anne, $seconds);
+
+    Accessing Tagged Cache Items
+    $john = Cache::tags(['people', 'artists'])->get('John'); 
+    $anne = Cache::tags(['people', 'authors'])->get('Anne');
+
+    Removing Tagged Cache Items
+    Cache::tags(['people', 'authors'])->flush();
+    Cache::tags('authors')->flush();

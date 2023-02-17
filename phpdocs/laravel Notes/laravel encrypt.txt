@@ -4,16 +4,11 @@ Encryption
 	use php artisan key:generate
 
 	Encrypt
-	use Illuminate\Support\Facades\Crypt;
-	use Illuminate\Contracts\Encryption\DecryptException;
-		$request->user()->fill([
-			'token' => Crypt::encryptString($request->token),
-		])->save();
-
+		Crypt::encryptString($request->token),
+	
 	Decrypting A Value
-
-	try {
-		$decrypted = Crypt::decryptString($encryptedValue);
-	} catch (DecryptException $e) {
-		//
-	}
+		try {
+			$decrypted = Crypt::decryptString($encryptedValue);
+		} catch (DecryptException $e) {
+			//
+		}

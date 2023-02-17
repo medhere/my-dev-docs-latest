@@ -1,0 +1,64 @@
+Set a gate
+    App\Providers\AuthServiceProvider
+
+    use App\Models\Post;
+    use App\Models\User;
+    use Illuminate\Support\Facades\Gate;
+    public function boot(): void
+    {
+        Gate::define('update-post', function (User $user, Post $post) {
+            return $user->id === $post->user_id;
+        });
+    }
+
+
+    use App\Policies\PostPolicy;
+    use Illuminate\Support\Facades\Gate;
+    public function boot(): void
+    {
+        Gate::define('update-post', [PostPolicy::class, 'update']);
+    }
+
+
+    used in controller Actions
+        if (! Gate::allows('update-post', $post)) {
+            abort(403);
+        }
+
+        if (Gate::any(['update-post', 'delete-post'], $post)) {
+        // The user can update or delete the post...
+        }
+        
+        if (Gate::none(['update-post', 'delete-post'], $post)) {
+            // The user can't update or delete the post...
+        }
+
+        Gate::authorize('update-post', $post);
+
+
+gate responses
+    use App\Models\User;
+    use Illuminate\Auth\Access\Response;
+    use Illuminate\Support\Facades\Gate;
+    
+    Gate::define('edit-settings', function (User $user) {
+        return $user->isAdmin
+                    ? Response::allow()
+                    : Response::deny('You must be an administrator.');
+    });
+
+    used in controller actions
+        $response = Gate::inspect('edit-settings');
+        
+        if ($response->allowed()) {
+            // The action is authorized...
+        } else {
+            echo $response->message();
+
+Inline Authorization
+    use App\Models\User;
+    use Illuminate\Support\Facades\Gate;
+    
+    Gate::allowIf(fn (User $user) => $user->isAdministrator());
+    
+    Gate::denyIf(fn (User $user) => $user->banned());
