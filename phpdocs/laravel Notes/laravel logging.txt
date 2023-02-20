@@ -1,0 +1,34 @@
+config/logging.php
+
+'channels' => [
+    'stack' => [
+        'driver' => 'stack',
+        'channels' => ['syslog', 'slack'],
+    ],
+ 
+    'syslog' => [
+        'driver' => 'syslog',
+        'level' => 'debug',
+    ],
+ 
+    'slack' => [
+        'driver' => 'slack',
+        'url' => env('LOG_SLACK_WEBHOOK_URL'),
+        'username' => 'Laravel Log',
+        'emoji' => ':boom:',
+        'level' => 'critical',
+    ],
+],
+
+
+Usage
+use Illuminate\Support\Facades\Log;
+ 
+Log::emergency($message);
+Log::alert($message);
+Log::critical($message);
+Log::error($message);
+Log::warning($message);
+Log::notice($message);
+Log::info($message);
+Log::debug($message);
