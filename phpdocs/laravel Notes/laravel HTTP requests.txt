@@ -13,26 +13,22 @@ HTTP requests
 		$response->failed() : bool;
 		$response->serverError() : bool;
 		$response->clientError() : bool;
+		$response->onError(callable $callback);
 		$response->header($header) : string;
 		$response->headers() : array;
-	$response = Http::post('http://example.com/users', ['name' => 'Steve' , 'role' => 'Network Administrator']);	//as post
-	$response = Http::asForm()->post('http://example.com/users', ['name' => 'Sara' , 'role' => 'Privacy Consultant',]);	//as a form
-	$response = Http::attach('attachment', file_get_contents('photo.jpg'), 'photo.jpg')->post('http://example.com/attachments');	//with attachments
-	$response = Http::withHeaders(['X-First' => 'foo','X-Second' => 'bar'])->post('http://example.com/users', ['name' => 'Taylor']);	//with headers
-	$response = Http::accept('application/json')->get('http://example.com/users');	//specify type of response
-	$response = Http::withBasicAuth('taylor@laravel.com', 'secret')->post(/* ... */);
- 	$response = Http::withDigestAuth('taylor@laravel.com', 'secret')->post(/* ... 
-	$response = Http::withToken('token')->post(...);	//using bearer token
-	$response = Http::timeout(3)->get(...);		//timeout in secs
-	$response = Http::connectTimeout(3)->get(...);
-	$response = Http::retry(number, millisecs)->post(...);		//retry
+			$response = Http::post('http://example.com/users', ['name' => 'Steve' , 'role' => 'Network Administrator']);	//as post
+			$response = Http::asForm()->post('http://example.com/users', ['name' => 'Sara' , 'role' => 'Privacy Consultant',]);	//as a form
+			$response = Http::attach('attachment', file_get_contents('photo.jpg'), 'photo.jpg')->post('http://example.com/attachments');	//with attachments
+			$response = Http::withHeaders(['X-First' => 'foo','X-Second' => 'bar'])->post('http://example.com/users', ['name' => 'Taylor']);	//with headers
+			$response = Http::accept('application/json')->get('http://example.com/users');	//specify type of response
+			$response = Http::withBasicAuth('taylor@laravel.com', 'secret')->post(/* ... */);
+			$response = Http::withDigestAuth('taylor@laravel.com', 'secret')->post(/* ... 
+			$response = Http::withToken('token')->post(...);	//using bearer token
+			$response = Http::timeout(3)->get(...);		//timeout in secs
+			$response = Http::connectTimeout(3)->get(...);
+			$response = Http::retry(number, millisecs)->post(...);		//retry
 	
 	Errors
-		$response->successful();
-		$response->failed();
-		$response->clientError();
-		$response->serverError();
-		$response->onError(callable $callback);
 		return Http::post(...)->throw()->json();
 		return Http::post(...)->throw(function ($response, $e) {})->json();
 	
