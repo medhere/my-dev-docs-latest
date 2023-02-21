@@ -1,0 +1,105 @@
+get notifcation channels from https://laravel-notification-channels.com/
+
+app/Notifications directory. 
+php artisan make:notification InvoicePaid
+
+in Notification class
+
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\MailMessage;
+ 
+class InvoicePaid extends Notification implements ShouldQueue
+{
+    use Queueable; 
+    private $invoice
+    public function __construct(){
+        $this->afterCommit();   //add this to enable sending after db tx commit
+        $this->invoice = $invoice;
+    }
+
+    public function via($notifiable){
+        return [mail]; //mail, database, broadcast, vonage, and slack
+    }
+
+    public function toMail($notifiable)
+    {
+        return (new MailMessage)
+            ->greeting($this->invoive)
+            ->action('Open Web', url('/'))
+            ->line('Thank you!');
+
+         return (new MailMessage)
+            ->mailer('sendmail')
+            ->subject('Notification Subject')
+            ->from('barrett@example.com', 'Barrett Blair')
+            ->attach('/path/to/file')
+            ->attach('/path/to/file', [
+                'as' => 'name.pdf',
+                'mime' => 'application/pdf',
+            ])
+            ->attachData($this->pdf, 'name.pdf', [
+                'mime' => 'application/pdf',
+            ])
+            ->metadata('comment_id', $this->comment->id)
+            ->error() //action will be red
+            ->greeting('Hello!')
+            ->line('One of your invoices has been paid!')
+            ->lineIf($this->amount > 0, "Amount paid: {$this->amount}")
+            ->action('View Invoice', $url)
+            ->line('Thank you for using our application!');
+            OR
+            ->view(
+                'emails.name', ['invoice' => $this->invoice]
+            );
+    }
+}
+
+using notify trait
+    use in Model
+        use Illuminate\Notifications\Notifiable;
+        class User extends Authenticatable
+        {
+            use Notifiable;
+        }
+
+    use in controller
+        use App\Notifications\InvoicePaid;  
+        $user->notify(new InvoicePaid($invoice));
+
+using facade
+    use in controller
+        use Illuminate\Support\Facades\Notification;
+        Notification::send($user, new InvoicePaid($invoice));
+        Notification::sendNow($user, new InvoicePaid($invoice));
+
+On-Demand Notifications
+    use Illuminate\Broadcasting\Channel; 
+    Notification::route('mail', 'taylor@example.com')
+        ->route('mail', [ 'barrett@example.com' => 'Barrett Blair', ])
+        ->route('vonage', '5555555555')
+        ->route('slack', 'https://hooks.slack.com/services/...')
+        ->route('broadcast', [new Channel('channel-name')])
+        ->notify(new InvoicePaid($invoice));
+
+Using database as notifcation channel
+    php artisan notifications:table
+    php artisan migrate
+
+    Accessing The Notifications
+        $user = App\Models\User::find(1);
+        
+        foreach ($user->notifications as $notification) {
+            echo $notification->type;
+        } 
+        foreach ($user->unreadNotifications as $notification) {
+            echo $notification->type;
+        }
+        foreach ($user->unreadNotifications as $notification) {
+            $notification->markAsRead();
+        }
+
+        $user->unreadNotifications->markAsRead(); 
+        $user->unreadNotifications()->update(['read_at' => now()]);
+        $user->notifications()->delete();
