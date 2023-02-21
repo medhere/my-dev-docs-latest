@@ -20,18 +20,53 @@ HTTP requests
 	$response = Http::attach('attachment', file_get_contents('photo.jpg'), 'photo.jpg')->post('http://example.com/attachments');	//with attachments
 	$response = Http::withHeaders(['X-First' => 'foo','X-Second' => 'bar'])->post('http://example.com/users', ['name' => 'Taylor']);	//with headers
 	$response = Http::accept('application/json')->get('http://example.com/users');	//specify type of response
+	$response = Http::withBasicAuth('taylor@laravel.com', 'secret')->post(/* ... */);
+ 	$response = Http::withDigestAuth('taylor@laravel.com', 'secret')->post(/* ... 
 	$response = Http::withToken('token')->post(...);	//using bearer token
-	$response = Http::timeout(3)->get(...);		//timeout
-	$response = Http::retry(numner, millisecs)->post(...);		//retry
+	$response = Http::timeout(3)->get(...);		//timeout in secs
+	$response = Http::connectTimeout(3)->get(...);
+	$response = Http::retry(number, millisecs)->post(...);		//retry
 	
 	Errors
 		$response->successful();
 		$response->failed();
 		$response->clientError();
 		$response->serverError();
+		$response->onError(callable $callback);
 		return Http::post(...)->throw()->json();
 		return Http::post(...)->throw(function ($response, $e) {})->json();
 	
+	Dump Requests
+		Http::dd()->get('http://example.com');
+
+	With Guzzle options
+		$response = Http::withOptions([
+			'debug' => true,
+		])->get('http://example.com/users');
+
+		[
+			'allow_redirects' => [
+				'max'             => 10,        // allow at most 10 redirects.
+				'strict'          => true,      // use "strict" RFC compliant redirects.
+				'referer'         => true,      // add a Referer header
+				'protocols'       => ['https'], // only allow https URLs
+				'on_redirect'     => $onRedirect,
+				'track_redirects' => true
+			]
+			'allow_redirects' => false,
+			'version' => 1.0,
+			'decode_content' => 'gzip', //identity", "deflate", and "gzip
+		]
+
+	Pool Requests
+		use Illuminate\Http\Client\Pool;
+		$responses = Http::pool(fn (Pool $pool) => [
+			$pool->as('first')->get('http://localhost/first'),
+			$pool->as('second')->get('http://localhost/second'),
+			$pool->as('third')->get('http://localhost/third'),
+		]);
+		return $responses['first']->ok();
+
 	Faking Responses
 		Http::fake();
 		$response = Http::post(...);
