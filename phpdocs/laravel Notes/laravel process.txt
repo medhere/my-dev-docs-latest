@@ -1,0 +1,139 @@
+use Illuminate\Support\Facades\Process;
+ 
+$result = Process::run('ls -la');
+
+Output
+    $result->successful();
+    $result->failed();
+    $result->exitCode();
+    $result->output();
+    $result->errorOutput();
+    $result = Process::run('ls -la', function (string $type, string $output) {
+        echo $output;
+    });
+    if (Process::run('ls -la')->seeInOutput('laravel')) { } //seeInErrorOutput
+    $result = Process::quietly()->run('bash import.sh'); //disable output
+
+Throwing Exceptions
+    $result = Process::run('ls -la')->throw(); 
+    $result = Process::run('ls -la')->throwIf($condition);
+
+Working Directory Path
+    $result = Process::path(__DIR__)->run('ls -la');
+
+Timeouts
+    $result = Process::timeout(120)->run('bash import.sh');
+    $result = Process::forever()->run('bash import.sh');
+    $result = Process::timeout(60)->idleTimeout(30)->run('bash import.sh');
+
+Environment Variables
+    $result = Process::env(['IMPORT_PATH' => __DIR__]) ->run('bash import.sh');
+    $result = Process:: ->env(['LOAD_PATH' => false]) ->run('bash import.sh');
+
+TTY Mode
+    Process::forever()->tty()->run('vim');
+
+Asynchronous Processes
+    $process = Process::timeout(120)->start('bash import.sh'); 
+        while ($process->running()) { // ... }
+        $result = $process->wait();
+
+Process IDs & Signals
+    $process = Process::start('bash import.sh'); 
+        return $process->pid();
+    $process->signal(SIGUSR2);
+
+
+Asynchronous Process Output
+    $process = Process::timeout(120)->start('bash import.sh'); 
+    while ($process->running()) {
+        echo $process->latestOutput();
+        echo $process->latestErrorOutput();
+        sleep(1);
+    }
+
+    $process = Process::start('bash import.sh', function (string $type, string $output) {
+        echo $output;
+    }); 
+    $result = $process->wait();
+
+Concurrent Processes
+    use Illuminate\Process\Pool;
+    use Illuminate\Support\Facades\Process;
+ 
+    $pool = Process::pool(function (Pool $pool) {
+        $pool->path(__DIR__)->command('bash import-1.sh');
+        $pool->path(__DIR__)->command('bash import-2.sh');
+        $pool->path(__DIR__)->command('bash import-3.sh');
+    })->start(function (string $type, string $output, int $key) { // ... });
+    while ($pool->running()->isNotEmpty()) { // ... }    
+    $results = $pool->wait();
+    echo $results[0]->output();
+
+    [$first, $second, $third] = Process::concurrently(function (Pool $pool) {
+        $pool->path(__DIR__)->command('ls -la');
+        $pool->path(app_path())->command('ls -la');
+        $pool->path(storage_path())->command('ls -la');
+    });    
+    echo $first->output();
+
+    $pool = Process::pool(function (Pool $pool) {
+        $pool->as('first')->command('bash import-1.sh');
+        $pool->as('second')->command('bash import-2.sh');
+        $pool->as('third')->command('bash import-3.sh');
+    })->start(function (string $type, string $output, string $key) { // ... });
+    $results = $pool->wait();
+    echo $results['first']->output();
+
+Faking Process
+    Process::fake([
+        '*' => Process::result(
+            output: 'Test output',
+            errorOutput: 'Test error output',
+            exitCode: 1,
+        ),
+    ]);
+
+    Process::fake([
+        'cat *' => Process::result(
+            output: 'Test "cat" output',
+        ),
+        'ls *' => Process::result(
+            output: 'Test "ls" output',
+        ),
+    ]);
+
+    Process::fake([
+        'cat *' => 'Test "cat" output',
+        'ls *' => 'Test "ls" output',
+    ]);
+
+    Process::fake([
+        'ls *' => Process::sequence()
+            ->push(Process::result('First invocation'))
+            ->push(Process::result('Second invocation')),
+    ]);
+
+Faking Asynchronous Process Lifecycles
+    use Illuminate\Support\Facades\Log;
+    use Illuminate\Support\Facades\Route;
+ 
+    Route::get('/import', function () {
+        $process = Process::start('bash import.sh');
+    
+        while ($process->running()) {
+            Log::info($process->latestOutput());
+            Log::info($process->latestErrorOutput());
+        }
+    
+        return 'Done';
+    });
+
+    Process::fake([
+        'bash import.sh' => Process::describe()
+            ->output('First line of standard output')
+            ->errorOutput('First line of error output')
+            ->output('Second line of standard output')
+            ->exitCode(0)
+            ->iterations(3),
+    ]);

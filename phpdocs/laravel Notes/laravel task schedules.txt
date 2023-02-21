@@ -1,0 +1,128 @@
+defined in the app/Console/Kernel.php file's schedule method.
+php artisan schedule:list
+
+use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+ 
+class Kernel extends ConsoleKernel
+{
+    protected function schedule(Schedule $schedule): void
+    {
+        $schedule->call(function () {
+            //.. run command
+        })->daily();
+    }
+}
+
+Artisan Commands
+use App\Console\Commands\SendEmailsCommand;
+    $schedule->command('emails:send Taylor --force')->daily();
+    $schedule->command(SendEmailsCommand::class, ['Taylor', '--force'])->daily();
+
+Queued Jobs
+    use App\Jobs\Heartbeat;
+    $schedule->job(new Heartbeat);
+    $schedule->job(new Heartbeat, 'heartbeats', 'sqs');//specifies the queue name and queue connection
+
+Scheduling Shell Commands
+    $schedule->exec('node /home/forge/script.js')->daily();
+
+Schedule Frequency Options
+    ->cron('* * * * *');	Run the task on a custom cron schedule
+    ->everyMinute();	Run the task every minute
+    ->everyTwoMinutes();	Run the task every two minutes
+    ->everyThreeMinutes();	Run the task every three minutes
+    ->everyFourMinutes();	Run the task every four minutes
+    ->everyFiveMinutes();	Run the task every five minutes
+    ->everyTenMinutes();	Run the task every ten minutes
+    ->everyFifteenMinutes();	Run the task every fifteen minutes
+    ->everyThirtyMinutes();	Run the task every thirty minutes
+    ->hourly();	Run the task every hour
+    ->hourlyAt(17);	Run the task every hour at 17 minutes past the hour
+    ->everyOddHour();	Run the task every odd hour
+    ->everyTwoHours();	Run the task every two hours
+    ->everyThreeHours();	Run the task every three hours
+    ->everyFourHours();	Run the task every four hours
+    ->everySixHours();	Run the task every six hours
+    ->daily();	Run the task every day at midnight
+    ->dailyAt('13:00');	Run the task every day at 13:00
+    ->twiceDaily(1, 13);	Run the task daily at 1:00 & 13:00
+    ->twiceDailyAt(1, 13, 15);	Run the task daily at 1:15 & 13:15
+    ->weekly();	Run the task every Sunday at 00:00
+    ->weeklyOn(1, '8:00');	Run the task every week on Monday at 8:00
+    ->monthly();	Run the task on the first day of every month at 00:00
+    ->monthlyOn(4, '15:00');	Run the task every month on the 4th at 15:00
+    ->twiceMonthly(1, 16, '13:00');	Run the task monthly on the 1st and 16th at 13:00
+    ->lastDayOfMonth('15:00');	Run the task on the last day of the month at 15:00
+    ->quarterly();	Run the task on the first day of every quarter at 00:00
+    ->quarterlyOn(4, '14:00');	Run the task every quarter on the 4th at 14:00
+    ->yearly();	Run the task on the first day of every year at 00:00
+    ->yearlyOn(6, 1, '17:00');	Run the task every year on June 1st at 17:00
+    ->timezone('America/New_York');	Set the timezone for the task
+
+    Combined With
+    ->weekdays();	Limit the task to weekdays
+    ->weekends();	Limit the task to weekends
+    ->sundays();	Limit the task to Sunday
+    ->mondays();	Limit the task to Monday
+    ->tuesdays();	Limit the task to Tuesday
+    ->wednesdays();	Limit the task to Wednesday
+    ->thursdays();	Limit the task to Thursday
+    ->fridays();	Limit the task to Friday
+    ->saturdays();	Limit the task to Saturday
+    ->days(array|mixed);	Limit the task to specific days
+        ->days([0, 3]);
+        ->days([Schedule::SUNDAY, Schedule::WEDNESDAY]);
+    ->between($startTime, $endTime);	Limit the task to run between start and end times
+        ->between('7:00', '22:00');
+    ->unlessBetween($startTime, $endTime);	Limit the task to not run between start and end times
+        ->unlessBetween('7:00', '22:00');
+
+Preventing Task Overlaps
+    $schedule->command('emails:send')->withoutOverlapping();
+    $schedule->command('emails:send')->withoutOverlapping(10);
+
+Running Tasks On One Server
+    $schedule->command('report:generate') ->onOneServer();
+    $schedule->job(new CheckUptime('https://laravel.com'))->name('check_uptime:laravel.com')->onOneServer(); 
+    $schedule->call(fn () => User::resetApiRequestCount())->name('reset-api-request-count')->onOneServer();
+
+Background Tasks
+    $schedule->command('analytics:report') ->runInBackground();
+
+Running The Scheduler
+    * * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
+
+Running The Scheduler Locally
+    php artisan schedule:work
+
+Task Output
+    $schedule->command('emails:send')->sendOutputTo($filePath);
+    $schedule->command('emails:send')->appendOutputTo($filePath);
+    $schedule->command('report:generate')->sendOutputTo($filePath)->emailOutputTo('taylor@example.com');
+    $schedule->command('report:generate') ->emailOutputOnFailure('taylor@example.com');
+    The emailOutputTo, emailOutputOnFailure, sendOutputTo, and appendOutputTo methods are exclusive to the command and exec methods.
+
+Task Hooks
+    $schedule->command('emails:send')
+        ->before(function () { // The task is about to execute... })
+        ->after(function () { // The task has executed... });
+    $schedule->command('emails:send')
+        ->onSuccess(function () { // The task succeeded... })
+        ->onFailure(function () { // The task failed... });
+
+use Illuminate\Support\Stringable; 
+    $schedule->command('emails:send')
+        ->onSuccess(function (Stringable $output) { // The task succeeded... })
+        ->onFailure(function (Stringable $output) { // The task failed... });
+
+Pinging URLs
+    $schedule->command('emails:send')
+        ->pingBefore($url)
+        ->thenPing($url);
+    $schedule->command('emails:send')
+        ->pingBeforeIf($condition, $url)
+        ->thenPingIf($condition, $url);
+    $schedule->command('emails:send')
+        ->pingOnSuccess($successUrl)
+        ->pingOnFailure($failureUrl);
