@@ -1,0 +1,59 @@
+Install
+    composer require laravel/sanctum
+    php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+    php artisan migrate
+
+    add Sanctum's middleware to your api middleware group within your application's app/Http/Kernel.php file:
+    'api' => [
+        \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+        \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
+        \Illuminate\Routing\Middleware\SubstituteBindings::class,
+    ],
+
+Add to User Model
+    use Laravel\Sanctum\HasApiTokens;
+    class User extends Authenticatable
+    {
+        use HasApiTokens, HasFactory, Notifiable;
+    }
+
+Login and send token
+    $token = $request->user()->createToken($request->token_name);
+    return ['token' => $token->plainTextToken];
+
+Access all tokens
+    foreach ($user->tokens as $token) {
+        // ...
+    }
+
+
+Token Abilities
+    return $user->createToken('token-name', ['server:update'])->plainTextToken;
+    if ($user->tokenCan('server:update')) { // ... }
+
+protect api routes
+    Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+        return $request->user();
+    });
+
+Revoking Tokens
+    
+    $user->tokens()->delete(); // Revoke all tokens...
+    $request->user()->currentAccessToken()->delete(); // Revoke the token that was used to authenticate the current request...
+    $user->tokens()->where('id', $tokenId)->delete(); // Revoke a specific token...
+
+Token Expiration
+    config/sanctum.php
+    'expiration' => 525600,
+
+    schedule sanctum:prune-expired Artisan command
+
+CORS & Cookies
+    config/cors.php configuration
+    'supports_credentials'
+    
+    in js, set axios.defaults.withCredentials = true;
+
+    set session cookie domain, prefixing the domain with a leading . in config/session.php
+    'domain' => '.domain.com',
+

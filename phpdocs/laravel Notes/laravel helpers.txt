@@ -1,0 +1,75 @@
+Arrays & Objects
+    use Illuminate\Support\Arr;
+
+    Arr::accessible(['a' => 1, 'b' => 2]); //check if Arrays
+    Arr::add(['name' => 'Desk'], 'price', 100);
+    Arr::collapse([[1, 2, 3], [4, 5, 6], [7, 8, 9]]); //joins arrays
+    Arr::dot(['products' => ['desk' => ['price' => 100]]]); // ['products.desk.price' => 100] 
+    Arr::except(['name' => 'Desk', 'price' => 100], ['price']); // ['name' => 'Desk']
+    Arr::exists(['name' => 'John Doe', 'age' => 17], 'name'); // true
+    Arr::first([100, 200, 300], function (int $value, int $key) {
+        return $value >= 150;
+    }); // 200
+    Arr::forget(['products' => ['desk' => ['price' => 100]]], 'products.desk'); // ['products' => []]
+    Arr::get(['products' => ['desk' => ['price' => 100]]], 'products.desk.price'); // 100
+    Arr::has(['product' => ['name' => 'Desk', 'price' => 100]], ['product.name']); // true
+    Arr::hasAny(['product' => ['name' => 'Desk', 'price' => 100]], ['product.name']); // true
+    Arr::isAssoc(['product' => ['name' => 'Desk', 'price' => 100]]); // true
+    Arr::isList(['foo', 'bar', 'baz']); //true
+    Arr::join(['Tailwind', 'Alpine', 'Laravel', 'Livewire'], ', '); // Tailwind, Alpine, Laravel, Livewire 
+    Arr::last([100, 200, 300, 110], function (int $value, int $key) {
+        return $value >= 150;
+    }); // 300
+    Arr::map(['first' => 'james', 'last' => 'kirk'], function (string $value, string $key) {
+        return ucfirst($value);
+    });
+    Arr::only(['name' => 'Desk', 'price' => 100, 'orders' => 10], ['name', 'price']); // ['name' => 'Desk', 'price' => 100]
+    Arr::pluck($array, 'developer.name');
+    Arr::prepend(['one', 'two', 'three', 'four'], 'zero'); // ['zero', 'one', 'two', 'three', 'four']
+    Arr::pull(['name' => 'Desk', 'price' => 100], 'name'); // name: Desk // $array: ['price' => 100]
+    Arr::query([
+        'name' => 'Taylor',
+        'order' => [
+            'column' => 'created_at',
+            'direction' => 'desc'
+        ]
+    ];); // name=Taylor&order[column]=created_at&order[direction]=desc
+
+    Arr::random([1, 2, 3, 4, 5]); // 4 - (retrieved randomly)
+    Arr::random([1, 2, 3, 4, 5], 2); // [2, 5] - (retrieved randomly)
+    Arr::shuffle([1, 2, 3, 4, 5]); // [3, 2, 5, 1, 4] - (generated randomly)
+    Arr::sort(['Desk', 'Table', 'Chair']); // ['Chair', 'Desk', 'Table']
+
+    array_values(Arr::sort([
+        ['name' => 'Desk'],
+        ['name' => 'Table'],
+        ['name' => 'Chair'],
+    ], function (array $value) {
+        return $value['name'];
+    }));
+
+    Arr::sortDesc(['Desk', 'Table', 'Chair']);    // ['Table', 'Desk', 'Chair']
+    array_values(Arr::sortDesc([
+        ['name' => 'Desk'],
+        ['name' => 'Table'],
+        ['name' => 'Chair'],
+    ], function (array $value) {
+        return $value['name'];
+    }));
+
+    Arr::sortRecursive([
+        ['Roman', 'Taylor', 'Li'],
+        ['PHP', 'Ruby', 'JavaScript'],
+        ['one' => 1, 'two' => 2, 'three' => 3],
+    ]);
+
+    Arr::where([100, '200', 300, '400', 500], function (string|int $value, int $key) {
+        return is_string($value);
+    }); // [1 => '200', 3 => '400']
+
+Strings
+    e('<html>foo</html>'); //htmlspecialchars function with the double_encode option
+    
+    use Illuminate\Support\Str;
+    
+    Str::after('This is my name', 'This is'); // ' my name'

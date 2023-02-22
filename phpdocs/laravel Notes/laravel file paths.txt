@@ -7,10 +7,13 @@ Paths
 	$path = base_path('vendor/bin');
 
 	config dir
-	$path = config_path();
+	$path = config_path('app.php');
 
 	db dir
 	$path = database_path('factories/UserFactory.php');
+
+	lang dir
+	$path = lang_path('en/messages.php');
 
 	public dir
 	$path = public_path('css/app.css');
