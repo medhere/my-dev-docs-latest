@@ -27,7 +27,5 @@ paas coollabs.io coolify
 
 server purchase
 gcp
-contabo tier 1
-hetzner tier 2
 
 Suite 173, BEFS Plaza, 21 Ajose Adeogun Street, Utako, 900108, Abuja
