@@ -42,9 +42,13 @@ Extra Settings
 		imunifyav ->install 
 			login with system root and password login
               
+              this is not necessary
 		CSF (CONFIGSERVER SECURITY AND FIREWALL) -> install (reroutes firewall option)
               (csf uses iptables underneath, normal cyberpanel uses firewalld (firewall-cmd))
-			use in cmd - 
+              to switch to UFW, 
+                            systemctl stop firewalld
+                            systemctl disable firewalld
+              use in cmd - 
                      csf -h
                      -h,  --help
                             Show this message
