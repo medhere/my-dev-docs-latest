@@ -85,7 +85,7 @@ Subqueries
     select
     Model1::addSelect(['key' => Model2::select('name')->limit(1)])->get()
     order
-    Model1::orderByDesc( )->get()
+    Model1::orderByDesc('arrived_at')->get()
 
 Insert
     $data = new Model;
