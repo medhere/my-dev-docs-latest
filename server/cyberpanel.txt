@@ -21,6 +21,12 @@ Installation
        20.166.87.6 Azure michael.edhere@walexbiznig.com
        testuser
        mememe6930..
+              added aapanel
+              aaPanel Internet Address: http://20.166.87.6:7800/df3853d9
+              aaPanel Internal Address: http://10.0.0.4:7800/df3853d9
+              username: sp9yhfa4
+              password: 4cc0d68f
+
 
        CyberPanel: https://20.166.87.6:8090
        * phpMyAdmin: https://20.166.87.6:8090/dataBases/phpMyAdmin
@@ -34,6 +40,7 @@ Installation
 	* You can get the Mysql cyberpanel user password with the following command:
 	  sudo cat /home/ubuntu/.db_password
 	* Run cyberpanel in cmd for options
+              or run cyberpanel_utility
 
 	OR
 
@@ -50,6 +57,10 @@ Installation
               sudo su -
               cyberpanel_utility
               select 1
+
+       install watchdog
+              cyberpanel_utility
+              select 3
 
 Extra Settings
 	docker -> install
