@@ -3,6 +3,11 @@ Cyberpanel
 Installation
 	install from Cloud provider marketplace
 	open ssh server and copy details
+
+       35.209.222.125 GCP walexbizserver@gmail.com
+       root
+       1234567
+
 	In a web browser, you can view:
 	* CyberPanel: https://35.209.222.125:8090
 	* openlitespeed: https://35.209.222.125:7080
@@ -10,6 +15,19 @@ Installation
               sudo ./admpass.sh to reset username and password
 	* phpMyAdmin: https://35.209.222.125:8090/dataBases/phpMyAdmin
 	* Rainloop:   https://35.209.222.125:8090/rainloop
+              Panel and openlitespeed u: admin                              
+		Panel and openlitespeed p: 1234567
+       
+       20.166.87.6 Azure michael.edhere@walexbiznig.com
+       testuser
+       mememe6930..
+
+       CyberPanel: https://20.166.87.6:8090
+       * phpMyAdmin: https://20.166.87.6:8090/dataBases/phpMyAdmin
+       * Rainloop:   https://20.166.87.6:8090/rainloop
+              Panel and openlitespeed username: admin                              
+		Panel and openlitespeed password: 1234567
+
 	On the server:
 	* You can get the CyberPanel admin password with the following command:
 	  sudo cat /home/ubuntu/.litespeed_password
@@ -21,13 +39,17 @@ Installation
 
 	apt update
 	apt upgrade
-	set root password for server (root,1234567)
+	set root password for server
 	install cyberpanel
-		Panel and openlitespeed username: admin                              
-		Panel and openlitespeed password: 1234567
+		
 
        To Restart
        systemctl restart lscpd
+
+       to upgrade cyberpanel
+              sudo su -
+              cyberpanel_utility
+              select 1
 
 Extra Settings
 	docker -> install
