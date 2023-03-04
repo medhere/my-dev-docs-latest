@@ -1,0 +1,8 @@
+FQDN
+	set server name to A record IP on DNS hosts as *.server.earlyfuture.com.ng
+	hostnamectl status
+	hostnamectl set-hostname cloud.server.earlyfuture.com.ng
+	ping cloud.server.earlyfuture.com.ng
+	host cloud.server.earlyfuture.com.ng
+	dig cloud.server.earlyfuture.com.ng
+	sudo nano /etc/hosts -> ipaddress cloud.server.earlyfuture.com.ng
