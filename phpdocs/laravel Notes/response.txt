@@ -75,6 +75,10 @@ Response
 
 	Views
 		return response()->view('hello', $data, 200)
+		$drug = '';
+		$drugCategory = '';
+		return(view('editDrug', compact('drug', 'drugCategory')));
+
 	
 	JSON
 		return response()->json([ 'name' => 'Abigail' , 'state' => 'CA']);

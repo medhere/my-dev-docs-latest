@@ -9,12 +9,10 @@ farmygro.com x
 worktimeng.com x
 esprogen.com x
 caluxconstruction.com x
+frati.shop
 
 estate
-earlyfuture home
-earlyfuture learn
 
-post other apps on apps.earlyfuture after changing layouts
 
 billing cloudonex
 *.builder larabuilder bdaia
@@ -23,9 +21,5 @@ learn moodle
 hub laravel
 *.apps
 server
-paas coollabs.io coolify
-
-server purchase
-gcp
 
 Suite 173, BEFS Plaza, 21 Ajose Adeogun Street, Utako, 900108, Abuja

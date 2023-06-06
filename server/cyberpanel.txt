@@ -1,5 +1,8 @@
 Cyberpanel
 
+cheatsheet
+https://wpjohnny.com/cyberpanel-cheatsheet/
+
 Installation
 	install from Cloud provider marketplace
               or use installer script
@@ -28,7 +31,6 @@ Installation
 	set root password for server
 	install cyberpanel
 		
-
        To Restart
        systemctl restart lscpd
 
@@ -83,13 +85,12 @@ Extra Settings
                      domain > ns2.domain
               wait for propergation
 
+		Setup Modsecurity
 
-       Change mail server port to 2525 Cyberpanel
-              There you can issue SSL for MailServer.
-              Go to https:/:8090/manageSSL/sslForMailServer
-
+		Email COnfig
+			set RDNS to domain name for emails (setting server ip to domain name or add an alias)
+              issue SSL for MailServer.
               Create email acct
-              https://:8090/email/createEmailAccount
 
               listen on non-standard SMTP port such as 2525.
               Open /etc/postfix/master.cf, and 
@@ -99,23 +100,82 @@ Extra Settings
                             2525 inet n - n - - smtpd
               sudo postfix reload
               Then netstat -lntu
+			  Block port 25 in firewall
               configure your web application to send emails via this mail server.
               Option	Value
                      SMTP Host	Domain for which you issued MailServer SSL.
                      SMTP User	Email that you just created.
                      SMTP Password	Password for the above email.
                      SMTP Port	2525
-
+				for SSL port use 578
+				send test mail to https://www.mail-tester.com/
+				for recieving, use port 143 for imap, 110 for pop3
 
        Edit UI
        restart after changes
               Login
-              This is the path to edit: /usr/local/CyberCP/loginSystem/templates/loginSystem/login.html
-              Edit this file to make changes to the login screen.
-
+				/usr/local/CyberCP/loginSystem/templates/loginSystem/login.html
               Dashboard
-              /usr/local/CyberCP/baseTemplate/templates/baseTemplate/index.html
+				/usr/local/CyberCP/baseTemplate/templates/baseTemplate/index.html
+			  Home
+				/usr/local/CyberCP/baseTemplate/templates/baseTemplate/homePage.html
+			  images
+				  /usr/local/CyberCP/public/static/baseTemplate
+				  /static/ path in git repo converted to /usr/local/CyberCP/public/ on server
+			  
+			  systemctl restart lscpd
 
        Change Defaults
+			/usr/local/CyberCP/index.html
               404
               default html on creation
+		public
+			/usr/local/CyberCP/public
+
+		litespeed files
+			 /usr/local/lsws
+		web files
+			/home
+			  
+		switch cyberpanel to subdomain and remove port
+		proxy nodejs or python to domain or subdomain
+			create domain/subdomain
+			got to hostssl, issue to subdomain
+			nano /usr/local/lsws/conf/httpd_config.conf			
+				extprocessor cyberpanel {
+				  type                    proxy
+				  address                 https://subdomain:8090
+				  maxConns                100
+				  pcKeepAliveTimeout      60
+				  initTimeout             60
+				  retryTimeout            0
+				  respBuffer              0
+				}
+			add rewrite rule
+				RewriteEngine On
+				RewriteCond %{HTTPS} !=on
+				RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L]
+				RewriteRule ^(.*)$ HTTP://cyberpanel/$1 [P]
+
+				restart cyberpanel
+				
+		Dovecot/mail login error
+			issue
+				netstat -lntu - no port 110, 143
+				sudo journalctl -xe - The unit tmp.mount has entered the 'failed' state with result 'exit-code'.
+			fix
+				editing the postfix.service file (nano /etc/systemd/system/multi-user.target.wants/dovecot.service) and set the default entry PrivateTmp=true to PrivateTmp=false.
+				systemctl daemon-reload
+				systemctl restart dovecot
+				systemctl status dovecot -l
+			
+		SpamAssasin 
+			definition updates daily
+
+			nano /etc/crontab
+			And append the following line at the bottom:
+			00 02 * * * root /bin/sa-update && /sbin/service spamassassin restart
+
+			sudo systemctl restart crond.service
+			
+			

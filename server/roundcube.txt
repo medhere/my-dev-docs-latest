@@ -21,3 +21,12 @@ SMTP
 auto_create_user true
 username_domain = '' or user domain name
 product_name = '' or domain name
+
+
+customize
+files
+/skins/elastic/templates
+	login.html
+	includes/menu.html
+images
+ 

@@ -1,0 +1,15 @@
+install moodle with git
+
+if error during installation or usage, to revert back
+git config --global --add safe.directory /www/wwwroot/learn.apps.earlyfuturegroup.com/moodle
+cd ../../www/wwwroot/learn.apps.earlyfuturegroup.com/moodle
+git restore .
+git status
+
+to install
+cd admin/cli
+php install.php
+php install_database.php --adminpass=123456 --agree-license
+
+to upgrade
+php upgrade.php --non-interactive

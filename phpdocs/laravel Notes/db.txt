@@ -96,10 +96,24 @@ Database
 							->inRandomOrder()	//get random order
 		Where							
 			->where | orWhere('user','','value')->get();
+			->where(function (Builder $query) use($var) {
+               $query->where('votes', '>', 100)
+                     ->orWhere('title', '=', 'Admin');
+           	})
+			->where([
+				['status', '=', '1'],
+				['subscribed', '<>', '1'],
+			])
 			
 			->whereBetween | orWhereBetween | whereNotBetween | orWhereNotBetween('column', [1, 100])
 			->whereIn | whereNotIn | orWhereIn | orWhereNotIn('column', [1, 2, 3])
 			->whereNull | whereNotNull | orWhereNull | orWhereNotNull('column')
+			->whereBetweenColumns | whereNotBetweenColumns | orWhereBetweenColumns | orWhereNotBetweenColumns('weight', ['minimum_allowed_weight', 'maximum_allowed_weight'])
+			->whereColumn | orWhereColumn('updated_at', '>', 'created_at') 
+				->whereColumn([
+						['first_name', '=', 'last_name'],
+						['updated_at', '>', 'created_at'],
+				])
 
 			->whereDate('created_at', '2016-12-31')->get();
 			->whereMonth('created_at', '12')->get();
@@ -107,16 +121,33 @@ Database
 			->whereYear('created_at', '2016')->get();
 			->whereTime('created_at', '=', '11:20:45')->get();
 
-			->where(function ($query) {
-               $query->where('votes', '>', 100)
-                     ->orWhere('title', '=', 'Admin');
-           	})
+			->whereExists(function (Builder $query) {
+						$query->select(DB::raw(1))
+								->from('orders')
+								->whereColumn('orders.user_id', 'users.id');
+					})
+			->whereFullText('bio', 'web developer')
+
+
+		When Conditional
+			->when($role, function (Builder $query, string $role) {
+					$query->where('role_id', $role);
+				})
+				
+			->when($sortByVotes, function (Builder $query, bool $sortByVotes) {
+					$query->orderBy('votes');
+				}, function (Builder $query) {
+					//if first closure fails
+					$query->orderBy('name');
+				})
 
 		Ordering
 			->orderBy('name', 'desc')
 			->orderBy('email', 'asc')
+			$query->reorder('email', 'desc')
 			->latest()	//order by date
 			->oldest()	//order by date
+			->inRandomOrder()
  
 		Grouping and Having
 			->groupBy('account_id')
@@ -138,6 +169,14 @@ Database
 			->join('contacts', 'users.id', '=', 'contacts.user_id')
 			->leftJoin('posts', 'users.id', '=', 'posts.user_id')
 			->rightJoin('posts', 'users.id', '=', 'posts.user_id')
+			->crossJoin('colors')
+			->join('contacts', function (JoinClause $join) {
+				$join->on('users.id', '=', 'contacts.user_id')->orOn(/* ... */);
+			})
+			->join('contacts', function (JoinClause $join) {
+				$join->on('users.id', '=', 'contacts.user_id')
+					->where('contacts.user_id', '>', 5);
+			})
 				->select('users.*', 'contacts.phone', 'orders.price')
 
 		Union
@@ -149,30 +188,47 @@ Database
 				['email' => 'picard@example.com', 'votes' => 0],
 				['email' => 'janeway@example.com', 'votes' => 0],
 			]); 
+			retrieve id
+			$id = DB::table('users')->insertGetId(
+				['email' => 'john@example.com', 'votes' => 0],
+				'id' //optional
+			);
 			->insertOrIgnore([
 				['id' => 1, 'email' => 'sisko@example.com'],
 				['id' => 2, 'email' => 'archer@example.com'],
 			]);													
 			insert or update	
-			->upsert([
-				['departure' => 'Oakland', 'destination' => 'San Diego', 'price' => 99],
-				['departure' => 'Chicago', 'destination' => 'New York', 'price' => 150]
-			], ['departure', 'destination'], ['price']);	// fields that should be updated
+			->upsert(
+				[
+					['departure' => 'Oakland', 'destination' => 'San Diego', 'price' => 99],
+					['departure' => 'Chicago', 'destination' => 'New York', 'price' => 150]
+				], 
+				['departure', 'destination'], //uniquely identify records with primary or unique key
+				['price'] // fields that should be updated if exists
+			);	
 		
 		Update
 			->where('id', 1)->update(['votes' => 1]);
 			->updateOrInsert(
-				['name' => 'John'],	//where
-				['votes' => '2']	//update or insert all with where
+				['email' => 'john@example.com', 'name' => 'John'],	//find this record
+				['votes' => '2']	//update this if found, else create all
 			);
 			->increment('votes', 5);
 			->increment('votes', 1, ['name' => 'John']); //with extra updated fields
 			->decrement('votes');
 			->decrement('votes', 5);
+			->incrementEach | decrementEach([
+				'votes' => 5,
+				'balance' => 100,
+			]);
 
 		Delete
 			->where('votes', '>', 100)->delete();
 			->truncate();
+
+		Locking
+			 ->sharedLock()
+	        ->lockForUpdate()
 
 		Querying Relationships
 			whereBelongsTo($user)->get();

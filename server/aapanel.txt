@@ -46,32 +46,3 @@ websites
 		check website on Website Speed, fail2ban, nginx free firewall
 		change root entry point for codeigniter and latavel
 				
-task managers
-	top
-	htop
-	ps
-	pstree	
-
-ports
-	ufw status numbered
-	ufw delete 1
-	ufw
-	
-	sudo lsof -i -P -n | grep LISTEN
-	sudo netstat -tulpn | grep LISTEN
-	sudo ss -tulpn | grep LISTEN
-	sudo ss -tulw
-	sudo lsof -i:22 ## see a specific port such as 22 ##
-	sudo nmap -sTU -O IP-address-Here
-	less /etc/services
-
-autoremove
-	apt autoremove --purge
-	
-	
-Linux Commands
-Files:	tar · pv · cat · tac · chmod · grep ·  diff · sed · ar · man · pushd · popd · fsck · testdisk · seq · fd · pandoc · cd · $PATH · awk · join · jq · fold · uniq · journalctl · tail · stat · ls · fstab · echo · less · chgrp · chown · rev · look · strings · type · rename · zip · unzip · mount · umount · install · fdisk · mkfs · rm · rmdir · rsync · df · gpg · vi · nano · mkdir · du · ln · patch · convert · rclone · shred · srm	
-
-Processes:	alias · screen · top · nice · renice · progress · strace · systemd · tmux · chsh · history · at · batch · free · which · dmesg · chfn · usermod · ps · chroot · xargs · tty · pinky · lsof · vmstat · timeout · wall · yes · kill · sleep · sudo · su · time · groupadd · usermod · groups · lshw · shutdown · reboot · halt · poweroff · passwd · lscpu · crontab · date · bg · fg	
-
-Networking:	netstat · ping · traceroute · ip · ss · whois · fail2ban · bmon · dig · finger · nmap · ftp · curl · wget · who · whoami · w · iptables · ssh-keygen · ufw

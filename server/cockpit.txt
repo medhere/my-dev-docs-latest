@@ -1,4 +1,4 @@
-cockpit Installation
+cockpit-project Installation
 
 apt update
 apt install cockpit -y

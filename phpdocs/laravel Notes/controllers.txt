@@ -7,8 +7,14 @@ controllers
 	php artisan make:controller nameofcontroller --api
 	
 	add new action
+		private $var;
+		public function __construct(Class $class) {
+			$this->var = $class;
+		}
+
 		public function show()
 		{
+			$this->var->action;
 			return 'this is a statement';
 		}
 		//	Use Controller in route

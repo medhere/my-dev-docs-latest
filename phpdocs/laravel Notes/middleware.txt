@@ -15,9 +15,18 @@ Middleware
 			}
 
 			// perform action before handling request
+			return $next($request);
+				//OR
+				
+			// perform action before handling request			
 			$response = $next($request);
 			// Perform action after handling request
 			return $response;
+		}
+		
+		public function terminate(Request $request, Response $response): void
+		{
+			// ...
 		}
 		
 	Global Middleware
@@ -25,8 +34,10 @@ Middleware
 			\App\Http\Middleware\Nameofmiddleware::class
 			
 	Assigning and Removing Middleware To Routes
-		list the middleware class in the $routeMiddleware property of your app/Http/Kernel.php class.
+		list the middleware class in the $routeMiddleware OR protected $middlewareAliases = [] property of your app/Http/Kernel.php class.
 			'nameofmiddleware' => \App\Http\Middleware\Nameofmiddleware::class
+		OR protected $middlewareGroups = []	
+			
 			Then
 				Route::get($uri,$callback)->middleware('nameofmiddleware');
 				Route::get($uri,$callback)->middleware('nameofmiddleware:param');
@@ -38,13 +49,18 @@ Middleware
 					Route::get($uri, $callback)->withoutMiddleware('first');
 						//omits first middleware
 				});
+				
 
 		use App\Http\Middleware\Nameofmiddleware;
-			Route::get($uri,$callback)->middleware(Nameofmiddleware::class);
+			Route::get($uri,$callback)
+			->middleware(Nameofmiddleware::class);
+			->middleware([First::class, Second::class]);
 
 		Route::withoutMiddleware([EnsureTokenIsValid::class])->group(function () {
 			Route::get($uri,$callback});
 		});
+		
+		
 		
 		Route::without+|middleware([Nameofmiddleware::class],...)->group(function () {
 			Route::get($uri, $callback);
