@@ -70,46 +70,88 @@ DB Migrations
 				Schema::dropIfExists('tablename');
 
 			}
-
-			Index
-				$table->primary('id');			//primary key.
-				$table->primary(['id', 'parent_id']);
-				$table->unique('email');	//	Adds unique.
-				$table->unique('email', 'unique_email');
-				$table->index('state');
 		
 			Columns types
+				bigInteger
 				binary('name')	//BLOB
 				boolean()
 				char('name', 1000)
-				decimal('quantity', 18, 2)
+				decimal('quantity', 8, 2)
+				double('quantity', 8, 2)
                 datetime()
                 date()
+				enum('difficulty', ['easy', 'hard']);
+				float('amount', 8, 2);
 				id()	//for auto-incrementing primary key as id or 'colname'
 				increments('id')	//for auto-incrementing primary key
 				integer
 				longText
+				rememberToken
                 softDeletes
 				string('name', 100)
 				text
+				time
+				timestamp
+				timestamps
+				uuid
 				year
 
-			Foreign
-				$table->foreign('user_id')->references('id')->on('users');
+			Index
+				$table->primary('id');			//primary key.
+				$table->primary(['id', 'parent_id']);
+				$table->unique('email');	//Adds unique.
+				$table->unique('email', 'unique_email');
+				$table->index('state');
+				$table->fullText('body');	//Adds a full text index (MySQL/PostgreSQL).
+				$table->fullText('body')->language('english');	//Adds a full text index of the specified language (PostgreSQL).
+				$table->spatialIndex('location');	//Adds a spatial index (except SQLite).
+
 		
 			Table update modifiers
 				->after('column')
-				->autoIncrement()
-				->default($value)
-				->nullable($value = true)
+				->autoIncrement()	Set INTEGER columns as auto-incrementing (primary key).
+				->charset('utf8mb4')	Specify a character set for the column (MySQL).
+				->collation('utf8mb4_unicode_ci')	Specify a collation for the column (MySQL/PostgreSQL/SQL Server).
+				->comment('my comment')	Add a comment to a column (MySQL/PostgreSQL).
+				->default($value)	Specify a "default" value for the column.
+				->first()	Place the column "first" in the table (MySQL).
+				->from($integer)	Set the starting value of an auto-incrementing field (MySQL / PostgreSQL).
+				->invisible()	Make the column "invisible" to SELECT * queries (MySQL).
+				->nullable($value = true)	Allow NULL values to be inserted into the column.
+				->unsigned()	Set INTEGER columns as UNSIGNED (MySQL).
+				->useCurrent()	Set TIMESTAMP columns to use CURRENT_TIMESTAMP as default value.
+				->useCurrentOnUpdate()	Set TIMESTAMP columns to use CURRENT_TIMESTAMP when a record is updated (MySQL).
 				->unique()
 
 			Index modifiers
 				->dropPrimary('users_id_primary');	Drop a primary key from the "users" table.
 				->dropUnique('users_email_unique');	Drop a unique index from the "users" table.
 				->dropIndex('geo_state_index');	Drop a basic index from the "geo" table.
+				->dropFullText('posts_body_fulltext');	Drop a full text index from the "posts" table.
+				->dropSpatialIndex('geo_location_spatialindex');	Drop a spatial index from the "geo" table (except SQLite).
 
-		
+			Foreign
+				$table->foreign('user_id')->references('id')->on('users');
+				$table->foreignId('user_id')->constrained();
+				$table->foreignId('user_id')->constrained(
+						table: 'users', indexName: 'posts_user_id'
+					);
+				$table->foreignId('user_id')
+				->constrained()
+				->onUpdate('cascade')
+				->onDelete('cascade');
+
+				$table->cascadeOnUpdate();	Updates should cascade.
+				$table->restrictOnUpdate();	Updates should be restricted.
+				$table->cascadeOnDelete();	Deletes should cascade.
+				$table->restrictOnDelete();	Deletes should be restricted.
+				$table->nullOnDelete();	Deletes should set the foreign key value to null.
+
+				$table->foreignId('user_id')
+					->nullable()
+					->constrained();
+
+
 		Check migrations
 			php artisan migrate
 			php artisan migrate:status
