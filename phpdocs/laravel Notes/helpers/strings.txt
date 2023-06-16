@@ -1,0 +1,101 @@
+__() //translation
+    echo __('Welcome to our application');
+    echo __('messages.welcome');
+
+e() //htmlspecialchars
+    echo e('<html>foo</html>');
+
+preg_replace_array()
+    preg_replace_array('/:[a-z_]+/', ['8:30', '9:00'], 'The event will take place between :start and :end');
+ 
+Str::after('This is my name', 'This is');       // ' my name'
+Str::afterLast('This is my name', 'is');        // ' my name'
+Str::before('This is my name', 'my name');      // 'This is '
+Str::beforeLast('This is my name', 'is');       // 'This '
+Str::between('This is my name', 'This', 'name');        // ' is my '
+Str::camel('foo_bar');      // fooBar
+Str::contains('This is my name', 'my');     // true
+Str::contains('This is my name', ['my', 'foo']);        // true
+Str::containsAll('This is my name', ['my', 'name']);        // true
+Str::endsWith('This is my name', 'name');       // true
+Str::endsWith('This is my name', ['name', 'foo']);      // true
+Str::excerpt('This is my name', 'my', [
+    'radius' => 3
+]);     // '...is my na...'
+Str::excerpt('This is my name', 'name', [
+    'radius' => 3,
+    'omission' => '(...) '
+]);     // '(...) my name'
+Str::finish('this/string', '/');     // this/string/
+Str::headline('steve_jobs');    // Steve Jobs
+Str::headline('EmailNotificationSent');      // Email Notification Sent
+Str::inlineMarkdown('**Laravel**');     // <strong>Laravel</strong>
+Str::is('foo*', 'foobar');      // true
+Str::is('baz*', 'foobar');      // false
+Str::isJson('[1,2,3]');     // true
+Str::isJson('{"first": "John", "last": "Doe"}');    // true
+Str::isJson('{first: "John", last: "Doe"}');    // false
+Str::kebab('fooBar');       // foo-bar
+Str::lcfirst('Foo Bar');    // foo Bar 
+Str::length('Laravel');     // 7
+Str::limit('The quick brown fox jumps over the lazy dog', 20);      // The quick brown fox...
+Str::limit('The quick brown fox jumps over the lazy dog', 20, ' (...)');    // The quick brown fox (...)
+Str::lower('LARAVEL');      // laravel
+Str::markdown('# Laravel');     // <h1>Laravel</h1>
+Str::markdown('# Taylor <b>Otwell</b>', [
+    'html_input' => 'strip',
+]);     // <h1>Taylor Otwell</h1>
+Str::mask('taylor@example.com', '*', 3);       // tay***************
+Str::mask('taylor@example.com', '*', -15, 3);       // tay***@example.com
+Str::padBoth('James', 10, '_');          // '__James___'
+Str::padLeft('James', 10, '-=');        // '-=-=-James'
+Str::padLeft('James', 10);          // '     James'
+Str::padRight('James', 10, '-');        // 'James-----'
+Str::padRight('James', 10);     // 'James     '
+Str::password();        // 'EbJo2vE-AS:U,$%_gkrV4n,q~1xy/-_4'
+Str::password(12);      // 'qwuar>#V|i]N'
+Str::plural('car');     // cars
+Str::plural('child');   // children
+Str::random(40);
+Str::remove('e', 'Peter Piper picked a peck of pickled peppers.');      // Ptr Pipr pickd a pck of pickld ppprs.
+Str::replace('8.x', '9.x', 'Laravel 8.x');      // Laravel 9.x
+Str::replace('Framework', 'Laravel', caseSensitive: false); 
+$replaced = Str::replaceArray('?', ['8:30', '9:00'], 'The event will take place between ? and ?');      // The event will take place between 8:30 and 9:00
+Str::replaceFirst('the', 'a', 'the quick brown fox jumps over the lazy dog');       // a quick brown fox jumps over the lazy dog
+Str::replaceLast('the', 'a', 'the quick brown fox jumps over the lazy dog');        // the quick brown fox jumps over a lazy dog
+Str::reverse('Hello World');        // dlroW olleH
+Str::singular('cars');      // car
+Str::singular('children');      // child
+Str::slug('Laravel 5 Framework', '-');      // laravel-5-framework
+Str::snake('fooBar');       // foo_bar
+Str::snake('fooBar', '-');      // foo-bar
+Str::squish('    laravel    framework    ');        // laravel framework
+Str::start('this/string', '/');     // /this/string
+Str::startsWith('This is my name', 'This');     // true
+Str::startsWith('This is my name', ['This', 'That', 'There']);      // true
+Str::studly('foo_bar');     // FooBar
+Str::substr('The Laravel Framework', 4, 7);     // Laravel
+Str::substrCount('If you like ice cream, you will like snow cones.', 'like');       // 2
+Str::substrReplace('1300', ':', 2);     // 13:
+Str::substrReplace('1300', ':', 2, 0);     // 13:00
+Str::swap([
+    'Tacos' => 'Burritos',
+    'great' => 'fantastic',
+], 'Tacos are great!');     // Burritos are fantastic!
+Str::title('a nice title uses the correct case');   // A Nice Title Uses The Correct Case
+Str::toHtmlString() //for blade templates
+    $htmlString = Str::of('Nuno Maduro')->toHtmlString();
+Str::ucfirst('foo bar');        // Foo bar
+Str::ucsplit('FooBar');     // [0 => 'Foo', 1 => 'Bar']
+Str::upper('laravel');      // LARAVEL
+Str::uuid()
+Str::wordCount('Hello, world!');        // 2
+Str::words('Perfectly balanced, as all things should be.', 3, ' >>>');      // Perfectly balanced, as >>>
+
+str()
+    str('Taylor')->append(' Otwell');   // 'Taylor Otwell'
+    str()->snake('FooBar');// 'foo_bar'
+trans('messages.welcome');
+
+Fluent Strings
+    Str::of('This is my name')->

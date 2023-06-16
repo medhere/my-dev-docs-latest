@@ -1,0 +1,104 @@
+use Closure;
+use App\Models\User;
+use Illuminate\Support\Facades\Pipeline;
+ 
+$user = Pipeline::send($user)
+            ->through([
+                function (User $user, Closure $next) {
+                    // ... 
+                    return $next($user);
+                },
+                function (User $user, Closure $next) {
+                    // ...
+                    return $next($user);
+                },
+            ])
+            ->then(fn (User $user) => $user);
+            //or thenReturn() //Run the pipeline and return the result.
+
+
+
+Example 1
+============
+    class ModerateContent
+    {
+        public function handle(string $content, Closure $next)
+        {
+            //...do something
+            return $next($content);
+        }
+    }
+
+
+
+    app(Pipeline::class)
+        ->send('<p>This is the HTML content of a blog post</p>')
+        ->through([
+            ModerateContent::class,
+        ])
+        ->then(function (string $content) {
+            return Post::create([ 'content' => $content ]);
+        });
+
+
+
+Example 2
+=============
+    class ApplyDiscount
+    {
+        public function handle(Order $order, Closure $next): Order
+        {
+            $order->pay_amount *= 0.9;
+            return $next($order);
+        }
+    }
+
+    class AddVat
+    {
+        public function handle(Order $order, Closure $next): Order
+        {
+            $order->pay_amount *= 1.15;
+            return $next($order);
+        }
+    }
+
+    class AddShipping
+    {
+        public function handle(Order $order, Closure $next): Order
+        {
+            $order->pay_amount += 10;
+            return $next($order);
+        }
+    }
+
+
+    class OrderController extends Controller
+    {
+        public function store(Request $request)
+        {
+            $order = Order::create([
+                'customer_name' => $request->customerName,
+                'net_amount' => $request->netAmount,
+                'pay_amount' => $request->netAmount,
+            ]);
+
+            $pipes = [
+                ApplyDiscount::class,
+                AddVat::class,
+                AddShipping::class,
+            ];
+
+            $order = app(Pipeline::class)
+                ->send($order)
+                ->through($pipes)
+                ->then(function (Order $order) {
+                    $order->save();
+                    return $order;
+                });
+
+            return response($order, Response::HTTP_CREATED);
+        }
+    }
+
+
+

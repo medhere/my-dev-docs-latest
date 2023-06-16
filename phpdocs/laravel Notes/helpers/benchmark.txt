@@ -1,0 +1,11 @@
+use Illuminate\Support\Benchmark;
+ 
+Benchmark::dd(fn () => User::find(1)); // 0.1 ms
+ 
+Benchmark::dd([
+    'Scenario 1' => fn () => User::count(), // 0.5 ms
+    'Scenario 2' => fn () => User::all()->count(), // 20.0 ms
+]);
+
+
+Benchmark::dd(fn () => User::count(), iterations: 10); // 0.5 ms

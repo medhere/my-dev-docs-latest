@@ -1,0 +1,266 @@
+abort()
+    abort(403);
+    abort(403, 'Unauthorized.', $headers);
+    abort_if(! Auth::user()->isAdmin(), 403);
+    abort_if(! Auth::user()->isAdmin(), 403, 'Unauthorized.', $headers);
+    abort_unless(Auth::user()->isAdmin(), 403);
+    abort_unless(Auth::user()->isAdmin(), 403 'Unauthorized.', $headers);
+
+app()
+    $api = app('HelpSpot\API');
+
+auth()
+    $user = auth()->user();
+    $user = auth('admin')->user(); //admin guard
+
+back()
+    return back($status = 302, $headers = [], $fallback = '/'); 
+    return back();
+
+bcrypt()
+    $password = bcrypt('my-secret-password');
+
+blank()
+    blank('');
+    blank('   ');
+    blank(null);
+    blank(collect());
+        // true
+ 
+    blank(0);
+    blank(true);
+    blank(false);
+        // false
+
+broadcast()
+    broadcast(new UserRegistered($user)); 
+    broadcast(new UserRegistered($user))->toOthers();
+
+cache()
+    $value = cache('key'); 
+    $value = cache('key', 'default');
+    cache(['key' => 'value'], 300); 
+    cache(['key' => 'value'], now()->addSeconds(10));
+
+collect()
+    $collection = collect(['taylor', 'abigail']);
+
+config()
+    $value = config('app.timezone'); 
+    $value = config('app.timezone', $default);
+    config(['app.debug' => true]);
+
+cookie()
+    $cookie = cookie('name', 'value', $minutes);
+
+csrf_field() //on blade
+    {{ csrf_field() }}
+
+csrf_token()
+    $token = csrf_token();
+
+decrypt()
+    $password = decrypt($value);
+
+dd()
+    dd($value);
+    dd($value1, $value2, $value3, ...);
+
+dispatch() //The dispatch function pushes the given job onto the Laravel job queue:
+    dispatch(new App\Jobs\SendEmails);
+
+dispatch_sync()
+    dispatch_sync(new App\Jobs\SendEmails);
+
+dump()
+    dump($value); 
+    dump($value1, $value2, $value3, ...);
+
+encrypt()
+    $secret = encrypt('my-secret-value');
+
+env()
+    $env = env('APP_ENV'); 
+    $env = env('APP_ENV', 'production');
+
+event()
+    event(new UserRegistered($user));
+
+fake()
+    @for($i = 0; $i < 10; $i++)
+        <dl>
+            <dt>Name</dt>
+            <dd>{{ fake()->name() }}</dd>
+    
+            <dt>Email</dt>
+            <dd>{{ fake()->unique()->safeEmail() }}</dd>
+        </dl>
+    @endfor
+
+    fake('nl_NL')->name()
+
+filled()
+    filled(0);
+    filled(true);
+    filled(false);
+        // true
+ 
+    filled('');
+    filled('   ');
+    filled(null);
+    filled(collect()); 
+        // false
+
+info()
+    info('Some helpful information!');
+    info('User login attempt failed.', ['id' => $user->id]);
+
+logger()
+    logger('Debug message');
+    logger('User has logged in.', ['id' => $user->id]);
+    logger()->error('You are not allowed here.');
+
+method_field()
+    <form method="POST">
+        {{ method_field('DELETE') }}
+    </form>
+
+now() //Carbon
+
+old()   //The old function retrieves an old input value flashed into the session:
+$value = old('value'); 
+$value = old('value', 'default');
+{{ old('name', $user->name) }}
+ 
+optional()
+    return optional($user->address)->street;
+    {!! old('name', optional($user)->name) !!}
+    return optional(User::find($id), function (User $user) {
+        return $user->name;
+    });
+
+policy()
+    $policy = policy(App\Models\User::class);
+
+redirect()
+    return redirect($to = null, $status = 302, $headers = [], $https = null); 
+    return redirect('/home');
+    return redirect()->route('route.name');
+
+report()
+    report($e);
+    report('Something went wrong.');
+
+report_if()
+    report_if($shouldReport, $e); 
+    report_if($shouldReport, 'Something went wrong.');
+
+report_unless()
+    report_unless($reportingDisabled, $e); 
+    report_unless($reportingDisabled, 'Something went wrong.');
+
+request()
+    $request = request(); 
+    $value = request('key', $default);
+
+rescue()
+    return rescue(function () {
+        return $this->method();
+    });
+
+    return rescue(function () {
+        return $this->method();
+    }, false);
+ 
+    return rescue(function () {
+        return $this->method();
+    }, function () {
+        return $this->failure();
+    });
+
+
+response()
+    return response('Hello World', 200, $headers); 
+    return response()->json(['foo' => 'bar'], 200, $headers);
+
+retry()
+    return retry(5, function () {
+        // Attempt 5 times while resting 100ms between attempts...
+    }, 100);
+
+
+    use Exception; 
+    return retry(5, function () {
+        // ...
+    }, function (int $attempt, Exception $exception) {
+        return $attempt * 100;
+    });
+
+    return retry([100, 200], function () {
+        // Sleep for 100ms on first retry, 200ms on second retry...
+    });
+
+
+    use Exception; 
+    return retry(5, function () {
+        // ...
+    }, 100, function (Exception $exception) {
+        return $exception instanceof RetryException;
+    });
+
+session()
+    $value = session('key');
+    session(['chairs' => 7, 'instruments' => 3]);
+    $value = session()->get('key'); 
+    session()->put('key', $value);
+
+tap()
+    $user = tap(User::first(), function (User $user) {
+        $user->name = 'taylor';    
+        $user->save();
+    });
+
+    $user = tap($user)->update([
+        'name' => $name,
+        'email' => $email,
+    ]);
+
+throw_if()
+    throw_if(! Auth::user()->isAdmin(), AuthorizationException::class); 
+    throw_if(
+        ! Auth::user()->isAdmin(),
+        AuthorizationException::class,
+        'You are not allowed to access this page.'
+    );
+
+throw_unless()
+    throw_unless(Auth::user()->isAdmin(), AuthorizationException::class); 
+    throw_unless(
+        Auth::user()->isAdmin(),
+        AuthorizationException::class,
+        'You are not allowed to access this page.'
+    );
+
+today() //Carbon
+    $today = today();
+
+transform()
+    $callback = function (int $value) {
+        return $value * 2;
+    };
+    $result = transform(5, $callback); // 10
+    $result = transform(null, $callback, 'The value is blank');// The value is blank
+
+validator()
+    $validator = validator($data, $rules, $messages);
+
+view()
+    return view('auth.login');
+
+with()
+    $callback = function (mixed $value) {
+        return is_numeric($value) ? $value * 2 : 0;
+    };
+    $result = with(5, $callback);   // 10
+    $result = with(null, $callback);    // 0
+    $result = with(5, null);    // 5

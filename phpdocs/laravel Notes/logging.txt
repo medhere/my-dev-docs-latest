@@ -1,34 +1,100 @@
+Drivers and Extra Options
+    daily	A RotatingFileHandler based Monolog driver which rotates daily
+        bubble	Indicates if messages should bubble up to other channels after being handled	true
+        locking	Attempt to lock the log file before writing to it	false
+        permission	The log file's permissions	0644
+        days	The number of days that daily log files should be retained	7
+    single	A single file or path based logger channel (StreamHandler)
+        bubble	Indicates if messages should bubble up to other channels after being handled	true
+        locking	Attempt to lock the log file before writing to it	false
+        permission	The log file's permissions	0644
+    errorlog	An ErrorLogHandler based Monolog driver
+    null	A driver that discards all log messages
+    slack	A SlackWebhookHandler based Monolog driver
+    stack	A wrapper to facilitate creating "multi-channel" channels
+    syslog
+
+
 config/logging.php
+    'channels' => [
+        "stack" => [
+            "driver" => "stack",
+            "channels" => [ "daily", "important", "urgent", ],
+            "ignore_exceptions" => false,
+        ],
 
-'channels' => [
-    'stack' => [
-        'driver' => 'stack',
-        'channels' => ['syslog', 'slack'],
-    ],
- 
-    'syslog' => [
-        'driver' => 'syslog',
-        'level' => 'debug',
-    ],
- 
-    'slack' => [
-        'driver' => 'slack',
-        'url' => env('LOG_SLACK_WEBHOOK_URL'),
-        'username' => 'Laravel Log',
-        'emoji' => ':boom:',
-        'level' => 'critical',
-    ],
-],
+        "daily" => [
+            "driver" => "daily",
+            "path" => storage_path("logs/daily.log"),
+            "level" => "info",
+        ],
 
+        "important" => [
+            "driver" => "daily",
+            "level" => "warning",
+            "path" => storage_path("logs/important.log"),
+        ],
+
+        "urgent" => [
+            "driver" => "daily",
+            "path" => storage_path("logs/urgent.log"),
+            "level" => "critical",
+        ],
+
+        "single" => [
+            "driver" => "single",
+            "path" => storage_path("logs/laravel.log"),
+            "level" => env("LOG_LEVEL", "debug"),
+        ],
+        
+        "daily" => [
+            "driver" => "daily",
+            "level" => env("LOG_LEVEL", "debug"),
+            "days" => 14,
+        ],
+        
+        'syslog' => [
+            'driver' => 'syslog',
+            'level' => 'debug',
+        ],
+
+        'slack' => [
+            'driver' => 'slack',
+            'url' => env('LOG_SLACK_WEBHOOK_URL'),
+            'username' => 'Laravel Log',
+            'emoji' => ':boom:',
+            'level' => 'critical',
+        ],
+    ],
+
+storage
+    storage/logs/
 
 Usage
-use Illuminate\Support\Facades\Log;
- 
-Log::emergency($message);
-Log::alert($message);
-Log::critical($message);
-Log::error($message);
-Log::warning($message);
-Log::notice($message);
-Log::info($message);
-Log::debug($message);
+    use Illuminate\Support\Facades\Log; 
+
+    Log::emergency($message);
+    Log::alert($message);
+    Log::critical($message);
+    Log::error($message);
+    Log::warning($message);
+    Log::notice($message);
+    Log::info($message);
+    Log::debug($message);
+    Log::info("The route /user is being accessed.", ["username" => $username]); //contextual info
+
+Change channel
+    Log::channel('slack')->info('Something happened!');
+    Log::stack(['single', 'slack'])->info('Something happened!');
+
+On demand
+    Log::build([
+        'driver' => 'single',
+        'path' => storage_path('logs/custom.log'),
+    ])->info('Something happened!');
+
+    $channel = Log::build([
+        'driver' => 'single',
+        'path' => storage_path('logs/custom.log'),
+    ]);
+    Log::stack(['slack', $channel])->info('Something happened!');

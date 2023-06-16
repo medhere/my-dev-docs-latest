@@ -1,9 +1,10 @@
-Arrays & Objects
     use Illuminate\Support\Arr;
 
     Arr::accessible(['a' => 1, 'b' => 2]); //check if Arrays
     Arr::add(['name' => 'Desk'], 'price', 100);
     Arr::collapse([[1, 2, 3], [4, 5, 6], [7, 8, 9]]); //joins arrays
+    Arr::divide()
+        [$keys, $values] = Arr::divide(['name' => 'Desk']); //returns two arrays: one containing the keys and the other containing the values
     Arr::dot(['products' => ['desk' => ['price' => 100]]]); // ['products.desk.price' => 100] 
     Arr::except(['name' => 'Desk', 'price' => 100], ['price']); // ['name' => 'Desk']
     Arr::exists(['name' => 'John Doe', 'age' => 17], 'name'); // true
@@ -17,6 +18,7 @@ Arrays & Objects
     Arr::isAssoc(['product' => ['name' => 'Desk', 'price' => 100]]); // true
     Arr::isList(['foo', 'bar', 'baz']); //true
     Arr::join(['Tailwind', 'Alpine', 'Laravel', 'Livewire'], ', '); // Tailwind, Alpine, Laravel, Livewire 
+    Arr::keyBy($array, 'product_id'); // group by value of key
     Arr::last([100, 200, 300, 110], function (int $value, int $key) {
         return $value >= 150;
     }); // 300
@@ -36,7 +38,8 @@ Arrays & Objects
     ];); // name=Taylor&order[column]=created_at&order[direction]=desc
 
     Arr::random([1, 2, 3, 4, 5]); // 4 - (retrieved randomly)
-    Arr::random([1, 2, 3, 4, 5], 2); // [2, 5] - (retrieved randomly)
+    Arr::random([1, 2, 3, 4, 5], 2); // [2, 5] - (retrieved randomly) 
+    Arr::set(['products' => ['desk' => ['price' => 100]]], 'products.desk.price', 200);
     Arr::shuffle([1, 2, 3, 4, 5]); // [3, 2, 5, 1, 4] - (generated randomly)
     Arr::sort(['Desk', 'Table', 'Chair']); // ['Chair', 'Desk', 'Table']
 
@@ -67,9 +70,33 @@ Arrays & Objects
         return is_string($value);
     }); // [1 => '200', 3 => '400']
 
-Strings
-    e('<html>foo</html>'); //htmlspecialchars function with the double_encode option
-    
-    use Illuminate\Support\Str;
-    
-    Str::after('This is my name', 'This is'); // ' my name'
+    data_get()
+        data_get(
+            ['products' => ['desk' => ['price' => 100]]], 
+            'products.desk.price', 
+            'default value'
+        );
+        data_get(
+            [
+                'product-one' => ['name' => 'Desk 1', 'price' => 100],
+                'product-two' => ['name' => 'Desk 2', 'price' => 150],
+            ],
+            '*.name'
+        );
+
+    data_set()
+        data_set(
+            ['products' => ['desk' => ['price' => 100]]], 
+            'products.desk.price', 
+            200
+        );
+        data_set(
+            [
+                'products' => [
+                    ['name' => 'Desk 1', 'price' => 100],
+                    ['name' => 'Desk 2', 'price' => 150],
+                ]
+            ],
+            'products.*.price',
+            200
+        );

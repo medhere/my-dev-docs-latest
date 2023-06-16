@@ -36,6 +36,9 @@ Mail
 			],
 		];
 
+	Change Mailer
+		Mail::mailer('sendmail')->to()->send()
+
 
 	New Mail
 		php artisan make:mail Orders
@@ -233,23 +236,36 @@ Mail
 
 	
 	Quick Mails
-		Mail::raw('Hello, welcome to Laravel!', function ($message) {
+		Illuminate\Mail\Message
+
+		Mail::raw('Hello, welcome to Laravel!', function (Message $message) {
 			$message
 				->to(...)
 				->subject(...);
 		});
 
-		Mail::html($html, function ($message) {
+		Mail::html($html, function (Message $message) {
 			$message
 				->to(...)
 				->subject(...);
 		});
 
-		Mail::plain('Hello {{ $user }}, welcome to Laravel!', ['user' => 'John Doe'], function ($message) {
-			$message
-				->to(...)
-				->subject(...);
-		});
+		Mail::plain('character.view',
+			[ 'character' => 'Xandeyr' ],
+			function (Message $message) {
+				$message->to('example@gmail.com')
+					->from('me@gmail.com');
+			}
+		);
+
+		Mail::plain('Hello {{ $user }}, welcome to Laravel!', 
+			['user' => 'John Doe'], 
+			function (Message $message) {
+				$message
+					->to(...)
+					->subject(...);
+			}
+		);
 
 		Mail::send([
 				'html' => $html,
@@ -257,19 +273,19 @@ Mail
 				'raw'  => 'Hello, welcome to Laravel!'
 			], [
 				'user' => 'John Doe'
-			], function ($message) {
+			], function (Message $message) {
 				$message
 					->to(...)
 					->subject(...);
 			}
 		);
 
-		Mail::send([], [], function ($message) use ($html) {
-		$message
-			->to(...)
-			->subject(...)
-			->setBody($html, 'text/html')
-			->addPart('Hello, welcome to Laravel!', 'text/plain');
+		Mail::send([], [], function (Message $message) use ($html) {
+			$message
+				->to(...)
+				->subject(...)
+				->setBody($html, 'text/html')
+				->addPart('Hello, welcome to Laravel!', 'text/plain');
 		});
 		
 		Mail::send([], [], function (Illuminate\Mail\Message $message) {

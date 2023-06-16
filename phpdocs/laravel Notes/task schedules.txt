@@ -83,12 +83,12 @@ Preventing Task Overlaps
     $schedule->command('emails:send')->withoutOverlapping(10);
 
 Running Tasks On One Server
-    $schedule->command('report:generate') ->onOneServer();
+    $schedule->command('report:generate')->onOneServer();
     $schedule->job(new CheckUptime('https://laravel.com'))->name('check_uptime:laravel.com')->onOneServer(); 
     $schedule->call(fn () => User::resetApiRequestCount())->name('reset-api-request-count')->onOneServer();
 
 Background Tasks
-    $schedule->command('analytics:report') ->runInBackground();
+    $schedule->command('analytics:report')->runInBackground();
 
 Running The Scheduler
     * * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
@@ -100,7 +100,7 @@ Task Output
     $schedule->command('emails:send')->sendOutputTo($filePath);
     $schedule->command('emails:send')->appendOutputTo($filePath);
     $schedule->command('report:generate')->sendOutputTo($filePath)->emailOutputTo('taylor@example.com');
-    $schedule->command('report:generate') ->emailOutputOnFailure('taylor@example.com');
+    $schedule->command('report:generate')->emailOutputOnFailure('taylor@example.com');
     The emailOutputTo, emailOutputOnFailure, sendOutputTo, and appendOutputTo methods are exclusive to the command and exec methods.
 
 Task Hooks
@@ -113,7 +113,7 @@ Task Hooks
 
 use Illuminate\Support\Stringable; 
     $schedule->command('emails:send')
-        ->onSuccess(function (Stringable $output) { // The task succeeded... })
+        ->onSuccess(function (Stringable $output) { echo $output; // The task succeeded... })
         ->onFailure(function (Stringable $output) { // The task failed... });
 
 Pinging URLs

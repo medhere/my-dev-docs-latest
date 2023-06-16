@@ -4,5 +4,3 @@ Use Database
     php artisan migrate
     .env file: QUEUE_CONNECTION=database
 
-app/Jobs directory
-php artisan make:job ProcessPodcas

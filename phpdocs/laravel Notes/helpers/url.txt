@@ -1,0 +1,31 @@
+action()
+    $url = action([HomeController::class, 'index']);
+    $url = action([UserController::class, 'profile'], ['id' => 1]);
+
+asset()
+    $url = asset('img/photo.jpg');
+    // .env ASSET_URL=http://example.com/assets
+    $url = asset('img/photo.jpg'); // http://example.com/assets/img/photo.jpg
+
+route()
+    $url = route('route.name');
+    $url = route('route.name', ['id' => 1]);
+    $url = route('route.name', ['id' => 1], false); //relative url
+
+secure_asset()
+    $url = secure_asset('img/photo.jpg');
+
+secure_url()
+    $url = secure_url('user/profile'); 
+    $url = secure_url('user/profile', [1]);
+
+to_route()
+    return to_route('users.show', ['user' => 1]); //redirect
+    return to_route('users.show', ['user' => 1], 302, ['X-Framework' => 'Laravel']);
+
+url()
+    $url = url('user/profile');
+    $url = url('user/profile', [1]);
+    $current = url()->current(); 
+    $full = url()->full();
+    $previous = url()->previous();

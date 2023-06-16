@@ -1,0 +1,10 @@
+Working with logs
+tail -n 100 storage/logs/laravel.log
+head -n 100 storage/logs/laravel.log
+grep -i "error" storage/logs/laravel.log
+awk '{print $11}' storage/logs/laravel.log //extract info
+sed -i '/error/d' storage/logs/laravel.log //delete lines
+find storage/logs -name "*.log" 
+wc -l storage/logs/laravel.log //count lines
+sort -k 12 storage/logs/laravel.log //sort lines
+uniq storage/logs/laravel.log //remove duplicate entries
