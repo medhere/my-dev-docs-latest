@@ -1,0 +1,26 @@
+install
+    composer require laravel/telescope
+    php artisan telescope:install
+    php artisan migrate
+
+set .env
+    TELESCOPE_ENABLED=true
+    TELESCOPE_DOMAIN=null
+    TELESCOPE_PATH=telescope
+
+schedule prunning
+    $schedule->command('telescope:prune --hours=48')->daily();
+
+Dashboard Authorization
+    accessed at /telescope route. 
+    Within your app/Providers/TelescopeServiceProvider.php file
+
+    use App\Models\User;
+    protected function gate(): void
+    {
+        Gate::define('viewTelescope', function (User $user) {
+            return in_array($user->email, [
+                'taylor@laravel.com',
+            ]);
+        });
+    }
