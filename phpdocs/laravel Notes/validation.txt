@@ -256,9 +256,4 @@ Validation
 		Password::min(8)->symbols()
 		Password::min(8)->uncompromised()	//uses haveibeenpwned.com service
 		Password::min(8)->uncompromised(3);	// number of apearances
-		Password::min(8)
-			->letters()
-			->mixedCase()
-			->numbers()
-			->symbols()
-			->uncompromised()
+			//chainable

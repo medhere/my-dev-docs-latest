@@ -1,0 +1,11 @@
+from beyondco.de/
+
+Install
+    composer require beyondcode/laravel-websockets
+    php artisan vendor:publish --provider="BeyondCode\LaravelWebSockets\WebSocketsServiceProvider" --tag="migrations"
+    php artisan migrate
+    php artisan vendor:publish --provider="BeyondCode\LaravelWebSockets\WebSocketsServiceProvider" --tag="config"
+        config/websockets.php
+
+    php artisan websockets:serve    //This will start the WebSockets server on port 6001.
+    visit /laravel-websockets       //real-time statistics.

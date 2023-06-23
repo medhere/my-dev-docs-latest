@@ -9,21 +9,20 @@ key facebook, twitter (OAuth 1.0), twitter-oauth-2 (OAuth 2.0), linkedin, google
     'redirect' => '/callback-url',
 ],
 
-Usage
 
+Routing
+    To authenticate users using an OAuth provider
+    
     use Laravel\Socialite\Facades\Socialite;
     
-    Route::get('/auth/redirect', function () {
+    Route::get('/auth/redirect', function () {  //redirecting the user to the OAuth provider
         return Socialite::driver('github')->redirect();
     });
-
-
-    Route::get('/auth/callback', function () {
-        $githubUser = Socialite::driver('github')->user();
-
-        // $githubUser->token
-
-
+    
+    Route::get('/auth/callback', function () {  //receiving the callback from the provider after authentication.
+        $user = Socialite::driver('github')->user();
+    
+        // $user->token
         $user = User::updateOrCreate([
             'github_id' => $githubUser->id,
         ], [
@@ -39,54 +38,51 @@ Usage
     });
 
 
+
 Retrieving User Details
-After the user is redirected back to your application's authentication callback route, you may retrieve the user's details using Socialite's user method. The user object returned by the user method provides a variety of properties and methods you may use to store information about the user in your own database.
+    After the user is redirected back to your application's authentication callback route, you may retrieve the user's details using Socialite's user method.
+    The user object returned by the user method provides a variety of properties and methods you may use to store information about the user in your own database.
+    Differing properties and methods may be available on this object depending on whether the OAuth provider you are authenticating with supports OAuth 1.0 or OAuth 2.0:
 
-Differing properties and methods may be available on this object depending on whether the OAuth provider you are authenticating with supports OAuth 1.0 or OAuth 2.0:
-
-use Laravel\Socialite\Facades\Socialite;
- 
-Route::get('/auth/callback', function () {
-    $user = Socialite::driver('github')->user();
- 
-    // OAuth 2.0 providers...
-    $token = $user->token;
-    $refreshToken = $user->refreshToken;
-    $expiresIn = $user->expiresIn;
- 
-    // OAuth 1.0 providers...
-    $token = $user->token;
-    $tokenSecret = $user->tokenSecret;
- 
-    // All providers...
-    $user->getId();
-    $user->getNickname();
-    $user->getName();
-    $user->getEmail();
-    $user->getAvatar();
-});
+    use Laravel\Socialite\Facades\Socialite;
+    
+    Route::get('/auth/callback', function () {
+        $user = Socialite::driver('github')->user();
+    
+        // OAuth 2.0 providers...
+        $token = $user->token;
+        $refreshToken = $user->refreshToken;
+        $expiresIn = $user->expiresIn;
+    
+        // OAuth 1.0 providers...
+        $token = $user->token;
+        $tokenSecret = $user->tokenSecret;
+    
+        // All providers...
+        $user->getId();
+        $user->getNickname();
+        $user->getName();
+        $user->getEmail();
+        $user->getAvatar();
+    });
 
 Retrieving User Details From A Token (OAuth2)
-If you already have a valid access token for a user, you can retrieve their user details using Socialite's userFromToken method:
+    If you already have a valid access token for a user, you can retrieve their user details using Socialite's userFromToken method:
 
-use Laravel\Socialite\Facades\Socialite;
- 
-$user = Socialite::driver('github')->userFromToken($token);
+    use Laravel\Socialite\Facades\Socialite;
+    $user = Socialite::driver('github')->userFromToken($token);
 
 Retrieving User Details From A Token And Secret (OAuth1)
-If you already have a valid token and secret for a user, you can retrieve their user details using Socialite's userFromTokenAndSecret method:
+    If you already have a valid token and secret for a user, you can retrieve their user details using Socialite's userFromTokenAndSecret method:
 
-use Laravel\Socialite\Facades\Socialite;
- 
-$user = Socialite::driver('twitter')->userFromTokenAndSecret($token, $secret);
+    use Laravel\Socialite\Facades\Socialite;
+    $user = Socialite::driver('twitter')->userFromTokenAndSecret($token, $secret);
 
 Stateless Authentication
-The stateless method may be used to disable session state verification. This is useful when adding social authentication to a stateless API that does not utilize cookie based sessions:
+    The stateless method may be used to disable session state verification.
+    This is useful when adding social authentication to a stateless API that does not utilize cookie based sessions:
+    Stateless authentication is not available for the Twitter OAuth 1.0 driver.
 
-use Laravel\Socialite\Facades\Socialite;
- 
-return Socialite::driver('google')->stateless()->user();
-
-
-Stateless authentication is not available for the Twitter OAuth 1.0 driver.
-
+    use Laravel\Socialite\Facades\Socialite;
+    return Socialite::driver('google')->stateless()->user();
+    

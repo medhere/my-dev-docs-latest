@@ -128,9 +128,9 @@ method_field()
 now() //Carbon
 
 old()   //The old function retrieves an old input value flashed into the session:
-$value = old('value'); 
-$value = old('value', 'default');
-{{ old('name', $user->name) }}
+    $value = old('value'); 
+    $value = old('value', 'default');
+    {{ old('name', $user->name) }}
  
 optional()
     return optional($user->address)->street;

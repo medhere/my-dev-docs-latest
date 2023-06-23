@@ -10,6 +10,15 @@ Install
         \Illuminate\Routing\Middleware\SubstituteBindings::class,
     ],
 
+CORS
+    config/cors.php
+    supports_credentials: true.
+    
+    in js, set axios.defaults.withCredentials = true;
+
+    set session cookie domain, prefixing the domain with a leading . in config/session.php
+    'domain' => '.domain.com',
+
 Add to User Model
     use Laravel\Sanctum\HasApiTokens;
     class User extends Authenticatable
@@ -47,13 +56,4 @@ Token Expiration
     'expiration' => 525600,
 
     schedule sanctum:prune-expired Artisan command
-
-CORS & Cookies
-    config/cors.php configuration
-    'supports_credentials'
-    
-    in js, set axios.defaults.withCredentials = true;
-
-    set session cookie domain, prefixing the domain with a leading . in config/session.php
-    'domain' => '.domain.com',
 

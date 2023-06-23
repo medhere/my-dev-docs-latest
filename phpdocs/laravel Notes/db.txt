@@ -96,7 +96,7 @@ Database
 							->inRandomOrder()	//get random order
 		Where							
 			->where | orWhere('user','','value')->get();
-			->where(function (Builder $query) use($var) {
+			->where(function ($query) use($var) {
                $query->where('votes', '>', 100)
                      ->orWhere('title', '=', 'Admin');
            	})
@@ -121,7 +121,7 @@ Database
 			->whereYear('created_at', '2016')->get();
 			->whereTime('created_at', '=', '11:20:45')->get();
 
-			->whereExists(function (Builder $query) {
+			->whereExists(function ($query) {
 						$query->select(DB::raw(1))
 								->from('orders')
 								->whereColumn('orders.user_id', 'users.id');
@@ -130,13 +130,13 @@ Database
 
 
 		When Conditional
-			->when($role, function (Builder $query, string $role) {
+			->when($role, function ($query, string $role) {
 					$query->where('role_id', $role);
 				})
 				
-			->when($sortByVotes, function (Builder $query, bool $sortByVotes) {
+			->when($sortByVotes, function ($query, bool $sortByVotes) {
 					$query->orderBy('votes');
-				}, function (Builder $query) {
+				}, function ($query) {
 					//if first closure fails
 					$query->orderBy('name');
 				})
