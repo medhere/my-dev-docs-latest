@@ -27,18 +27,48 @@ Add to User Model
     }
 
 Login and send token
-    $token = $request->user()->createToken($request->token_name);
+        $token = $user->createToken(
+            $user->name.'_'.Carbon::now(), // The name of the token
+            ['*'],                         // Whatever abilities you want
+            now()->addDays(6).     // The expiration date for remember_me
+        );
+        //createToken method located at vendor/laravel/sanctum/src/HasApiTokens.php.
+
+    $token = $user->createToken($request->name);
+    $token = $user->createToken($request->name, ['server:update'], now()->addDays(15)); //with ability and expiry
     return ['token' => $token->plainTextToken];
+        $token->plainTextToken
+        $token->accessToken->name;
+        $token->accessToken->id;
+        $token->accessToken->abilities;
+
+Token Abilities
+	assign
+		$user->createToken('token-name', ['server:update'])->plainTextToken;
+	usage
+		if ($user->tokenCan('server:update')) {
+			// ...
+		}
+       $request->user()->tokenCan('server:update')
+	   
+	middleware
+	$middlewareAliases property of app/Http/Kernel.php
+		'abilities' => \Laravel\Sanctum\Http\Middleware\CheckAbilities::class, //has all abilities
+		'ability' => \Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,	//has at least one
+
+	usage
+		Route::get('/orders', function () {
+			// Token has both "check-status" and "place-orders" abilities...
+		})->middleware(['auth:sanctum', 'abilities:check-status,place-orders']);
+
+		Route::get('/orders', function () {
+			// Token has the "check-status" or "place-orders" ability...
+		})->middleware(['auth:sanctum', 'ability:check-status,place-orders']);
 
 Access all tokens
     foreach ($user->tokens as $token) {
         // ...
     }
-
-
-Token Abilities
-    return $user->createToken('token-name', ['server:update'])->plainTextToken;
-    if ($user->tokenCan('server:update')) { // ... }
 
 protect api routes
     Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -53,7 +83,7 @@ Revoking Tokens
 
 Token Expiration
     config/sanctum.php
-    'expiration' => 525600,
+    'expiration' => 525600, //minutes
 
     schedule sanctum:prune-expired Artisan command
 
