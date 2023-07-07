@@ -188,24 +188,26 @@ Database
 				['email' => 'picard@example.com', 'votes' => 0],
 				['email' => 'janeway@example.com', 'votes' => 0],
 			]); 
+
 			retrieve id
-			$id = DB::table('users')->insertGetId(
-				['email' => 'john@example.com', 'votes' => 0],
-				'id' //optional
-			);
-			->insertOrIgnore([
-				['id' => 1, 'email' => 'sisko@example.com'],
-				['id' => 2, 'email' => 'archer@example.com'],
-			]);													
+				$id = DB::table('users')->insertGetId(
+					['email' => 'john@example.com', 'votes' => 0],
+					'id' //optional
+				);
+				->insertOrIgnore([
+					['id' => 1, 'email' => 'sisko@example.com'],
+					['id' => 2, 'email' => 'archer@example.com'],
+				]);													
+
 			insert or update	
-			->upsert(
-				[
-					['departure' => 'Oakland', 'destination' => 'San Diego', 'price' => 99],
-					['departure' => 'Chicago', 'destination' => 'New York', 'price' => 150]
-				], 
-				['departure', 'destination'], //uniquely identify records with primary or unique key
-				['price'] // fields that should be updated if exists
-			);	
+				->upsert(
+					[
+						['departure' => 'Oakland', 'destination' => 'San Diego', 'price' => 99],
+						['departure' => 'Chicago', 'destination' => 'New York', 'price' => 150]
+					], 
+					['departure', 'destination'], //uniquely identify records with primary or unique key
+					['price'] // fields that should be updated if exists
+				);	
 		
 		Update
 			->where('id', 1)->update(['votes' => 1]);
