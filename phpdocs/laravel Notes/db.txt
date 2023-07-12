@@ -80,6 +80,8 @@ Database
 
 		Select
 		DB::table('tablename')
+			->select('')
+			->addSelect('')
 			returning query results
 				retrieve data			
 					rows/cols	->get()		foreach ($users as $user) {}, foreach ($users as $name => $user) {}
