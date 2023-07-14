@@ -1,0 +1,32 @@
+install
+================
+sudo su
+yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm && dnf install wget -y
+yum -y update && reboot
+
+sudo su
+yum -y install tmux && tmux
+cd /usr/local/src && wget http://centos-webpanel.com/cwp-el8-latest && sh cwp-el8-latest -r yes --phpfpm 7.4 && reboot
+
+
+view scripts
+==============
+sudo su
+cd /scripts
+
+actions
+=================
+edit index and acct suspension html
+	/usr/local/apache/htdocs
+create account
+add default domain, add dns zones, setup hostname (after rDNS set on server provider)
+setup nameserver
+create email for admin
+setup all security
+install all php
+go through all menus
+
+install iptables
+================
+yum -y install iptables
+csf -x && csf -e
