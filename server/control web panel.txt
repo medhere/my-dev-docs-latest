@@ -19,6 +19,7 @@ actions
 edit index and acct suspension html
 	/usr/local/apache/htdocs
 create account
+change ssh port
 add default domain, add dns zones, setup hostname (after rDNS set on server provider)
 setup nameserver
 create email for admin

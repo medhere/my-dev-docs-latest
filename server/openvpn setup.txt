@@ -1,0 +1,52 @@
+apt update && apt upgrade
+ip a
+	OR
+dig +short myip.opendns.com @resolver1.opendns.com
+# IPv4 version #
+dig -4 TXT +short o-o.myaddr.l.google.com @ns1.google.com | awk -F'"' '{ print $2}'
+# IPv6 version #
+dig -6 TXT +short o-o.myaddr.l.google.com @ns1.google.com | awk -F'"' '{ print $2}'
+
+wget https://raw.githubusercontent.com/Angristan/openvpn-install/master/openvpn-install.sh -O ubuntu-22.04-lts-vpn-server.sh
+chmod -v +x ubuntu-22.04-lts-vpn-server.sh
+./ubuntu-22.04-lts-vpn-server.sh
+
+download .ovpn file after create user
+scp vivek@172.105.158.108:~/desktopclient.ovpn .
+
+Open port 1194 UDP
+
+# --- stop the service --- #
+sudo systemctl stop openvpn@server
+# --- start the service --- #
+sudo systemctl start openvpn@server
+# --- restart the service --- #
+sudo systemctl restart openvpn@server
+# --- get the service status --- #
+sudo systemctl status openvpn@server
+
+Check options after installation
+sudo ./ubuntu-22.04-lts-vpn-server.sh
+
+Check OpenVPN server for errors:
+sudo journalctl --identifier ovpn-server
+
+Is OpenVPN server running and port is open?
+## is the default openvpn server port UDP/1194 open? ##
+sudo ss -tulpn | grep :1194
+## is the openvpn server running? ##
+ps aux | grep -i openvpn
+## is the openvpn server running? ##
+ps -C openvpn
+## find the openvpn server PID ##
+pidof openvpn
+
+If not running, restart the OpenVPN server:
+sudo systemctl restart openvpn@server
+sudo systemctl enable openvpn@server
+
+Look out for errors:
+sudo systemctl status openvpn@server
+
+test if OpenVPN server port (UDP 1194) accepts connections
+sudo nmap -sU -p 1194 172.105.158.108

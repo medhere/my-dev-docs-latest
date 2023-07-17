@@ -1,0 +1,21 @@
+apt update -y
+apt install lightdm && service lightdm start
+	select as display manager
+
+Install GNOME
+	apt install tasksel
+	sudo tasksel
+
+Install xrdp
+	apt install xrdp -y && systemctl enable xrdp.service && systemctl start xrdp.service && adduser xrdp ssl-cert
+
+fix color managed device issue with gnome
+	sudo nano /etc/polkit-1/localauthority/50-local.d/45-allow-colord.pkla
+	Paste in the following:
+
+	[Allow Colord all Users]
+	Identity=unix-user:*
+	Action=org.freedesktop.color-manager.create-device;org.freedesktop.color-manager.create-profile;org.freedesktop.color-manager.delete-device;org.freedesktop.color-manager.delete-profile;org.freedesktop.color-manager.modify-device;org.freedesktop.color-manager.modify-profile
+	ResultAny=no
+	ResultInactive=no
+	ResultActive=yes
