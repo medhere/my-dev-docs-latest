@@ -1,5 +1,6 @@
-
 mysql open all to external access
+
+mysql -u root
 
 CREATE USER 'office-server'@'%' IDENTIFIED BY '123456';
 GRANT ALL ON *.* TO 'office-server'@'%';
@@ -12,4 +13,4 @@ open ini, remove bind-address and skip-networking
 laragon allow phpmyadmin external access
 C:\laragon\etc\apache2\alias\phpmyadmin.conf
 
-Just change 'Require local' to 'Require all granted'.
+change 'Require local' to 'Require all granted'.
