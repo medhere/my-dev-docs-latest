@@ -1,11 +1,11 @@
 install
 ================
 sudo su
-yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm && dnf install wget -y
+yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm && dnf install wget tmux -y
 yum -y update && reboot
 
 sudo su
-yum -y install tmux && tmux
+tmux
 cd /usr/local/src && wget http://centos-webpanel.com/cwp-el8-latest && sh cwp-el8-latest -r yes --phpfpm 7.4 && reboot
 
 
@@ -29,5 +29,8 @@ go through all menus
 
 install iptables
 ================
-yum -y install iptables
-csf -x && csf -e
+yum -y install iptables && csf -x && csf -e
+
+upgrade to pro
+============
+sudo sh /scripts/update_cwp
