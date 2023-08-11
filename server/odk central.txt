@@ -1,5 +1,5 @@
 git clone https://github.com/getodk/central && cd central && git submodule update -i
-
+OR
 git clone -b v2023.2.0 https://github.com/getodk/central && cd central && git submodule update -i
 
 cp .env.template .env && nano .env
@@ -8,13 +8,10 @@ touch ./files/allow-postgres14-upgrade
 		change to getodk/pyxform-http
 	nano enketo.dockerfile
 		change to enketo/enketo-express
-docker compose build
-
-docker compose up -d
-docker compose ps
+docker compose build && docker compose up -d && docker compose ps
 
 cd central
-docker compose exec service odk-cmd --email YOUREMAIL@ADDRESSHERE.com user-create
-docker compose exec service odk-cmd --email YOUREMAIL@ADDRESSHERE.com user-promote
+docker compose exec service odk-cmd --email ajiriogeh@gmail.com user-create
+docker compose exec service odk-cmd --email ajiriogeh@gmail.com user-promote
 
-docker compose exec service odk-cmd --email YOUREMAIL@ADDRESSHERE.com user-set-password
+docker compose exec service odk-cmd --email ajiriogeh@gmail.com user-set-password

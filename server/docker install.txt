@@ -12,9 +12,7 @@ apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
 systemctl enable docker.service
 systemctl start docker.service
  
-usermod -aG docker $USER
-newgrp docker
-groups
+usermod -aG docker $USER && newgrp docker && groups
 
 docker version
 docker run hello-world
