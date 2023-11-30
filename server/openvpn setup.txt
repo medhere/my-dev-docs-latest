@@ -8,11 +8,10 @@ dig -4 TXT +short o-o.myaddr.l.google.com @ns1.google.com | awk -F'"' '{ print $
 dig -6 TXT +short o-o.myaddr.l.google.com @ns1.google.com | awk -F'"' '{ print $2}'
 
 wget https://raw.githubusercontent.com/Angristan/openvpn-install/master/openvpn-install.sh -O ubuntu-22.04-lts-vpn-server.sh
-chmod -v +x ubuntu-22.04-lts-vpn-server.sh
-./ubuntu-22.04-lts-vpn-server.sh
+chmod -v +x ubuntu-22.04-lts-vpn-server.sh && sudo ./ubuntu-22.04-lts-vpn-server.sh
 
-download .ovpn file after create user
-scp vivek@172.105.158.108:~/desktopclient.ovpn .
+download .ovpn file after create user, e.g
+scp username@172.105.158.108:~/desktopclient.ovpn .
 
 Open port 1194 UDP
 

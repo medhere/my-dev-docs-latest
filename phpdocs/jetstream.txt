@@ -1,0 +1,61 @@
+jetstream
+    composer require laravel/jetstream
+    php artisan jetstream:install livewire
+    php artisan jetstream:install livewire --dark
+        or
+    php artisan jetstream:install inertia
+    php artisan jetstream:install inertia --ssr
+
+    npm install
+    npm run build
+    php artisan migrate
+    
+    config/fortify.php
+    config/jetstream.php
+
+    Actions ​
+    actions are published to your application's app/Actions director
+
+    Views / Pages ​
+    Livewire: resources/views directory. 
+    Inertia: resources/js/Pages
+
+    Layouts ​
+    The Application Layout ​
+    Livewire: this layout is defined at resources/views/layouts/app.blade.php and rendered by the App\View\Components\AppLayout class. 
+    Inertia: this layout is defined at resources/js/Layouts/AppLayout.vue.
+
+    The Livewire Guest / Authentication Layout ​
+    Livewire: this layout is defined at resources/views/layouts/guest.blade.php and rendered by the App\View\Components\GuestLayout class.
+
+    Dashboard ​
+    Livewire: resources/views/dashboard.blade.php 
+    Inertia: resources/js/Pages/Dashboard.vue 
+
+
+Logo
+    Livewire ​
+    resources/views/components/application-logo.blade.php
+    resources/views/components/application-mark.blade.php
+    resources/views/components/authentication-card-logo.blade.php
+
+    Inertia ​
+    resources/js/Components/ApplicationLogo.vue
+    resources/js/Components/ApplicationMark.vue
+    resources/js/Components/AuthenticationCardLogo.vue
+
+    npm run build
+
+Banner Alerts
+    $request->session()->flash('flash.banner', 'Yay it works!');
+    $request->session()->flash('flash.bannerStyle', 'success');
+    return redirect('/');
+        or
+    return redirect()->route('subscriptions')->banner('Subscription created successfully.');
+    return redirect()->route('subscriptions')->dangerBanner('Subscription cancellation failed.');
+
+API
+    config/jetstream.php configuration file:
+    'features' => [
+        Features::api(),
+    ],

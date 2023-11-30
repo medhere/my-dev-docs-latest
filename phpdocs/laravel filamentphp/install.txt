@@ -1,0 +1,11 @@
+Install
+	composer require filament/filament:"^3.0-stable" -W
+	composer require flowframe/laravel-trend
+	 
+	php artisan filament:install --panels
+	php artisan vendor:publish --tag=filament-config
+	php artisan migrate
+	php artisan make:filament-user
+
+	follow the deploying to production user access
+

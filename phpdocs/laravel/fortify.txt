@@ -1,0 +1,60 @@
+fortify
+
+Installation
+    composer require laravel/fortify
+    php artisan vendor:publish --provider="Laravel\Fortify\FortifyServiceProvider"
+        Fortify ations: app/Actions 
+        config/fortify.php
+    php artisan migrate
+
+Fortify Features
+    'features' => [
+        Features::registration(),
+        Features::resetPasswords(),
+        Features::emailVerification(),
+    ],
+
+Disabling Views
+    within your application's config/fortify.php configuration file to false:
+    'views' => false,
+    
+Disabling Views & Password Reset
+    define a route named password.reset that is responsible for displaying your application's "reset password" view. 
+    This is necessary because Laravel's Illuminate\Auth\Notifications\ResetPassword notification will generate the password reset URL via the password.reset named route.
+
+Authentication
+    Laravel\Fortify\Fortify class. 
+    Typically, you should call this method from the boot method of your application's App\Providers\FortifyServiceProvider class. 
+
+    use Laravel\Fortify\Fortify;    
+    public function boot(): void
+    {
+        Fortify::loginView(function () {
+            return view('auth.login');
+        });
+    
+        // ...
+    }
+
+    The /login endpoint expects a string email / username and a password. 
+    The name of the email / username field should match the username value within the config/fortify.php configuration file. 
+    In addition, a boolean remember field may be provided
+
+    Customizing User Authentication
+    public function boot(): void
+    {
+        Fortify::authenticateUsing(function (Request $request) {
+            $user = User::where('email', $request->email)->first();
+    
+            if ($user &&
+                Hash::check($request->password, $user->password)) {
+                return $user;
+            }
+        });
+    
+        // ...
+    }
+
+    If login, redirect to home configuration option within config/fortify.php
+
+Two Factor Authentication

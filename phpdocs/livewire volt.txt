@@ -1,0 +1,35 @@
+livewire volt
+    composer require livewire/volt
+    php artisan volt:install
+
+Components
+    php artisan make:volt counter
+    php artisan make:volt counter --class //class based
+
+    class based
+        <?php
+            use Livewire\Volt\Component;
+            
+            new
+                #[Layout('layouts.guest')] //class attributes
+                #[Title('Login')]
+            class extends Component
+            
+            new class extends Component 
+            {
+                public $count = 0;
+            
+                public function increment() { $this->count++; }
+
+                public function with(): array //return data to view
+                {
+                    return [ 'posts' => Post::paginate(10), ];
+                }
+            } 
+        ?>
+        <div>
+            <h1>{{ $count }}</h1>
+            <button wire:click="increment">+</button>
+        </div>
+
+    functional

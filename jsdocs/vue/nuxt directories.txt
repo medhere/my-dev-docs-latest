@@ -1,0 +1,383 @@
+Directory Structure
+
+assets
+	Stylesheets (CSS, SASS, etc.)
+	Fonts
+	Images that won't be served from the public/ directory.
+		~/assets/
+		
+components
+	| components/
+	--| base/
+	----| foo/
+	------| Button.vue
+	<BaseFooButton />
+	
+	to disable naming
+		export default defineNuxtConfig({
+		  components: [
+			{
+				pathPrefix: false,
+			},
+		  ],
+		});
+		
+	dynamic components
+	import { SomeComponent } from '#components'
+	
+	dynamic imports (Lazy...)
+	<LazyBaseFooButton />
+	
+composables
+	composables/useFoo.ts
+
+	export const useFoo = () => {
+	  return useState('foo', () => 'bar')
+	}
+	or
+	export default function () {
+	  return useState('foo', () => 'bar')
+	}
+	
+	autoimport
+	<script setup lang="ts">
+	const foo = useFoo()
+	</script>
+
+	<template>
+	  <div>
+		{{ foo }}
+	  </div>
+	</template>
+	
+	scanning
+	export default defineNuxtConfig({
+	  imports: {
+		dirs: [
+		  'composables/**'
+		]
+	  }
+	})
+	
+content
+@nuxt/content
+	parses .md, .yml, .csv and .json
+	
+	
+layout
+	Default Layout
+		Add a ~/layouts/default.vue:
+		layouts/default.vue
+
+		<template>
+		  <div>
+			<p>Some default layout content shared across all pages</p>
+			<slot />
+		  </div>
+		</template>
+	
+	Named Layout
+		Directory Structure
+
+		-| layouts/
+		---| default.vue
+		---| custom.vue
+		Then you can use the custom layout in your page:
+		pages/about.vue
+
+		<script setup lang="ts">
+		definePageMeta({
+		  layout: 'custom'
+		})
+		</script>
+		
+	Naming
+		File							Layout Name
+		~/layouts/desktop/default.vue	desktop-default
+		~/layouts/desktop-base/base.vue	desktop-base
+		~/layouts/desktop/index.vue		desktop
+		
+	Changing the Layout Dynamically
+		<script setup lang="ts">
+		function enableCustomLayout () {
+		  setPageLayout('custom')
+		}
+		definePageMeta({
+		  layout: false,
+		});
+		</script>
+		
+	Overriding a Layout on a Per-page Basis
+		<script setup lang="ts">
+		definePageMeta({
+		  layout: false,
+		})
+		</script>
+
+		<template>
+		  <div>
+			<NuxtLayout name="custom">
+			  <template #header> Some header template content. </template>
+			  The rest of the page
+			</NuxtLayout>
+		  </div>
+		</template>
+
+		Parent layout
+		<template>
+		  <NuxtLayout :name="layout">
+			<NuxtLoadingIndicator 
+				color: The color of the loading bar. It can be set to false to turn off explicit color styling.
+				height: Height of the loading bar, in pixels (default 3).
+				duration: Duration of the loading bar, in milliseconds (default 2000).
+				throttle: Throttle the appearing and hiding, in milliseconds (default 200).
+			/>
+			<NuxtPage />
+		  </NuxtLayout>
+		</template>
+		
+middleware
+	middleware/my-middleware.ts
+
+	export default defineNuxtRouteMiddleware((to, from) => {
+	  if (to.params.id === '1') {
+		return abortNavigation()
+	  }
+	  // In a real app you would probably not redirect every route to `/`
+	  // however it is important to check `to.path` before redirecting or you
+	  // might get an infinite redirect loop
+	  if (to.path !== '/') {
+		return navigateTo('/')
+	  }
+	})
+
+	return values
+		nothing - does not block navigation and will move to the next middleware function, if any, or complete the route navigation
+		return navigateTo('/') - redirects to the given path and will set the redirect code to 302 Found if the redirect happens on the server side
+		return navigateTo('/', { redirectCode: 301 }) - redirects to 301 Moved Permanently if the redirect happens on the server side
+		return abortNavigation() - stops the current navigation
+		return abortNavigation(error) - rejects the current navigation with an error
+		
+	Middleware Order
+		middleware/
+		--| 01.setup.global.ts
+		--| 02.analytics.global.ts
+		--| auth.ts
+
+		pages/profile.vue
+		<script setup lang="ts">
+		definePageMeta({
+		  middleware: [
+			function (to, from) {
+			  // Custom inline middleware
+			},
+			'auth',
+		  ],
+		});
+		</script>
+		
+pages
+	vue
+		<template>
+		  <h1>Index page</h1>
+		</template>
+
+	jsx
+		export default defineComponent({
+		  render () {
+			return <h1>Index page</h1>
+		  }
+		})
+
+	structure
+		pages/users-[group]/[id].vue
+		pages/[...slug].vue
+		
+		const route = useRoute()
+		$route.params...
+	
+	nested pages
+		[
+		  {
+			path: '/parent',
+			component: '~/pages/parent.vue',
+			name: 'parent',
+			children: [
+			  {
+				path: 'child',
+				component: '~/pages/parent/child.vue',
+				name: 'parent-child'
+			  }
+			]
+		  }
+		]
+
+		<template>
+		  <div>
+			<h1>I am the parent view</h1>
+			<NuxtPage :foobar="123" />
+		  </div>
+		</template>
+		
+	Page Metadata
+
+		<script setup lang="ts">
+		definePageMeta({
+		  title: 'My home page'
+		})
+		</script>
+		This data can then be accessed throughout the rest of your app from the route.meta object.
+
+		<script setup lang="ts">
+		const route = useRoute()
+
+		console.log(route.meta.title) // My home page
+		</script>
+		
+	Other metadata
+		definePageMeta({
+			...,
+			keepalive: true,
+			layout
+			layoutTransition
+			pageTransition
+			middleware
+			name
+		})
+		
+	Navigation
+	 <NuxtLink to="/">Home page</NuxtLink>
+		to: Any URL or a route location object from Vue Router
+		href: An alias for to. If used with to, href will be ignored
+		target: A target attribute value to apply on the link
+		activeClass: A class to apply on active links. Works the same as Vue Router's active-class prop on internal links. Defaults to Vue Router's default ("router-link-active")
+		replace: Works the same as Vue Router's replace prop on internal links
+		prefetch and noPrefetch: Whether to enable prefetching assets for links that enter the view port.
+
+	 navigateTo({
+		path: '/search',
+		query: {
+		  name: name.value,
+		  type: type.value
+		}
+	  })
+	  
+	config options
+		export default defineNuxtConfig({
+		  ssr: false,
+		  router: {
+			options: {
+			  hashMode: true,
+			  scrollBehaviorType: 'smooth'
+			}
+		  }
+		})
+		
+server
+	routing
+		-| server/
+		---| api/
+		-----| hello.ts      # /api/hello
+		---| routes/
+		-----| bonjour.ts    # /bonjour
+		---| middleware/
+		-----| log.ts        # log all requests
+		
+		server/api/hello.ts
+		export default defineEventHandler((event) => {
+		  return {
+			hello: 'world'
+		  }
+		})
+		usage
+		useFetch('/api/hello')
+		
+		server/api/hello/[name].ts
+		export default defineEventHandler((event) => {
+		  const name = getRouterParam(event, 'name')
+
+		  return `Hello, ${name}!`
+		})
+		/api/hello/[name].ts
+		
+		server/api/test.get.ts
+		export default defineEventHandler(() => 'Test get handler')
+
+		server/api/test.post.ts
+		export default defineEventHandler(() => 'Test post handler')
+
+		index.[method].ts inside a directory to create API namespaces.
+		server/api/foo/index.get.ts
+		server/api/foo/index.post.ts
+		server/api/foo/bar.get.ts
+		export default defineEventHandler((event) => {
+		  // handle GET requests for the `api/foo` endpoint
+		})
+		
+		~/server/api/foo/[...slug].ts and access it via event.context.params.slug.
+		server/api/foo/[...slug].ts
+		
+		server/routes/hello.ts
+		export default defineEventHandler(() => 'Hello World!')
+		the /hello route will be accessible at http://localhost:3000/hello.
+		
+		server/middleware/log.ts
+		export default defineEventHandler((event) => {
+		  console.log('New request: ' + getRequestURL(event))
+		})
+
+		server/middleware/auth.ts
+		export default defineEventHandler((event) => {
+		  event.context.auth = { user: 123 }
+		})
+		
+	Body Handling
+	
+		server/api/submit.post.ts
+		export default defineEventHandler(async (event) => {
+		  const body = await readBody(event)
+		  return { body }
+		})
+	
+		usage
+		const { body } = await $fetch('/api/submit', {
+			method: 'post',
+			body: { test: 123 }
+		  })
+		  
+	Query Parameters
+		Sample query /api/query?foo=bar&baz=qux
+		server/api/query.get.ts
+
+		export default defineEventHandler((event) => {
+		  const query = getQuery(event)
+
+		  return { a: query.foo, b: query.baz }
+		})
+	
+	Error
+		throw createError({
+		  statusCode: 400,
+		  statusMessage: 'ID should be an integer',
+		})
+
+	Status Codes
+		setResponseStatus(event, 202)
+		
+utils
+	utils/index.ts
+	export const { format: formatNumber } = Intl.NumberFormat('en-GB', {
+	  notation: 'compact',
+	  maximumFractionDigits: 1
+	})
+
+	utils/random-entry.ts or utils/randomEntry.ts
+
+	// It will be available as randomEntry() (camelCase of file name without extension)
+	export default function (arg) {
+	  return arg
+	}
+
+	<template>
+	  <p>{{ formatNumber(1234) }}</p>
+	</template>

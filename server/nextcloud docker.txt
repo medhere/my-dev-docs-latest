@@ -1,0 +1,17 @@
+nextcloud docker
+
+install docker
+
+install nc
+======================
+sudo docker run \
+--init \
+--sig-proxy=false \
+--name nextcloud-aio-mastercontainer \
+--restart always \
+--publish 8081:8080 \
+--volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
+--volume /var/run/docker.sock:/var/run/docker.sock:ro \
+nextcloud/all-in-one:latest
+
+open port 8081 (or proxy domain name to https://localhost:8081) and port 3478 tcp udp

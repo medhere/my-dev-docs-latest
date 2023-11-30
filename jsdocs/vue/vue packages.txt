@@ -1,0 +1,45 @@
+Vue UI Libs
+
+https://quasar.dev/
+https://vuetifyjs.com
+https://bootstrap-vue.org
+https://ui.vuestic.dev/
+https://www.creative-tim.com/vuematerial
+https://vuecidity.wemakesites.net
+https://element-plus.org/en-US/
+https://buefy.org/
+https://myliang.github.io/fish-ui/#/
+https://shoelace.style/frameworks/vue
+ionic vue
+primevue.org
+
+
+vue
+========================
+pinia
+pinia-plugin-persistedstate
+vue router
+vue-auth
+vue-simple-acl
+vue-axios
+@vueuse/core
+@vueform/vueform
+@websanova/vue-auth
+
+
+
+nuxtjs
+==================
+@pinia/nuxt @pinia-plugin-persistedstate/nuxt
+@pinia-plugin-persistedstate/nuxt
+nuxt-security@rc
+@vueuse/nuxt @vueuse/core
+@vite-pwa/nuxt -D 
+element-plus @element-plus/nuxt -D
+npm install --save-dev nuxt-primevue
+npm install --save-dev @ant-design-vue/nuxt
+npm i -D nuxt-api-party
+npm install @nuxtjs/ionic -D
+npm install -D @kevinmarrec/nuxt-pwa
+npm install @vuestic/nuxt
+npm install --save-dev nuxt-auth-sanctum

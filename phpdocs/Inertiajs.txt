@@ -1,0 +1,10 @@
+Inertiajs
+
+Intro
+    scaffold with breeze
+    composer require laravel/breeze --dev
+    php artisan breeze:install
+        select vue or react
+    php artisan migrate
+    npm install
+    npm run dev

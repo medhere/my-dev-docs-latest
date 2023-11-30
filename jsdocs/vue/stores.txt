@@ -1,0 +1,128 @@
+Stores
+	
+	Reactive
+		import { ref, reactive } from 'vue'
+
+		export const reactiveStore = reactive({
+		  count: 0,
+		  increment() {
+			this.count++
+		  }
+		})
+
+
+		// global state, created in module scope
+		const globalCount = ref(1)
+
+		export function useCount() {
+		  // local state, created per-component
+		  const localCount = ref(1)
+
+		  return {
+			globalCount,
+			localCount
+		  }
+		}
+		
+	Vuex
+		import { createApp } from 'vue'
+		import { createStore } from 'vuex'
+
+		// Create a new store instance.
+		const store = createStore({
+			state() {
+				return {
+					count: 0
+				}
+			},
+			mutations: {
+				increment(state) {
+					state.count++
+				},
+				incrementVal(state, n) {
+					state.count += n
+				}
+			},
+			actions: {
+				increment(context) {
+					// var { commit, state } = context
+					context.commit('increment')
+				}
+			}
+
+		})
+
+		//modules
+		const moduleA = {
+			namespaced: true,
+			state: () => ({  }),
+			mutations: {  },
+			actions: {  },
+			getters: {  }
+		}
+
+		const moduleB = {
+			namespaced: true,
+			state: () => ({  }),
+			mutations: {  },
+			actions: {  }
+		}
+
+		const store2 = createStore({
+			modules: {
+				modulenameA: moduleA,
+				modulenameB: moduleB
+			}
+		})
+
+
+		// Install the store instance as a plugin
+		// app.use(store)
+
+		//single store usage
+		// const store = useStore()
+		// or const store = this.$store
+		// console.log(store.state.count) //state
+		// store.commit('increment')    //mutation
+		// store.commit('incrementVal', 10) //mutation
+		// store.dispatch('increment') //action
+		// store.dispatch('incrementVal', 10) //action
+
+		//modole store usage
+		// store.state.modulenameA // -> `moduleA`'s state
+		// store.state.modulenameB // -> `moduleB`'s state
+		// store.commit('modulename/mutation')
+		// store.dispatch('modulename/action')
+
+	Pinia
+		import { defineStore } from 'pinia'
+		export const useCounterStore = defineStore('counter', {
+			state: () => ({
+				count: 0
+			}),
+			actions: {
+				increment() {
+					this.count++
+				},
+			},
+		})
+
+		export const useCounterStoreTwo = defineStore('counter', () => {
+			const variable = useComposable() //can use any composable
+
+			const count = ref(0)
+			function increment() {
+				count.value++
+			}
+
+			return { count, increment }
+		})
+
+
+
+		// usage
+		// const counter = useCounterStore()
+		// counter.count++
+		// counter.$patch({ count: counter.count + 1 })
+		// counter.increment()
+		// counter.count

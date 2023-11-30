@@ -1,0 +1,357 @@
+livewire
+
+Intro
+    scaffold with breeze
+    composer require laravel/breeze --dev
+    php artisan breeze:install
+    php artisan migrate
+    npm install
+    npm run dev
+
+    or
+
+    composer require livewire/livewire
+    php artisan livewire:publish --config
+    create default layout /views/components/layouts/app.blade.php
+    php artisan livewire:layout
+
+Components
+    views/livewire
+    php artisan make:livewire CreatePost
+    php artisan make:livewire posts.create-post  //subdir
+    php artisan livewire:form PostForm //create form
+
+    class Counter extends Component
+    {
+        public $count = 1;
+        public function increment() { $this->count++; }
+        public function decrement() { $this->count--; }    
+        public function render() { return view('livewire.counter'); }
+    }
+    <div>
+        <h1>{{ $count }}</h1>
+        <button wire:click="increment">+</button>
+        <button wire:click="decrement">-</button>
+    </div>
+
+    class CreatePost extends Component
+        mount()	Called when a component is created
+        hydrate()	Called when a component is re-hydrated at the beginning of a subsequent request
+        boot()	Called at the beginning of every request. Both initial, and subsequent
+        updating()	Called before updating a component property
+        updated()	Called after updating a property
+        rendering()	Called before render() is called
+        rendered()	Called after render() is called
+        dehydrate()	Called at the end of every component request
+
+    usage
+    <livewire:create-post />
+    @livewire('create-post') //blade directive
+
+Layouts
+
+    /views/components/layouts/
+    <div>
+        {{ $slot }}
+    </div>
+
+    custom layout
+    #[Layout('layouts.layoutname')] 
+    public function render()
+    {
+        return view('livewire.create-post');
+            // or ->layout('layouts.app'); 
+    }
+
+Routing and Navigation
+    Route::get('/', Dashboard::class);
+    <a href="/" wire:navigate>Dashboard</a>
+    <a href="/posts" wire:navigate.hover>Posts</a> //prefecth
+
+    redirect
+        $this->redirect('/posts'); 
+        $this->redirect('/posts', navigate: true);
+        $this->redirectRoute('profile'); //named route
+        $this->redirectRoute('profile', ['id' => 1]);
+
+    persist across navigation
+        @persist('player')
+            <audio src="{{ $episode->file }}" controls></audio>
+        @endpersist
+
+Javascript and Assets
+    @script
+    <script>
+        setInterval(() => {
+            $wire.$refresh()
+        }, 2000)
+    </script>
+    @endscript
+    
+    @assets
+    <script src="https://cdn.jsdelivr.net/npm/pikaday/pikaday.js" defer></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/pikaday/css/pikaday.css">
+    @endassets
+
+
+Actions
+    #[Reactive] //live modification
+    public $title;
+
+    #[Locked] //prevent modification
+    public $id;
+
+    #[Validate('required|min:5')] //validation , use as  @error('title') <span class="error">{{ $message }}</span> @enderror 
+    #[Validate('required', message: 'Please provide a post title')]
+    #[Validate('min:3', message: 'This title is too short')]
+    public $content = '';
+
+    public function mount($title = null)
+    {
+        $this->title = $title;
+    }
+
+    public function render()
+    {
+        return view('livewire.create-post')->with([ 'user' => User::all() ]);
+    }
+
+    #[Computed] //live evaluation, accessed in view with $this->todos without (), remove cahce with unset($this->todos); 
+    #[Computed(persist: true, seconds: 7200)]
+    public function todos()
+    {
+        return User::where(...);
+    }
+
+    public function save() 
+    {
+        $this->validate(); 
+        $form = $this->form->all(); //retrieve all form values
+
+        $post = Post::create([ 'title' => $this->title, 'content' => $this->content ]);
+        return redirect()->to('/posts')->with('status', 'Post created!');
+    }
+
+    #[On('post-created.{title}')] //get dispatch events
+    public function refreshPost()
+    { ... }
+
+    public function add($id)
+    {
+        $this->todos[] = $this->todo;
+
+        //dispatch event
+        $this->dispatch('post-created', title: $post->title);
+        $this->dispatch('post-created')->to(Dashboard::class); //to another component
+    }
+
+Directives and Events
+    Input Binding
+        <input 
+            wire:key={{ user.id }}
+            wire:model={{ $title }} //bound to $title
+            wire:model.live={{ $title }} //live update
+        >
+        wire:model.blur="title" //update on blur
+        wire:model.live.debounce.150ms="title"  //debounce
+        wire:model.live.throttle.150ms="title" //trottle
+
+    Dispatch Events
+        <button wire:click="$dispatch('post-created', { id: {{ $post->id }} })"> 
+            EditPost 
+        </button>
+        <button wire:click="$dispatchTo('posts', 'post-created', { id: {{ $post->id }} })">
+            EditPost 
+        </button> //dispatch to another component "Post"
+
+    Event listeners
+        wire:click	Triggered when an element is clicked
+        wire:submit	Triggered when a form is submitted
+        wire:keydown	Triggered when a key is pressed down
+            wire:keydown.enter
+        wire:keyup	Triggered when a key is released
+        wire:mouseenter	Triggered when the mouse enters an element
+        wire:*	Whatever text follows wire: will be used as the event name of the listener
+    
+        <form wire:submit="save"></form> //triggers save()
+        <livewire:create-post 
+            title="Initial Title"  //passed to mount()
+            :title="$initialTitle" 
+        />
+        <button wire:click="add(id)"></button>
+
+    Event modifiers
+            <input wire:keydown.prevent="...">
+        .prevent	Equivalent of calling .preventDefault()
+        .stop	Equivalent of calling .stopPropagation()
+        .window	Listens for event on the window object
+        .outside	Only listens for clicks "outside" the element
+        .document	Listens for events on the document object
+        .once	Ensures the listener is only called once
+        .debounce	Debounce the handler by 250ms as a default
+        .debounce.100ms	Debounce the handler for a specific amount of time
+        .throttle	Throttle the handler to being called every 250ms at minimum
+        .throttle.100ms	Throttle the handler at a custom duration
+        .self	Only call listener if event originated on this element, not children
+        .camel	Converts event name to camel case (wire:custom-event -> "customEvent")
+        .dot	Converts event name to dot notation (wire:custom-event -> "custom.event")
+        .passive	wire:touchstart.passive won't block scroll performance
+        .capture	Listen for event in the "capturing" phase
+
+    Confirm action
+        wire:confirm="Are you sure you want to delete this post?" //confirmation
+
+    Loading State
+        <span wire:loading>Saving...</span> 
+
+    Access Triggers
+        $parent
+            access parent component properties and call parent component actions
+            <button wire:click="$parent.removePost({{ $post->id }})">Remove</button>
+
+        $set
+            update a property in Livewire component directly
+            <button wire:click="$set('query', '')">Reset Search</button>
+
+        $refresh
+            triggers a re-render of Livewire component
+            wire:click="$refresh" //refresh function
+            x-on:click="$wire.$refresh()" //using alpine
+
+        $toggle
+            toggle the value of a boolean property in Livewire component
+            <button wire:click="$toggle('sortAsc')"> Sort {{ $sortAsc ? 'Descending' : 'Ascending' }} </button>
+
+        $dispatch
+            dispatch a Livewire event directly in the browser
+            <button type="submit" wire:click="$dispatch('post-deleted')">Delete Post</button>
+
+        $event
+            gives you access to the actual JavaScript event that was Triggered
+            <input type="text" wire:keydown.enter="search($event.target.value)">
+
+    Teleports
+        @teleport('body')
+            <div x-show="open">
+                Modal contents...
+            </div>
+        @endteleport
+
+    Offline
+        <div wire:offline>
+            This device is currently offline.
+        </div>
+
+    Others
+        <div wire:transition> //transition conditional elements smoothly in and out of the page
+            @foreach ($post->comments as $comment)
+                <!-- ... -->
+            @endforeach
+        </div>
+
+        <div wire:ignore> //ignore on refresh
+            <!-- This element would be reference by a -->
+            <!-- third-party library for initialization... -->
+            <input id="id-for-date-picker-library">
+        </div>
+
+        <div wire:init="loadPosts"> //onload
+            <!-- ... -->
+        </div>
+
+        <div wire:poll> //poll render() 
+            Subscribers: {{ $count }}
+        </div>
+        <div wire:poll="refreshSubscribers"> // poll component method
+            Subscribers: {{ $count }}
+        </div>
+        <div wire:poll.15s> <!-- In seconds... -->
+        <div wire:poll.15000ms> <!-- In milliseconds... -->
+        <div wire:poll.keep-alive>
+        <div wire:poll.visible>
+
+Lazy
+    #[Lazy]
+    class ComponentName extends Component
+    or
+    <livewire:coponentname lazy />
+    <livewire:coponentname :lazy="false" />
+    or
+    Route::get('/dashboard', \App\Livewire\Dashboard::class)->lazy();
+    Route::get('/dashboard', \App\Livewire\Dashboard::class)->lazy(enabled: false);
+
+File Uploads
+    class UploadPhoto extends Component
+    {
+        use WithFileUploads;
+    
+        #[Validate('image|max:1024')] // 1MB Max
+        public $photo;
+    
+        public function save()
+        {
+            $this->photo->store('photos');
+
+            // Store the file in the "photos" directory in a configured "s3" disk
+            $this->photo->store('photos', 's3');
+        
+            // Store the file in the "photos" directory with the filename "avatar.png"
+            $this->photo->storeAs('photos', 'avatar');
+        
+            // Store the file in the "photos" directory in a configured "s3" disk with the filename "avatar.png"
+            $this->photo->storeAs('photos', 'avatar', 's3');
+        
+            // Store the file in the "photos" directory, with "public" visibility in a configured "s3" disk
+            $this->photo->storePublicly('photos', 's3');
+        
+            // Store the file in the "photos" directory, with the name "avatar.png", with "public" visibility in a configured "s3" disk
+            $this->photo->storePubliclyAs('photos', 'avatar', 's3');
+        }
+
+            #[Validate(['photos.*' => 'image|max:1024'])] //multiple
+        public $photos = [];
+    
+        public function save()
+        {
+            foreach ($this->photos as $photo) {
+                $photo->store('photos');
+            }
+        }
+    }
+        <input type="file" wire:model="photo">
+        <input type="file" wire:model="photos" multiple>
+            @error('photos.*') <span class="error">{{ $message }}</span> @enderror
+
+    Progress indicators
+        livewire-upload-start	Dispatched when the upload starts
+        livewire-upload-finish	Dispatched if the upload is successfully finished
+        livewire-upload-error	Dispatched if the upload fails
+        livewire-upload-progress	An event containing the upload progress percentage as the upload progresses
+
+Pagination
+    class ShowPosts extends Component
+    {
+        use WithPagination;
+    
+        public function render()
+        {
+            return view('show-posts', [
+                'posts' => Post::paginate(10),
+            ]);
+        }
+    }
+    <div>
+        <div>
+            @foreach ($posts as $post)
+                <!-- ... -->
+            @endforeach
+        </div>
+    
+        {{ $posts->links() }}
+    </div>
+
+    Component navigation
+        $this->setPage($page)	Set the paginator to a specific page number
+        $this->resetPage()	Reset the page back to 1
+        $this->nextPage()	Go to the next page
+        $this->previousPage()	Go to the previous page

@@ -18,6 +18,14 @@ Model settings
     protected $guarded = ['name'];
     protected $visible = ['first_name', 'last_name'];
     protected $hidden = ['password'];
+	
+	protected static function boot() //setting default values
+    {
+        parent::boot();
+        static::creating(function ($model) {
+            $model->unique_id = Str::random(4).rand(1000,9000);
+        });
+    }
 
     protected $casts = [ 'joined_at' => 'datetime:Y-m-d H:00', ];
     cast types
@@ -166,8 +174,8 @@ Relationships
         Model::querable()->where('id', $id)->with('relationship')
 
     Store Records
-    $model->rship()->save($car);
-    $model->rship()->saveMany([
-        $car1, 
-        $car2,
-    ]);
+		$model->rship()->save($car);
+		$model->rship()->saveMany([
+			$car1, 
+			$car2,
+		]);

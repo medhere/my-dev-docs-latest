@@ -1,0 +1,777 @@
+
+Resources
+====================================================
+====================================================
+Resource Forms
+	public static function form(Form $form): Form
+	{
+		return $form
+			->schema([
+				Forms\Components\TextInput::make('name')->required(),
+				Forms\Components\TextInput::make('email')->email()->required()
+				Forms\Components\TextInput::make('password')
+					->password()
+					->required()
+					->hiddenOn('edit'),
+					->visibleOn('create'), //create is based on page action
+				,
+				// ...
+			]);
+	}
+
+
+Tables
+public static function table(Table $table): Table
+	{
+		return $table
+			->columns([
+				Tables\Columns\TextColumn::make('name'),
+				Tables\Columns\TextColumn::make('email'),
+				// ...
+			])
+			->filters([
+				Tables\Filters\Filter::make('verified')
+					->query(fn (Builder $query): Builder => $query->whereNotNull('email_verified_at')),
+				// ...
+			])
+			->actions([
+				Tables\Actions\EditAction::make(),
+			])
+			->bulkActions([
+				Tables\Actions\BulkActionGroup::make([
+					Tables\Actions\DeleteBulkAction::make(),
+				]),
+			]);
+	}
+
+
+Change Menu name
+	protected static ?string $navigationLabel = 'Mis Clientes';
+	protected static ?string $navigationIcon = 'heroicon-o-user-group';
+	protected static ?int $navigationSort = 2;
+	protected static ?string $navigationGroup = 'Shop';
+
+
+Generating URLs to resource pages
+	CustomerResource::getUrl(); // /admin/customers
+	CustomerResource::getUrl('create'); // /admin/customers/create
+	CustomerResource::getUrl('edit', ['record' => $customer]); // /admin/customers/edit/1
+
+Customizing the resource Eloquent query
+	public static function getEloquentQuery(): Builder
+	{
+		return parent::getEloquentQuery()->where('is_active', true);
+	}
+
+
+
+Listing Records
+==========================
+using tabs
+	use Filament\Resources\Components\Tab;
+	use Illuminate\Database\Eloquent\Builder;
+	public function getTabs(): array
+	{
+		return [
+			'all' => Tab::make('All customers')
+			->icon('heroicon-m-user-group')
+			->iconPosition(IconPosition::After)
+			->badge(Customer::query()->where('active', true)->count())
+			->badgeColor('success')
+			,
+			'active' => Tab::make('Active customers')
+				->modifyQueryUsing(fn (Builder $query) => $query->where('active', true)),
+			'inactive' => Tab::make('Inactive customers')
+				->modifyQueryUsing(fn (Builder $query) => $query->where('active', false)),
+		];
+	}
+	
+	Custom list page view
+		protected static string $view = 'users.pages.list-users';
+		<x-filament-panels::page>
+			{{ $this->table }}
+		</x-filament-panels::page>
+
+	
+Creating Records
+================================
+On Create Page in extends CreateRecord
+Handlng default data on submit
+	app/filamet/...resources/pages/...
+	use Illuminate\Database\Eloquent\Model;
+	
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        dd($data);
+        return $data;
+    }
+	
+    protected function handleRecordCreation(array $data): Model
+    {
+        dd($data);
+        return static::getModel()::create($data);
+
+    }
+	
+	protected function getRedirectUrl(): string
+	{
+		return $this->getResource()::getUrl('index');
+		//return $this->previousUrl ?? $this->getResource()::getUrl('index');
+	}
+	
+	use Filament\Notifications\Notification;
+	protected function getCreatedNotification(): ?Notification
+	{
+		return Notification::make()
+			->success()
+			->title('User registered')
+			->body('The user has been created successfully.');
+	}
+
+	Lifecycle hooks 
+	protected function beforeFill(): void
+    {
+        // Runs before the form fields are populated with their default values.
+    }
+ 
+    protected function afterFill(): void
+    {
+        // Runs after the form fields are populated with their default values.
+    }
+ 
+    protected function beforeValidate(): void
+    {
+        // Runs before the form fields are validated when the form is submitted.
+    }
+ 
+    protected function afterValidate(): void
+    {
+        // Runs after the form fields are validated when the form is submitted.
+    }
+ 
+    protected function beforeCreate(): void
+    {
+        // Runs before the form fields are saved to the database.
+    }
+ 
+    protected function afterCreate(): void
+    {
+        // Runs after the form fields are saved to the database.
+    }
+
+
+	Halting the creation process
+		At any time, you may call $this->halt()
+
+	Using a wizard inside extends CreateRecord
+		class CreateCategory extends CreateRecord
+		{
+			use CreateRecord\Concerns\HasWizard;
+			
+			protected static string $resource = CategoryResource::class;
+		 
+			protected function getSteps(): array
+			{
+				return [
+					 Step::make('Description')
+						->description('Add some extra details')
+						->schema([
+							MarkdownEditor::make('description')
+								->columnSpan('full'),
+						]),
+					Step::make('Visibility')
+						->description('Control who can view it')
+						->schema([
+							Toggle::make('is_visible')
+								->label('Visible to customers.')
+								->default(true),
+						]),
+				];
+			}
+		}
+		
+	Custom view
+		protected static string $view = 'page.view';
+
+		<x-filament-panels::page>
+			<x-filament-panels::form wire:submit="create">
+				{{ $this->form }}
+		 
+				<x-filament-panels::form.actions
+					:actions="$this->getCachedFormActions()"
+					:full-width="$this->hasFullWidthFormActions()"
+				/>
+			</x-filament-panels::form>
+		</x-filament-panels::page>
+				
+
+Editing Records
+=========================
+extends EditRecord
+
+	protected function mutateFormDataBeforeFill(array $data): array
+	{
+		$data['user_id'] = auth()->id();
+	 
+		return $data;
+	}
+
+	protected function mutateFormDataBeforeSave(array $data): array
+	{
+		$data['last_edited_by_id'] = auth()->id();
+	 
+		return $data;
+	}
+
+	use Illuminate\Database\Eloquent\Model; 
+	protected function handleRecordUpdate(Model $record, array $data): Model
+	{
+		$record->update($data);
+	 
+		return $record;
+	}
+
+	protected function getRedirectUrl(): string
+	{
+		return $this->getResource()::getUrl('index');
+		//return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
+		//return $this->previousUrl ?? $this->getResource()::getUrl('index');
+	}
+
+	use Filament\Notifications\Notification; 
+	protected function getSavedNotification(): ?Notification
+	{
+		return Notification::make()
+			->success()
+			->title('User updated')
+			->body('The user has been saved successfully.');
+	}
+
+    protected function beforeFill(): void
+    {
+        // Runs before the form fields are populated from the database.
+    }
+ 
+    protected function afterFill(): void
+    {
+        // Runs after the form fields are populated from the database.
+    }
+ 
+    protected function beforeValidate(): void
+    {
+        // Runs before the form fields are validated when the form is saved.
+    }
+ 
+    protected function afterValidate(): void
+    {
+        // Runs after the form fields are validated when the form is saved.
+    }
+ 
+    protected function beforeSave(): void
+    {
+        // Runs before the form fields are saved to the database.
+    }
+ 
+    protected function afterSave(): void
+    {
+        // Runs after the form fields are saved to the database.
+    }
+
+	
+	Halting the saving process
+		At any time, you may call $this->halt()
+	
+	Custom Actions
+		protected function getHeaderActions(): array
+		{
+			return [
+				Actions\Action::make('impersonate')
+					->action(function (): void {
+						// ...
+					}),
+				Actions\DeleteAction::make(),
+			];
+		}
+
+		protected function getFormActions(): array
+		{
+			return [
+				...parent::getFormActions(),
+				Action::make('close')->action('saveAndClose'),
+			];
+		}
+	 
+		public function saveAndClose(): void
+		{
+			// ...
+		}
+			
+	Custom views
+	protected static string $view = 'users.pages.edit-user';
+	<x-filament-panels::page>
+		<x-filament-panels::form wire:submit="save">
+			{{ $this->form }}
+	 
+			<x-filament-panels::form.actions
+				:actions="$this->getCachedFormActions()"
+				:full-width="$this->hasFullWidthFormActions()"
+			/>
+		</x-filament-panels::form>
+	 
+		@if (count($relationManagers = $this->getRelationManagers()))
+			<x-filament-panels::resources.relation-managers
+				:active-manager="$activeRelationManager"
+				:managers="$relationManagers"
+				:owner-record="$record"
+				:page-class="static::class"
+			/>
+		@endif
+	</x-filament-panels::page>
+	
+	
+View Records
+=========================
+	Use Infolist within resource 
+		use Filament\Infolists;
+		use Filament\Infolists\Infolist;
+		 
+		public static function infolist(Infolist $infolist): Infolist
+		{
+			return $infolist
+				->schema([
+					Infolists\Components\TextEntry::make('name'),
+					Infolists\Components\TextEntry::make('email'),
+					Infolists\Components\TextEntry::make('notes')
+						->columnSpanFull(),
+				]);
+		}
+		
+	Adding a View page to an existing resource
+		php artisan make:filament-page ViewUser --resource=UserResource --type=ViewRecord
+
+		public static function getPages(): array
+		{
+			return [
+				'view' => Pages\ViewUser::route('/{record}'),
+			];
+		}
+		
+		public static function table(Table $table): Table
+		{
+			return $table
+				->actions([
+					Tables\Actions\ViewAction::make(),
+				]);
+		}
+		
+	View in modal
+	Remove the 'view' page
+	
+	extends ViewRecord
+		Customizing data before filling the form
+		protected function mutateFormDataBeforeFill(array $data): array
+		{
+			$data['user_id'] = auth()->id();	 
+			return $data;
+		}
+
+		Custom view
+			protected static string $view = 'users.pages.view-user';
+			<x-filament-panels::page>
+				@if ($this->hasInfolist())
+					{{ $this->infolist }}
+				@else
+					{{ $this->form }}
+				@endif
+			 
+				@if (count($relationManagers = $this->getRelationManagers()))
+					<x-filament-panels::resources.relation-managers
+						:active-manager="$activeRelationManager"
+						:managers="$relationManagers"
+						:owner-record="$record"
+						:page-class="static::class"
+					/>
+				@endif
+			</x-filament-panels::page>
+		
+Deleting Records
+===================
+	Within Resource
+		use Illuminate\Database\Eloquent\SoftDeletingScope;
+		 
+		public static function table(Table $table): Table
+		{
+			return $table
+				 ->filters([
+					Tables\Filters\TrashedFilter::make(),
+				])
+				->actions([
+					 Tables\Actions\DeleteAction::make(),
+					Tables\Actions\ForceDeleteAction::make(),
+					Tables\Actions\RestoreAction::make(),
+				])
+				->bulkActions([
+					Tables\Actions\BulkActionGroup::make([
+						Tables\Actions\DeleteBulkAction::make(),
+						Tables\Actions\ForceDeleteBulkAction::make(),
+						Tables\Actions\RestoreBulkAction::make(),
+					]),
+				]);
+		}
+		 
+		public static function getEloquentQuery(): Builder
+		{
+			return parent::getEloquentQuery()
+				->withoutGlobalScopes([
+					SoftDeletingScope::class,
+				]);
+		}
+		
+	Within EditPage
+		use Filament\Actions;
+		 
+		protected function getHeaderActions(): array
+		{
+			return [
+				Actions\DeleteAction::make(),
+				Actions\ForceDeleteAction::make(),
+				Actions\RestoreAction::make(),
+				// ...
+			];
+		}
+
+		
+Managing Relationships
+
+	using ->relationship on all form elements
+	->relationship('param1', 'param2') param1 defines the relationship in the model. The second argument is the column name to use from the related table — in this case, name.
+		Fieldset::make('Metadata')
+			->relationship('metadata') //relationship name on model
+			->schema([
+				TextInput::make('title'),
+				Textarea::make('description'),
+				FileUpload::make('image'),
+			])
+
+	Create Relationship
+	php artisan make:filament-relation-manager CategoryResource relationshipname dbcolumnname  --soft-deletes --attach
+		Resource is the parent resource
+		relationshipname is usually with HasMany and function name is that of the db_tbl_name
+		dbcolumnname is the 1st db column u want
+	
+	Attaching and detaching records
+		In Resource file
+		public function table(Table $table): Table
+		{
+			return $table
+				->columns([
+					// ...
+				])
+				->headerActions([
+					// ...
+					Tables\Actions\AttachAction::make(),
+				])
+				->actions([
+					// ...
+					Tables\Actions\DetachAction::make(),
+				])
+				->bulkActions([
+					Tables\Actions\BulkActionGroup::make([
+						// ...
+						Tables\Actions\DetachBulkAction::make(),
+					]),
+				]);
+		}
+		
+		Scoping the options to attach
+			AttachAction::make()
+				->recordSelectOptionsQuery(fn (Builder $query) => $query->whereBelongsTo(auth()->user())
+				
+		Searching the options to attach across multiple columns
+			AttachAction::make()
+				->recordSelectSearchColumns(['title', 'description'])
+		Customizing the select field in the attached modal 
+			AttachAction::make()
+				->recordSelect(
+					fn (Select $select) => $select->placeholder('Select a post'),
+				)
+			
+	Associating and dissociating records
+		php artisan make:filament-relation-manager CategoryResource posts title --associate
+		public function table(Table $table): Table
+		{
+			return $table
+				->columns([
+					// ...
+				])
+				->headerActions([
+					// ...
+					Tables\Actions\AssociateAction::make(),
+				])
+				->actions([
+					// ...
+					Tables\Actions\DissociateAction::make(),
+				])
+				->bulkActions([
+					Tables\Actions\BulkActionGroup::make([
+						// ...
+						Tables\Actions\DissociateBulkAction::make(),
+					]),
+				]);
+		}
+
+		Preloading the associate modal select options
+			use Filament\Tables\Actions\AssociateAction;
+			AssociateAction::make()
+				->preloadRecordSelect()
+		
+		Scoping the options to associate 
+			AssociateAction::make()
+				->recordSelectOptionsQuery(fn (Builder $query) => $query->whereBelongsTo(auth()->user())
+		Searching the options to associate across multiple columns 
+			AssociateAction::make()
+				->recordSelectSearchColumns(['title', 'description'])
+		
+		Customizing the select field in the associate modal 
+			AssociateAction::make()
+				->recordSelect(
+					fn (Select $select) => $select->placeholder('Select a post'),
+				)
+					
+					
+					
+	View Related
+	php artisan make:filament-relation-manager CategoryResource posts title --view
+		public function table(Table $table): Table
+		{
+			return $table
+				->columns([
+					// ...
+				])
+				->actions([
+					Tables\Actions\ViewAction::make(),
+					// ...
+				]);
+		}
+		
+	Deleting Record
+		php artisan make:filament-relation-manager CategoryResource posts title --soft-deletes		 
+		public function table(Table $table): Table
+		{
+			return $table
+				->modifyQueryUsing(fn (Builder $query) => $query->withoutGlobalScopes([
+					SoftDeletingScope::class,
+				]))
+				->columns([
+					// ...
+				])
+				->filters([
+					Tables\Filters\TrashedFilter::make(),
+					// ...
+				])
+				->actions([
+					Tables\Actions\DeleteAction::make(),
+					Tables\Actions\ForceDeleteAction::make(),
+					Tables\Actions\RestoreAction::make(),
+					// ...
+				])
+				->bulkActions([
+					BulkActionGroup::make([
+						Tables\Actions\DeleteBulkAction::make(),
+						Tables\Actions\ForceDeleteBulkAction::make(),
+						Tables\Actions\RestoreBulkAction::make(),
+						// ...
+					]),
+				]);
+		}
+		
+	
+	Grouping relation managers 
+	public static function getRelations(): array
+	{
+		return [
+			// ...
+			RelationGroup::make('Contacts', [
+				RelationManagers\IndividualsRelationManager::class,
+				RelationManagers\OrganizationsRelationManager::class,
+			]),
+			// ...
+		];
+	}
+	
+	Display create button on view page
+		->headerActions([
+			Tables\Actions\CreateAction::make()->authorize(true),
+		])
+	
+	
+	Accessing the relationship's owner record
+		$this->getOwnerRecord()
+
+		However, if you're inside a static method like form() or table(), $this isn't accessible. 
+		So, you may use a callback to access the $livewire instance:
+
+		use Filament\Forms;
+		use Filament\Forms\Form;
+		use Filament\Resources\RelationManagers\RelationManager;
+		 
+		public function form(Form $form): Form
+		{
+			return $form
+				->schema([
+					Forms\Components\Select::make('store_id')
+						->options(function (RelationManager $livewire): array {
+							return $livewire->getOwnerRecord()->stores()
+								->pluck('name', 'id')
+								->toArray();
+						}),
+					// ...
+				]);
+		}
+
+		All methods in Filament accept a callback which you can access $livewire->ownerRecord in.
+			
+	Global search
+	Within resource
+		protected static ?string $recordTitleAttribute = 'title';
+
+		public static function getGlobalSearchResultTitle(Model $record): string | Htmlable
+		{
+			return $record->name;
+		}
+
+		public static function getGloballySearchableAttributes(): array
+		{
+			return ['title', 'slug', 'author.name', 'category.name'];
+		}
+
+		public static function getGlobalSearchResultDetails(Model $record): array
+		{
+			return [
+				'Author' => $record->author->name,
+				'Category' => $record->category->name,
+			];
+		}
+
+		public static function getGlobalSearchEloquentQuery(): Builder
+		{
+			return parent::getGlobalSearchEloquentQuery()->with(['author', 'category']);
+		}
+
+		public static function getGlobalSearchResultUrl(Model $record): string
+		{
+			return UserResource::getUrl('edit', ['record' => $record]);
+		}
+
+		public static function getGlobalSearchResultActions(Model $record): array
+		{
+			return [
+				Action::make('edit')
+					->url(static::getUrl('edit', ['record' => $record])),
+			];
+		}
+
+		Opening URLs from global search actions 
+			Action::make('view')
+				->url(static::getUrl('view', ['record' => $record]), shouldOpenInNewTab: true)
+
+		Dispatching Livewire events from global search actions
+			Action::make('quickView')
+				->dispatch('quickView', [$record->id])
+
+		Limiting the number of global search results
+			protected static int $globalSearchResultsLimit = 20;
+			
+			
+		Registering global search keybindings
+			within panel file
+			use Filament\Panel; 
+			public function panel(Panel $panel): Panel
+			{
+				return $panel
+					// ...
+					->globalSearchKeyBindings(['command+k', 'ctrl+k']);
+			}
+			
+		
+			
+			
+	Widgets
+		within Pages
+	
+		php artisan make:filament-widget WidgetName --resource=ModelResource
+		create widget in app.../Widgets/ and view.../widgets
+		public static function getWidgets(): array
+		{
+			return [
+				CustomerResource\Widgets\CustomerOverview::class,
+			];
+		}
+	
+		Displaying a widget on a resource page
+			class ListCustomers extends ListRecords
+			{
+				public static string $resource = CustomerResource::class;
+			 
+				protected function getHeaderWidgets(): array
+				{
+					return [
+						CustomerResource\Widgets\CustomerOverview::class,
+					];
+				}
+			}
+			getHeaderWidgets() or getFooterWidgets().
+
+		Accessing the current record in the widget
+			use Illuminate\Database\Eloquent\Model; 
+			public ?Model $record = null;
+
+		Accessing page table data in the widget
+			add to page class
+			use Filament\Pages\Concerns\ExposesTableToWidgets;
+			class ListProducts extends ListRecords
+			{
+				use ExposesTableToWidgets;
+			}
+
+			add to widget class
+			use Filament\Widgets\Concerns\InteractsWithPageTable;
+			class ProductStats extends Widget
+			{
+				use InteractsWithPageTable;
+			 
+				protected function getTablePage(): string
+				{
+					return ListProducts::class;
+				}
+			 
+				// ...
+			}
+			
+			add to widget class
+			use Filament\Widgets\StatsOverviewWidget\Stat;			 
+			Stat::make('Total Products', $this->getPageTableQuery()->count()),
+			Stat::make('Total Products', $this->getPageTableRecords()->count()),
+
+		Passing properties to widgets on resource pages
+			protected function getHeaderWidgets(): array
+			{
+				return [
+					CustomerResource\Widgets\CustomerOverview::make([
+						'status' => 'active',
+					]),
+				];
+			}	
+			
+	 
+	 
+	Custom pages
+		within resource file
+		php artisan make:filament-page SortUsers --resource=UserResource --type=custom
+		public static function getPages(): array
+		{
+			return [
+				// ...
+				'sort' => Pages\SortUsers::route('/sort'),
+			];
+		}

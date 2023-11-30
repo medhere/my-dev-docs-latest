@@ -1,0 +1,285 @@
+Orchid Php
+
+Installation
+	composer require orchid/platform
+	php artisan orchid:install
+	php artisan orchid:admin admin admin@admin.com password
+
+	Updating
+	composer update orchid/platform --with-dependencies
+	php artisan orchid:publish
+	php artisan view:clear
+
+	other plugins
+	composer require orchid/crud
+
+Keeping Assets Updated
+	add to composer.json file. This will automatically publish the latest assets for you:
+	"scripts": {
+		"post-update-cmd": [
+		  "@php artisan orchid:publish --ansi"
+	  ]
+	}
+
+
+Config
+	config > platform.php
+
+	'prefix' => env('DASHBOARD_PREFIX', 'admin'),
+	'index' => 'platform.main'
+	'resource' => [
+		'stylesheets' => [
+			'/path/to/custom.css'
+		],
+		'scripts'     => [
+			'https://example.com/js/app.js',
+		],
+	],
+
+	'template' => [
+		'header' => 'brand.header',
+		'footer' => 'brand.footer',
+	],
+
+
+Overriding Blade Templates
+
+	For example, to override /vendor/orchid/platform/resources/views/partials/search.blade.php, 
+	create a new template at /resources/views/vendor/platform/partials/search.blade.php. 
+
+	your-project/
+	├─ ...
+	└─ resources/
+	   └─ views/
+		  └─ vendor/
+			 └─ platform/
+				└─ partials/
+					└─ search.blade.php          
+
+
+Custom Model Classes
+
+	namespace App\Providers;
+	use Illuminate\Support\ServiceProvider;
+	use Orchid\Platform\Dashboard;
+
+	class AppServiceProvider extends ServiceProvider
+	{
+		public function boot()
+		{
+			Dashboard::useModel(
+				\Orchid\Platform\Models\User::class, 
+				\App\Models\User::class
+			);
+			
+			//OR
+			Dashboard::configure([
+				'models' => [
+					User::class => MyCustomClass::class,
+				],
+			]);
+
+		}
+	}
+
+				
+Simple Usage
+	php artisan make:migration create_tasks_table --create=tasks
+	php artisan make:model Task
+		namespace App\Models;
+
+		use Illuminate\Database\Eloquent\Factories\HasFactory;
+		use Illuminate\Database\Eloquent\Model;
+		use Orchid\Screen\AsSource;
+		use Orchid\Attachment\Models\Attachment;
+		use Orchid\Attachment\Attachable;
+		use Orchid\Filters\Filterable;
+		
+		class Task extends Model
+		{
+			use HasFactory, AsSource, Attachable, Filterable;
+		}
+
+	php artisan orchid:screen TaskScreen
+
+	Routing, with breadcrumbs
+		Route::screen('task', TaskScreen::class)
+			->name('platform.task')
+			->breadcrumbs(function (Trail $trail){
+				return $trail
+					->parent('platform.index')
+					->push('Task');
+			});
+
+	Menu
+		app/Orchid/PlatformProvider.php file and add a new declaration to the menu() method.
+
+		use Orchid\Screen\Actions\Menu;
+		public function menu(): array
+		{
+			return [
+				// Other items...
+			
+				Menu::make('Tasks')
+					->icon('bag')
+					->route('platform.task')
+					->title('Tools')
+			];
+		}
+		
+	Screen and Actions
+		<?php
+
+			namespace App\Orchid\Screens;
+
+			use App\Models\Tasks;
+			use Orchid\Screen\Actions\Button;
+			use Orchid\Screen\Actions\ModalToggle;
+			use Orchid\Screen\Fields\Input;
+			use Orchid\Screen\Screen;
+			use Orchid\Screen\TD;
+			use Orchid\Support\Facades\Layout;
+
+			class TaskScreen extends Screen
+			{
+			    public $post; // gotten from url params in route
+
+				public function name(): ?string
+				{
+					return 'Task Screen';
+				}
+
+				public function description(): ?string
+				{
+					return 'Orchid Tasks for everyone';
+				}
+				
+				public function commandBar(): iterable
+				{
+					return [
+						ModalToggle::make('Add Task')
+							->modal('taskModal') //modal name from method layout()
+							->method('create') // class method create()
+							->icon('plus'),
+					];
+				}
+
+				public function query(): iterable
+				{
+					$post->load('attachment');
+					
+					return [
+						// 'tbl_tasks' => Tasks::latest()->get(),
+						'tbl_tasks' => Tasks::latest()->filters()->defaultSort('id')->paginate(2),
+						
+					];
+				}
+
+				public function layout(): iterable
+				{
+					return [
+						Layout::table(
+							'tbl_tasks', //from query method
+							[
+								TD::make('name', 'Fullname'),
+
+								TD::make('title', 'Title')
+								->sort()
+								->filter(Input::make())
+								->render(function (Post $post) {
+									return Link::make($post->title)
+										->route('platform.post.edit', $post);
+								}), //linked to Route::screen('post/{post?}', PostEditScreen::class)->name('platform.post.edit');
+
+								TD::make('Actions')
+									->alignRight()
+									->render(function (Tasks $task) {
+										return Button::make('Delete Task')
+											->confirm('After deleting, the task will be gone forever.')
+											->method('delete', ['task' => $task->id]); //class method delete()
+									}),
+							]
+						),
+
+						Layout::modal('taskModal', Layout::rows([
+							Input::make('task.name')
+								->title('Name')
+								->placeholder('Enter task name')
+								->help('The name of the task to be created.'),
+						]))
+							->title('Create Task')
+							->applyButton('Add Task Now'),
+							
+						Layout::rows([
+							Input::make('post.title')
+								->title('Title')
+								->placeholder('Attractive but mysterious title')
+								->help('Specify a short descriptive title for this post.'),
+								
+							Cropper::make('post.hero')
+								->title('Large web banner image, generally in the front and center')
+								->width(1000)
+								->height(500)
+								->targetRelativeUrl(), //->targetId(),
+
+							TextArea::make('post.description')
+								->title('Description')
+								->rows(3)
+								->maxlength(200)
+								->placeholder('Brief description for preview'),
+
+							Relation::make('post.author')
+								->title('Author')
+								->fromModel(User::class, 'name'),
+
+							Quill::make('post.body')
+								->title('Main text'),
+								
+							Upload::make('post.attachment')
+								->title('All files')
+								
+							Button::make('Create post')
+								->icon('pencil')
+								->method('createOrUpdate')
+								->canSee(!$this->post->exists),
+
+							Button::make('Update')
+								->icon('note')
+								->method('createOrUpdate')
+								->canSee($this->post->exists),
+
+
+						])
+
+					];
+				}
+
+				public function create()
+				{
+					request()->validate([
+						'task.name' => 'required|max:255',
+					]);
+
+					$task = new Tasks();
+					$task->name = request()->input('task.name'); //field name from method layout() modal input
+					$task->save();
+				}
+				
+				public function createOrUpdate(Request $request)
+				{
+					$this->post->fill($request->get('post'))->save();
+					
+					$this->post->attachment()->syncWithoutDetaching(
+						$request->input('post.attachment', [])
+					);	//uploading attachedments
+
+					Alert::info('You have successfully created a post.');
+
+					return redirect()->route('platform.post.list');
+				}
+
+				public function delete(Tasks $task)
+				{
+					$task->delete();
+				}
+			}

@@ -1,32 +1,44 @@
-Installing Docker
-==============================
-apt-get remove docker docker-engine docker.io containerd runc
-apt-get update
+install fresh docker
 
-apt-get install ca-certificates curl gnupg lsb-release
+quick install
+===================
+curl -fsSL https://get.docker.com | sudo sh
+
+manual install
+======================
+sudo apt-get remove docker docker-engine docker.io containerd runc
+
+sudo apt-get update
+
+sudo apt-get install ca-certificates curl gnupg lsb-release
+
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-apt-get update -y
-apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
-systemctl enable docker.service
-systemctl start docker.service
- 
-usermod -aG docker $USER && newgrp docker && groups
+sudo apt-get update -y
 
-docker version
-docker run hello-world
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
- 
-if lxd installation Change storage driver
-==============================================
-apt install fuse-overlayfs
-nano /etc/docker/daemon.json
-	paste and save
+sudo systemctl enable docker.service
+
+sudo systemctl start docker.service
+
+sudo usermod -aG docker $USER
+
+newgrp docker
+
+groups
+
+
+webdock lxd specifics (if not using kvm instance)
+=====================================================
+sudo apt install fuse-overlayfs
+sudo nano /etc/docker/daemon.json
+	Paste blow
 	{
 	  "storage-driver": "fuse-overlayfs"
 	}
-
-systemctl restart docker
-docker info | grep "Storage Driver:"
-	//Storage Driver: fuse-overlayfs
+sudo systemctl restart docker
+sudo docker info | grep "Storage Driver:"
+	should see Storage Driver: fuse-overlayfs

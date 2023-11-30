@@ -239,7 +239,7 @@ Database
 
 		Pagination
 				->paginate(15);		//add page as field in request, increase by 1 for each page, or send page number directly		
-				->paginate( $perPage = 15, $columns = ['*'], $pageName = 'users' );
+				->paginate( $perPage = 15, $columns = ['*'], $pageName = 'users', $pageNumber = 2 );
 				->orderBy('id')->cursorPaginate(15);
 				->simplePaginate(15);	//without pages, just next and previous
 

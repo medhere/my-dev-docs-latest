@@ -79,6 +79,7 @@ Retrieving User Details From A Token And Secret (OAuth1)
     $user = Socialite::driver('twitter')->userFromTokenAndSecret($token, $secret);
 
 Stateless Authentication
+	For API only
     The stateless method may be used to disable session state verification.
     This is useful when adding social authentication to a stateless API that does not utilize cookie based sessions:
     Stateless authentication is not available for the Twitter OAuth 1.0 driver.
@@ -86,3 +87,4 @@ Stateless Authentication
     use Laravel\Socialite\Facades\Socialite;
     return Socialite::driver('google')->stateless()->user();
     
+	API e.g ->stateless()->redirect()->getTargetUrl()

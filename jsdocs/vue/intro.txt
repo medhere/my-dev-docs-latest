@@ -1,0 +1,164 @@
+vue3
+	Resources - https://github.com/vuejs/awesome-vue
+
+	{{ variable }} - output variables or js expression
+	const app = Vue.createApp({
+	  data() {
+		return {
+		  text: ''
+		}
+	  },
+	  methods: {
+		writeText() {
+		  this.text = 'Hello Wrold!'
+		}
+	  }
+	})
+
+	Directives
+		v-bind	Connects an attribute in an HTML tag to a data variable inside the Vue instance.
+		<div v-bind:[attribute]="[Vue data]"></div>
+		<div :[attribute]="[Vue data]"></div>
+		v-bind:style="{ backgroundColor: 'lightpink', 'font-weight': 'bolder' }"
+		:style="{textDecoration: item.marked ? 'line-through' : 'underline'}
+		:style="{ display: ['-webkit-box', '-ms-flexbox', 'flex'] }"
+		v-bind:class="{yelClass: isYellow, impClass: isImportant}"
+		v-bind:class="[{ impClass: isImportant }, 'yelClass' ]
+
+		v-if	Creates HTML tags depending on a condition. Directives v-else-if and v-else are used together with the v-if directive.
+		<p v-if="variable>3">In stock</p>
+		<p v-else-if="variable>0">Very few left!</p>
+		<p v-else>Not in stock</p>
+
+		v-show	Specifies if an HTML element should be visible or not depending on a condition. Condition must return true or false
+		<div v-show="showDiv">This div tag can be hidden</div>
+
+		v-for	Creates a list of tags based on an array in the Vue instance using a for-loop.\
+		<p v-for="(x, index) in manyFoods" :key="index">
+		  {{ index }}: "{{ x.name }}", url: "{{ x.url }}" <br>
+		</p>
+		<li v-for="(value, key, index) in myObject">
+		  {{ index }}. {{ key }}: {{ value }}
+		</li>
+		<span v-for="n in 10">{{ n }}</span>
+
+		v-on	Connects an event on an HTML tag to a JavaScript expression or a Vue instance method. We can also define more specifically how our page should react to a certain event by using event-modifiers. Use javascript event modifiers like onclick, onchange ...
+		<button v-on:click="count++">{{count}}</button>
+		<button @click="count++">{{count}}</button>
+		<button @click="funcname($event, 5)">+5</button>
+			medthods:{
+				funcname(e, value){}
+			}
+				@submit.prevent
+				@click.once
+		    .stop
+			.prevent
+			.self
+			.capture
+			.once
+			.passive
+
+			@keydown, keypress, and keyup
+				.enter
+				.tab
+				.delete (captures both "Delete" and "Backspace" keys)
+				.esc
+				.space
+				.up
+				.down
+				.left
+				.right
+				.ctrl
+				.alt
+				.shift
+				.meta
+				.exact Modifier
+			<input @keyup.alt.enter="clear" />
+			<div @click.ctrl.y="doSomething">Do something</div>
+			Mouse Button Modifiers
+				.left
+				.right
+				.middle
+			use the .s key modifier to listen to the 'S' key.			
+
+		v-model	Used in HTML forms with tags like <form>, <input> and <button>. Creates a two way binding between an input element and a Vue instance data property.
+		   <input v-model="input2" type="text" />
+			.lazy
+			.number
+			.trim
+			<input
+			  type="checkbox"
+			  v-model="toggle"
+			  true-value="yes"
+			  false-value="no" 
+			  :true-value="var"
+			  :false-value="var"
+			/>
+
+
+	Composition API Functions
+		props
+			defineProps({
+			  // Basic type check
+				String
+				Number
+				Boolean
+				Array
+				Object
+				Date
+				Function
+				Symbol
+			  propA: Number,//  (`null` and `undefined` values will allow any type)
+			 
+			  // Multiple possible types
+			  propB: [String, Number],
+			 
+			  // Required string
+			  propC: {
+				type: String,
+				required: true
+			  },
+			 
+			  // Number with a default value
+			  propD: {
+				type: Number,
+				default: 100
+			  },
+			 
+			  // Object with a default value
+			  propE: {
+				type: Object,
+				default(rawProps) {
+				  return { message: 'hello' }
+				}
+			  },
+			 
+			  // Custom validator function
+			  propF: {
+				validator(value) {
+				  return ['success', 'warning', 'danger'].includes(value)
+				}
+			  },
+			 
+			  // Function with a default value
+			  propG: {
+				type: Function,
+				default() {
+				  return 'Default function'
+				}
+			  }
+			})
+
+
+		emitters
+			const emits = defineEmits(["emitHeader"]); //emits('emitHeader')
+			@click="$emit('emitHeader', 'value 1', 'value 2')
+			@emit-header="(val1, val2)=>console.log('header emitted', val1, val2)" 
+
+			
+		options
+			defineOptions({
+			  inheritAttrs: false
+			})
+			import { useAttrs } from 'vue'
+			const attrs = useAttrs()

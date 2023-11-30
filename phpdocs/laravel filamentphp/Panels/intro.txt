@@ -1,0 +1,15 @@
+Panel Builder
+	panel config at app/providers/filament/...
+	
+	php artisan make:model Patient -m (with belongsTo or hasMany relationships)
+	php artisan make:filament-resource Patient
+		--simple --generate --soft-deletes --view
+	php artisan make:filament-relation-manager PatientResource modelrelationship
+		add manager to Resource getRelations()
+
+	create a widget
+	php artisan make:filament-widget PatientTypeOverview --stats-overview
+	php artisan make:filament-widget TreatmentsChart --chart
+	
+	create a new panel
+	php artisan make:filament-panel app //accessed at /app

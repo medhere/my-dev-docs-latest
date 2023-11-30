@@ -1,0 +1,712 @@
+Nuxtjs
+
+Config
+	access .enc NUXT_
+	const runtimeConfig = useRuntimeConfig()
+
+Views
+	pages
+	components
+	layouts
+		default.vue
+			<slot/>
+			
+		custom layout
+		layout/custom.vue
+			<template>
+			  <div class="custom">
+				<slot name="header">
+				  <p><i>Default #header slot content for <code>layouts/custom.vue</code></i></p>
+				</slot>
+				<slot />
+			  </div>
+			</template>
+
+		usage
+			<script setup>
+			definePageMeta({
+			  layout: 'custom'
+			})
+			</script>
+
+			<template>
+			  <div>
+				Custom layout defined with <code>definePageMeta</code>
+			  </div>
+			</template>
+			
+Assets
+	public folder
+		/
+	assets folder
+		~/assets/
+	
+Styling
+	Ref and Reactive
+		<script setup lang="ts">
+		const isActive = ref(true)
+		const hasError = ref(false)
+		const classObject = reactive({
+		  active: true,
+		  'text-danger': false
+		})
+		</script>
+
+		<template>
+		  <div class="static" :class="{ active: isActive, 'text-danger': hasError }"></div>
+		  <div :class="classObject"></div>
+		</template>
+		
+	computed
+		<script setup lang="ts">
+		const isActive = ref(true)
+		const error = ref(null)
+
+		const classObject = computed(() => ({
+		  active: isActive.value && !error.value,
+		  'text-danger': error.value && error.value.type === 'fatal'
+		}))
+		</script>
+
+		<template>
+		  <div :class="classObject"></div>
+		</template>
+		
+	array
+		<script setup lang="ts"> 
+		const isActive = ref(true)
+		const errorClass = ref('text-danger')
+		</script>
+
+		<template>
+		  <div :class="[{ active: isActive }, errorClass]"></div>
+		</template>
+		
+	style
+		<script setup lang="ts">
+		const activeColor = ref('red')
+		const fontSize = ref(30)
+		const styleObject = reactive({ color: 'red', fontSize: '13px' })
+		</script>
+
+		<template>
+		  <div :style="{ color: activeColor, fontSize: fontSize + 'px' }"></div>
+		  <div :style="[baseStyles, overridingStyles]"></div>
+		  <div :style="styleObject"></div>
+		</template>
+
+	Dynamic Styles With v-bind
+		<script setup lang="ts">
+		const color = ref("red")
+		</script>
+
+		<template>
+		  <div class="text">hello</div>
+		</template>
+
+		<style>
+		.text {
+		  color: v-bind(color);
+		}
+		</style>
+
+	Scoped Styles
+		<template>
+		  <div class="example">hi</div>
+		</template>
+
+		<style scoped>
+		.example {
+		  color: red;
+		}
+		</style>
+		CSS Modules
+		You can use CSS Modules with the module attribute. Access it with the injected $style variable.
+
+		<template>
+		  <p :class="$style.red">This should be red</p>
+		</template>
+
+		<style module>
+		.red {
+		  color: red;
+		}
+		</style>
+	
+	
+Routing
+	pages/index.vue
+	pages/[id].vue
+	
+	Navig
+		<NuxtLink to="/about">About</NuxtLink>
+	
+	Params
+		const route = useRoute()
+		route.params
+	
+	Middleware
+		middleware/auth.js
+		export default defineNuxtRouteMiddleware((to, from) => {
+		  if (isAuthenticated() === false) {
+			return navigateTo('/login')
+		  }
+		})
+		
+		<script setup lang="ts">
+		definePageMeta({
+		  middleware: 'auth',
+		  middleware: () => {
+			console.log('Strictly forbidden.')
+			return false
+		  }
+		})
+		</script>
+
+		<template>
+		  <h1>Welcome to your dashboard</h1>
+		</template>
+
+SEO and META
+	Defaults
+		nuxt.config.ts
+
+		export default defineNuxtConfig({
+		  app: {
+			head: {
+			  charset: 'utf-8',
+			  viewport: 'width=device-width, initial-scale=1',
+			}
+		  }
+		})
+		
+	useHead
+		<script setup lang="ts">
+		useHead({
+		  title: 'My App',
+		  meta: [
+			{ name: 'description', content: 'My amazing site.' }
+		  ],
+		  link: [
+			{
+			  rel: 'preconnect',
+			  href: 'https://fonts.googleapis.com'
+			},
+			{
+			  rel: 'stylesheet',
+			  href: 'https://fonts.googleapis.com/css2?family=Roboto&display=swap',
+			  crossorigin: ''
+			}
+		  ],
+		  bodyAttrs: {
+			class: 'test'
+		  },
+		  script: [ { innerHTML: 'console.log(\'Hello world\')' } ]
+		})
+		</script>
+		
+	useSeoMeta
+		<script setup lang="ts">
+		useSeoMeta({
+		  title: 'My Amazing Site',
+		  ogTitle: 'My Amazing Site',
+		  description: 'This is my amazing site, let me tell you all about it.',
+		  ogDescription: 'This is my amazing site, let me tell you all about it.',
+		  ogImage: 'https://example.com/image.png',
+		  twitterCard: 'summary_large_image',
+		})
+		</script>	
+			
+	Components
+		Nuxt provides <Title>, <Base>, <NoScript>, <Style>, <Meta>, <Link>, <Body>, <Html> and <Head>	
+		<Head>
+		  <Title>{{ title }}</Title>
+		  <Meta name="description" :content="title" />
+		  <Style type="text/css" children="body { background-color: green; }" />
+		</Head>
+	
+	definePageMeta
+		pages/some-page.vue
+
+		<script setup lang="ts">
+		definePageMeta({
+		  title: 'Some Page'
+		})
+		</script>
+	
+Page Transitions
+	All Page transitions
+		nuxt.config.ts
+
+		export default defineNuxtConfig({
+		  app: {
+			pageTransition: { name: 'page', mode: 'out-in' },
+			layoutTransition: { name: 'layout', mode: 'out-in' }
+		  },
+		})
+		
+		add to main.css
+		.page-enter-active,
+		.page-leave-active {
+		  transition: all 0.4s;
+		}
+		.page-enter-from,
+		.page-leave-to {
+		  opacity: 0;
+		  filter: blur(1rem);
+		}
+		
+		.layout-enter-active,
+		.layout-leave-active {
+		  transition: all 0.4s;
+		}
+		.layout-enter-from,
+		.layout-leave-to {
+		  filter: grayscale(1);
+		}
+			
+	Per Page
+		<script setup lang="ts">
+		definePageMeta({
+		  layout: 'orange',
+		  layoutTransition: {
+			name: 'slide-in'
+		  },
+		   pageTransition: {
+			name: 'bounce',
+			mode: 'out-in' // default
+		  },
+		  pageTransition: false,
+		  layoutTransition: false,
+		  pageTransition: {
+			name: 'custom-flip',
+			mode: 'out-in',
+			onBeforeEnter: (el) => {
+			  console.log('Before enter...')
+			},
+			onEnter: (el, done) => {},
+			onAfterEnter: (el) => {}
+		  },
+		  middleware (to, from) {
+			to.meta.pageTransition.name = +to.params.id > +from.params.id ? 'slide-left' : 'slide-right'
+		  }
+		})
+		</script>
+		
+		//for middleware
+		<style>
+		.slide-left-enter-active,
+		.slide-left-leave-active,
+		.slide-right-enter-active,
+		.slide-right-leave-active {
+		  transition: all 0.2s;
+		}
+		.slide-left-enter-from {
+		  opacity: 0;
+		  transform: translate(50px, 0);
+		}
+		.slide-left-leave-to {
+		  opacity: 0;
+		  transform: translate(-50px, 0);
+		}
+		.slide-right-enter-from {
+		  opacity: 0;
+		  transform: translate(-50px, 0);
+		}
+		.slide-right-leave-to {
+		  opacity: 0;
+		  transform: translate(50px, 0);
+		}
+		</style>
+		
+Data Fetching
+	useFetch
+		<script setup lang="js">
+		const { data: count } = await useFetch('/api/count')
+		const { data, error, execute, pending, status } = await useFetch('/api/users')
+		const {idle, pending, error, success} = status
+		</script>
+		
+	$fetch
+		uses ofetch library
+		const users = await $fetch('/api/users').catch((error) => error.data)
+		
+		Use JSON.parse
+			await $fetch("/movie?lang=en", { parseResponse: JSON.parse });
+
+		Return text as is
+			await $fetch("/movie?lang=en", { parseResponse: (txt) => txt });
+
+		Get the blob version of the response
+			await $fetch("/api/generate-image", { responseType: "blob" });
+			const { users } = await $fetch("/api/users", {
+			  method: "POST",
+			  body: { some: "json" },
+			});
+
+		To catch error response:
+			await $fetch("/url").catch((err) => err.data);
+		
+		To bypass status error catching you can set ignoreResponseError option:
+			await $fetch("/url", { ignoreResponseError: true });
+
+		Retry
+			await $fetch("http://google.com/404", {
+			  retry: 3,
+			  retryDelay: 500, // ms
+			});
+
+		Timeout
+			await $fetch("http://google.com/404", {
+			  timeout: 3000, // Timeout after 3 seconds
+			});
+
+		Adding baseURL
+			await $fetch("/config", { baseURL });
+
+		Adding Query Search Params
+			await $fetch("/movie?lang=en", { query: { id: 123 } });
+		
+		Interceptors
+			You might want to use $fetch.create to set shared interceptors.
+
+			onRequest({ request, options })
+			onRequest is called as soon as $fetch is being called, allowing to modify options or just do simple logging.
+
+			await $fetch("/api", {
+			  async onRequest({ request, options }) {
+				// Log request
+				console.log("[fetch request]", request, options);
+
+				// Add `?t=1640125211170` to query search params
+				options.query = options.query || {};
+				options.query.t = new Date();
+			  },
+			});
+			onRequestError({ request, options, error })
+			onRequestError will be called when fetch request fails.
+
+			await $fetch("/api", {
+			  async onRequestError({ request, options, error }) {
+				// Log error
+				console.log("[fetch request error]", request, error);
+			  },
+			});
+			onResponse({ request, options, response })
+			onResponse will be called after fetch call and parsing body.
+
+			await $fetch("/api", {
+			  async onResponse({ request, response, options }) {
+				// Log response
+				console.log("[fetch response]", request, response.status, response.body);
+			  },
+			});
+			onResponseError({ request, options, response })
+			onResponseError is same as onResponse but will be called when fetch happens but response.ok is not true.
+
+			await $fetch("/api", {
+			  async onResponseError({ request, response, options }) {
+				// Log error
+				console.log(
+				  "[fetch response error]",
+				  request,
+				  response.status,
+				  response.body
+				);
+			  },
+			});
+
+		Create fetch with default options
+		const apiFetch = $fetch.create({ baseURL: "/api" });
+		apiFetch("/test"); // Same as $fetch('/test', { baseURL: '/api' })
+			
+		Adding headers
+			await $fetch("/movies", {
+			  headers: {
+				Accept: "application/json",
+				"Cache-Control": "no-cache",
+			  },
+			});
+
+		Adding HTTP(S) Agent
+			import { HttpsProxyAgent } from "https-proxy-agent";
+			await $fetch("/api", {
+			  agent: new HttpsProxyAgent("http://example.com"),
+			});
+
+		Access to Raw Response
+			const response = await $fetch.raw("/sushi");
+			// response._data
+			// response.headers
+			// ...
+
+	useAsyncData
+		fetcher function can be replaced with axios
+		useAsyncData(url, () => $fetch(url))
+		const { data, error } = await useAsyncData('users', () => myGetFunction('users'))
+
+		const id = ref(1)
+		const { data, error } = await useAsyncData(`user:${id.value}`, () => {
+		  return myGetFunction('users', { id: id.value })
+		})
+
+		const { data: discounts, pending } = await useAsyncData('cart-discount', async () => {
+		  const [coupons, offers] = await Promise.all([$fetch('/cart/coupons'), $fetch('/cart/offers')])
+		  return {
+			coupons,
+			offers
+		  }
+		})
+		
+	Options
+		const id = ref(1)
+
+		const { pending, data: posts } = useFetch('/api/posts', {
+			lazy: true,
+			server: false,
+			immediate: false,
+			watch: [id],
+			query: {
+				user_id: id
+			}
+		})
+		
+	Headers
+		Pass Client Headers to the API
+		<script setup lang="ts">
+		const headers = useRequestHeaders(['cookie'])
+
+		const { data } = await useFetch('/api/me', { headers })
+		</script>
+		
+
+State management
+		useState
+			const color = useState('x', () => 'pink')
+
+		Shared State
+			composables/states.ts
+
+			export const useCounter = () => useState<number>('counter', () => 0)
+			export const useColor = () => useState<string>('color', () => 'pink')
+			app.vue
+
+			<script setup lang="ts">
+			const color = useColor() // Same as useState('color')
+			</script>
+
+			<template>
+			  <p>Current color: {{ color }}</p>
+			</template>
+			
+		pinia
+			@pinia/nuxt	
+			Nuxt 2 & 3 module
+			npm i @pinia/nuxt
+
+			Usage
+			Add to modules (Nuxt 3) or buildModules (Nuxt 2) in nuxt.config.js:
+
+			// Nuxt 2
+			export default {
+			  buildModules: [['@pinia/nuxt', { disableVuex: true }]],
+			}
+			// Nuxt 3
+			export default defineNuxtConfig({
+				modules: ['@pinia/nuxt'],
+			})
+				
+Error Handling
+	use onErrorCaptured()
+	
+	Global Handler
+		plugins/error-handler.ts
+
+		export default defineNuxtPlugin((nuxtApp) => {
+		  nuxtApp.vueApp.config.errorHandler = (error, instance, info) => {
+			// handle error, e.g. report to a service
+		  }
+
+		  // Also possible
+		  nuxtApp.hook('vue:error', (error, instance, info) => {
+			// handle error, e.g. report to a service
+		  })
+		})
+
+	Startup Errors
+		Customize the default error page by adding ~/error.vue in the source directory of your application, alongside app.vue. (not in pages)
+		error.vue
+
+		<script setup lang="ts">
+		const props = defineProps({
+		  error: Object
+		})
+			
+		const handleError = () => clearError({ redirect: '/' })
+		</script>
+
+		<template>
+		  <div>
+			<h2>{{ error.statusCode }}</h2>
+			<button @click="handleError">Clear errors</button>
+		  </div>
+		</template>
+
+		The error object provides the fields:
+		{
+		  url: string
+		  statusCode: number
+		  statusMessage: string
+		  message: string
+		  description: string
+		  data: any
+		}
+
+		If you have an error with custom fields they will be lost; you should assign them to data instead:
+
+		throw createError({
+		  statusCode: 404,
+		  statusMessage: 'Page Not Found',
+		  data: {
+			myCustomField: true
+		  }
+		})
+
+	Error Utils
+		useError
+			function useError (): Ref<Error | { url, statusCode, statusMessage, message, description, data }>
+
+		createError
+			function createError (err: { cause, data, message, name, stack, statusCode, statusMessage, fatal }): Error
+			pages/movies/[slug].vue
+
+			<script setup lang="ts">
+			const route = useRoute()
+			const { data } = await useFetch(`/api/movies/${route.params.slug}`)
+
+			if (!data.value) {
+			  throw createError({
+				statusCode: 404,
+				statusMessage: 'Page Not Found'
+			  })
+			}
+			</script>
+
+		clearError
+			function clearError (options?: { redirect?: string }): Promise<void>
+
+	Render Error in Component
+		pages/index.vue
+
+		<template>
+		  <!-- some content -->
+		  <NuxtErrorBoundary @error="someErrorLogger">
+			<!-- You use the default slot to render your content -->
+			<template #error="{ error, clearError }">
+			  You can display the error locally here: {{ error }}
+			  <button @click="clearError">
+				This will clear the error.
+			  </button>
+			</template>
+		  </NuxtErrorBoundary>
+		</template>
+		
+Server
+	Both endpoints and middleware can be defined like this:
+		server/api/test.ts
+
+		export default defineEventHandler(async (event) => {
+		  // ... Do whatever you want here
+		})
+		directly return text, json, html, stream.
+		
+		consume
+		const { data } = await useFetch('/api/test')
+		
+	Hybrid Rendering
+		nuxt.config.ts
+		export default defineNuxtConfig({
+		  routeRules: {
+			
+			// Generated at build time for SEO purpose
+			'/': { prerender: true },
+			
+			// Cached for 1 hour
+			'/api/*': { cache: { maxAge: 60 * 60 } },
+			
+			// Redirection to avoid 404
+			'/old-page': {
+			  redirect: { to: { '/new-page', statusCode: 302 }
+			}
+			
+			// Product page generated on-demand, revalidates in background
+			'/products/**': { swr: 3600 },
+			
+			// Blog post generated on-demand once until next deploy
+			'/blog/**': { isr: true },
+			
+			// Admin dashboard renders only on client-side
+			'/admin/**': { ssr: false },
+			
+			// Add cors headers on API routes
+			'/api/**': { cors: true },
+			
+			// Redirects legacy urls
+			'/old-page': { redirect: '/new-page' }
+		  }
+		})
+		
+Deployment
+	Entry Point
+		nuxt build
+		node .output/server/index.mjs
+		.env
+		NITRO_PORT or PORT (defaults to 3000)
+		NITRO_HOST or HOST (defaults to '0.0.0.0')
+		NITRO_SSL_CERT and NITRO_SSL_KEY 
+		NITRO_PRESET=node_cluster
+			
+		PM2
+			ecosystem.config.js
+			module.exports = {
+			  apps: [
+				{
+				  name: 'NuxtAppName',
+				  port: '3000',
+				  exec_mode: 'cluster',
+				  instances: 'max',
+				  script: './.output/server/index.mjs'
+				}
+			  ]
+			}
+			
+	Static Hosting
+		nuxt.config.ts
+		Static site generation (SSG) with ssr: true 
+		will also generate /200.html and /404.html single-page app fallback pages, which can render dynamic routes or 404 errors on the client (though you may need to configure this on your static host).
+		
+		prerender your site with ssr: false 
+		static single-page app. 
+		
+		for partial pre-rendering, use <ClientOnly> to wrap the portions of your site that cannot be server rendered (if any).
+		
+	Crawl-based Pre-rendering
+		nuxt build --prerender.
+		deploy the .output/public directory to any static hosting service 
+		or preview it locally with npx serve .output/public.
+		
+	Client-side Only Rendering
+		nuxt.config.ts
+
+		defineNuxtConfig({
+		  ssr: false
+		})
+		
+	Presets
+		nuxt.config.ts
+
+		export default {
+		  nitro: {
+			preset: 'node-server'
+		  }
+		}

@@ -1,0 +1,46 @@
+Pages
+=============================
+	php artisan make:filament-page Settings
+	a page class in the app.../Pages directory of the Filament directory, and a view in the views.../pages directory
+
+Conditionally hiding pages in navigation
+	public static function shouldRegisterNavigation(): bool
+	{
+		return auth()->user()->canManageSettings();
+	}
+	public function mount(): void
+	{
+		abort_unless(auth()->user()->canManageSettings(), 403);
+	}
+
+Header actions
+	protected function getHeaderActions(): array
+	{
+		return [
+			Action::make('edit')
+				->url(route('posts.edit', ['post' => $this->post])),
+			Action::make('delete')
+				->requiresConfirmation()
+				->action(fn () => $this->post->delete()),
+		];
+	}
+	
+Refreshing form data 
+	Action::make('approve')
+		->action(function (Post $record) {
+			$record->approve();
+	 
+			$this->refreshFormData([
+				'status',
+			]);
+		})
+		
+Adding widgets to pages
+	protected function getHeaderWidgets(): array
+	{
+		return [
+			StatsOverviewWidget::class
+		];
+	}
+	getHeaderWidgets()
+	getFooterWidgets()
