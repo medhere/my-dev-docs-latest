@@ -1,0 +1,16 @@
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+cat ~/.ssh/id_rsa.pub
+echo "your_public_key_contents" >> ~/.ssh/authorized_keys
+sudo nano /etc/ssh/sshd_config
+    PubkeyAuthentication yes
+    AuthorizedKeysFile     %h/.ssh/authorized_keys
+sudo systemctl restart ssh
+
+setup ssh file in host .ssh/config
+Host hostshortname
+  HostName hostdomainname
+  User username
+  IdentityFile ~/.ssh/id_rsa
+  PreferredAuthentications publickey
+  IdentitiesOnly yes
+  ForwardAgent yes

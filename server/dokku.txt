@@ -1,0 +1,57 @@
+
+# for debian systems, installs Dokku via apt-get
+wget -NP . https://dokku.com/install/v0.34.6/bootstrap.sh && sudo DOKKU_TAG=v0.34.4 bash bootstrap.sh
+
+cat ~/.ssh/authorized_keys | dokku ssh-keys:add admin
+dokku domains:set-global domainname.com
+	//set domainname.com and *.domainname.com to server ip
+
+dokku config:set --global CURL_TIMEOUT=1200
+dokku config:set --global CURL_CONNECT_TIMEOUT=180
+
+
+setup keys
+=====================
+ssh-keygen
+
+echo 'CONTENTS_OF_ID_RSA_PUB_FILE' | dokku ssh-keys:add username
+
+.ssh/config
+Host hostshortname
+  HostName hostdomainname
+  User username
+  IdentityFile /location/jdskjdjkds/
+  PreferredAuthentications publickey
+  IdentitiesOnly yes
+
+  
+user setup attempt
+=====================
+sudo passwd <username>
+sudo usermod -a -G dokku <username>
+
+create a public key for username and add to linux
+add private key to ssh/config
+  
+remote commands
+=====================
+ssh -t dokku@hostshortname <command>
+ 
+
+deploy
+=====================
+
+git remote add remotename dokku@domainname:appname
+git push remotename master
+  
+add swap (2GB)
+=====================
+sudo install -o root -g root -m 0600 /dev/null /swapfile
+dd if=/dev/zero of=/swapfile bs=1k count=2048k
+mkswap /swapfile
+swapon /swapfile
+echo "/swapfile       swap    swap    auto      0       0" | sudo tee -a /etc/fstab
+sudo sysctl -w vm.swappiness=10
+echo vm.swappiness = 10 | sudo tee -a /etc/sysctl.conf
+
+

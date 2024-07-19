@@ -1,0 +1,36 @@
+sendmail relay setup
+
+Step 1: Install Sendmail
+sudo yum install sendmail sendmail-cf 
+sudo apt install sendmail sendmail-cf 
+
+Step 2: Create SMTP Credentials File
+sudo nano /etc/mail/smtp-auth-creds 
+AuthInfo:smtp.example.com "U:username" "P:password" "M:PLAIN"
+Save the file and close the text editor.
+
+Compile the smtp-auth-creds file into the sendmail
+makemap hash /etc/mail/smtp-auth-creds < /etc/mail/smtp-auth-creds 
+
+Step 3: Modify the sendmail.mc File
+Open the sendmail.mc file using a text editor:
+sudo nano /etc/mail/sendmail.mc 
+define(`SMART_HOST', `smtp.example.com')dnl
+define(`ESMTP_MAILER_ARGS', `TCP $h 587')dnl
+FEATURE(`authinfo', `hash -o /etc/mail/smtp-auth-creds.db')dnl
+define(`confAUTH_OPTIONS', `A p')dnl
+TRUST_AUTH_MECH(`EXTERNAL DIGEST-MD5 CRAM-MD5 LOGIN PLAIN')dnl
+define(`confAUTH_MECHANISMS', `EXTERNAL GSSAPI DIGEST-MD5 CRAM-MD5 LOGIN PLAIN')dnl
+
+Save the file and close the text editor.
+
+Step 4: Generate the sendmail.cf File
+sudo make -C /etc/mail 
+
+Then restart the sendmail service to apply the changes:
+systemctl restart sendmail 
+
+Step 5: Verify Setup
+To verify that the configuration is working as expected, you can use the sendmail command-line utility to send a test email:
+
+echo "This is a test email" | sendmail recipient@example.com 
