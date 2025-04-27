@@ -1,0 +1,67 @@
+Chatwoot
+===================
+install
+curl -fsSL https://get.docker.com | sudo sh
+
+pull .env and docker-compose.yaml
+wget -O .env https://raw.githubusercontent.com/chatwoot/chatwoot/develop/.env.example &&
+wget -O docker-compose.yaml https://raw.githubusercontent.com/chatwoot/chatwoot/develop/docker-compose.production.yaml
+
+set postgress password to both .env and docker-compose, add postgres port to .env if changed
+proxy to 3000 or set rails to 0.0.0.0 in docker-compose.yaml
+set ip or domain to .env FRONTEND
+
+docker compose run --rm rails bundle exec rails db:chatwoot_prepare
+docker compose up -d
+
+index.html footer
+<script>
+  window.chatwootSettings = {
+    hideMessageBubble: false,
+    position: 'right',
+    locale: 'en',
+    type: 'expanded_bubble', //standard, expanded_bubble
+    // launcherTitle: "SSWAN Chat Center",
+    // widgetStyle: "flat", //standard, flat
+    //darkMode: "auto", //light, auto, dark
+    //showUnreadMessagesDialog: true, //true,false
+
+  };
+
+(function(d,t) {
+  var BASE_URL="http://ip:3000";
+  var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+  g.src=BASE_URL+"/packs/js/sdk.js";
+  g.defer = true;
+  g.async = true;
+  s.parentNode.insertBefore(g,s);
+  g.onload=function(){
+    window.chatwootSDK.run({
+      websiteToken: 'token',
+      baseUrl: BASE_URL
+    })
+  }
+})(document,"script");
+window.addEventListener('chatwoot:ready', function() {
+  window.$chatwoot.toggleBubbleVisibility('hide') //hide/show
+  // window.$chatwoot.toggle('close') //close/open
+  // hasLoaded
+  // isOpen
+})
+</script>
+
+
+for react
+  useEffect(() => {
+      if (window.$chatwoot) {
+        window.$chatwoot.toggle('open')
+      }
+
+    return () => {
+      if (window.$chatwoot) {
+        window.$chatwoot.toggle('close')
+      }
+    }
+
+  }, []);
+
