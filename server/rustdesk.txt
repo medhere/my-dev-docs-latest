@@ -1,0 +1,52 @@
+services:
+  rustdesk:
+    image: rustdesk/rustdesk-server-s6:${VERSION}
+    #    container_name: ${CONTAINER_NAME}
+    deploy:
+      resources:
+        limits:
+          cpus: ${CPUS}
+          memory: ${MEMORY_LIMIT}
+    environment:
+        - RELAY=${RUSTDESK_HOST_ADDR}:${RUSTDESK_PORT_HBBR}
+        - ENCRYPTED_ONLY=1
+    ports:
+        - ${HOST_IP}:${RUSTDESK_PORT_NAT}:21115
+        - ${HOST_IP}:${RUSTDESK_PORT_HBBS}:21116
+        - ${HOST_IP}:${RUSTDESK_PORT_HBBS}:21116/udp
+        - ${HOST_IP}:${RUSTDESK_PORT_HBBR}:21117
+        - ${HOST_IP}:${RUSTDESK_PORT_WEB_CLIENT_1}:21118
+        - ${HOST_IP}:${RUSTDESK_PORT_WEB_CLIENT_2}:21119
+    restart: always
+    volumes:
+        - ${APP_PATH}/data:/data
+    labels:
+      createdBy: "bt_apps"
+    networks:
+      - baota_net
+
+networks:
+  baota_net:
+    external: true
+    
+env setting    
+===============
+VERSION=1.1.11
+CONTAINER_NAME=CONTAINER_NAME
+RUSTDESK_HOST_ADDR=
+RUSTDESK_PORT_NAT=21115
+RUSTDESK_PORT_HBBS=21116
+RUSTDESK_PORT_HBBR=21117
+RUSTDESK_PORT_WEB_CLIENT_1=21118
+RUSTDESK_PORT_WEB_CLIENT_2=21119
+HOST_IP=0.0.0.0
+CPUS=0
+MEMORY_LIMIT=0MB
+APP_PATH=/www/dk_project/dk_app/rustdesk/rustdesk #set to path or omit
+
+
+
+on desktop
+===================
+rustdesk --cm-no-ui
+pm2 start rustdesk --name rustdesk --interpreter none --restart-delay=0 -- --cm-no-ui

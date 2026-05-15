@@ -49,3 +49,40 @@ sudo systemctl status openvpn@server
 
 test if OpenVPN server port (UDP 1194) accepts connections
 sudo nmap -sU -p 1194 172.105.158.108
+
+
+
+with docker compose
+=========================
+
+version: '3.8'
+
+services:
+  openvpn-as:
+    image: openvpn/openvpn-as:latest
+    container_name: openvpn-server
+    restart: unless-stopped
+    # This capability is CRITICAL for creating the TUN device
+    cap_add:
+      - NET_ADMIN
+    # This explicitly maps the host's TUN device into the container
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    ports:
+#      - "22:22/tcp"
+      - "943:943/tcp"
+#      - "443:41944/tcp"
+      - "1194:1194/udp"
+    volumes:
+      - ${APP_PATH}/openvpn_data:/usr/local/openvpn/data
+
+
+volumes:
+  openvpn-data:
+  
+  
+  .env
+  APP_PATH=/www/dk_project/dk_app/openvpn/openvpn-as
+  
+  current user: openvpn o9ZZQ8l9Q96G
+

@@ -29,12 +29,12 @@ look for favicon.ico
 	bl-kernel/img/favicon.png
 remove POWERED BYBLUDIT from home page
 	got bl-themes/themname/php/footer.php
-remove Documentation, Forum support, Chat support from dashboard page	
-	\bl-kernel\admin\views\dashboard.php
 change favicon
 	\bl-kernel\img\logo.svg
 	\bl-themes\alternative\img\favicon.png 32x32
 change BLUDIT
+remove Documentation, Forum support, Chat support from dashboard page	
+	\bl-kernel\admin\views\dashboard.php
 	\bl-kernel\admin\themes\booty\html\sidebar.php echo (defined('BLUDIT_PRO'))?'BLUDIT PRO':'BLUDIT'
 	\bl-kernel\admin\views\login.php style="color: #555;">BLUDIT</h1>';
 notifications

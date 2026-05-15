@@ -1,0 +1,45 @@
+services:
+  meshcentral:
+    image: typhonragewind/meshcentral:latest
+    container_name: meshcentral
+    restart: always
+    environment:
+      # - HOSTNAME=rds.medhere.site # Your domain
+      - REVERSE_PROXY=false      # Set to true if you add Nginx later
+      - IFRAME=1                 # Useful for embedding
+      - ALLOW_NEW_ACCOUNTS=true  # Set to false after creating your admin account
+    ports:
+      - "10001:443"              # MeshCentral Web UI on port 10001
+    volumes:
+      - /www/docker-volumes/meshcentral/data:/home/node/meshcentral-data
+      - /www/docker-volumes/meshcentral/user_files:/home/node/meshcentral-files
+      
+      
+      
+      
+Step 3: Connect to your Laptop via RDP (Agentless)
+To connect to your laptop (or any other computer on the same network as the OCI server) without an agent:
+
+Create a Device Group:
+
+Click on Add Device Group.
+
+Crucial: Change the "Type" from "Manage using a software agent" to "Local Devices - No Agent".
+
+Add your Device:
+
+Inside that new group, click Add Device.
+
+Enter a name (e.g., "My Laptop").
+
+Enter the Local IP Address of your laptop.
+
+Initiate RDP:
+
+Click on your laptop in the list.
+
+Click the Desktop tab.
+
+Select RDP from the dropdown (instead of VNC).
+
+MeshCentral will now open an RDP session in your browser.

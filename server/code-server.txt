@@ -1,0 +1,59 @@
+# code-server Deployment Guide (Linux)
+
+This document covers installing, running, and throttling system resource usage for code-server using systemd.
+
+## 1. Installation
+
+Install code-server using the official automated script:
+curl -fsSL https://code-server.dev | sh
+or curl -L https://coder.com/install.sh | sh
+
+## 2. Configuration & Credentials
+
+Before launching, configure the bind address and access password. 
+
+nano ~/.config/code-server/config.yaml
+
+bind-addr: 0.0.0.0:10000
+auth: password
+password: "password"
+cert: false
+app-name: "Medhere IDE"
+proxy-domain: "vscode.rds.medhere.site"
+welcome-text: "Welcome to Medhere IDE"
+disable-telemetry: true
+
+## 3. Systemd Service Management
+
+### Enable and Start the Service
+sudo systemctl enable --now code-server@user
+
+### Useful Management Commands
+* **Check Service Status:** sudo systemctl status code-server@user
+* **Restart Service:** sudo systemctl restart code-server@user
+* **Stop Service:** sudo systemctl stop code-server@user
+* **View Real-Time Logs:** journalctl -u code-server@user -f
+
+---
+
+## 4. Resource Throttling (Prevent CPU Spikes)
+### 1. Open the Systemd Override File
+sudo systemctl edit code-server@user
+
+### 2. Append Resource Configurations
+Insert the following configuration lines between the top comments:
+
+[Service]
+# Drop process priority to lowest priority tier
+CPUSchedulingPolicy=idle
+# Reduce CPU share priority relative to other system tasks (Default is 100)
+CPUWeight=20
+# Hard limit maximum CPU utilization across all cores (e.g., 200% = 2 full cores)
+CPUQuota=200%
+
+### 3. Apply Changes
+Reload the systemd daemon config tree and cycle the active process instance:
+sudo systemctl daemon-reload
+sudo systemctl restart code-server@user
+
+

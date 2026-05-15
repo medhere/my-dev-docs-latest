@@ -1,0 +1,31 @@
+Use a Visual Tool (Recommended)
+ncdu
+If you want to navigate your disk like a file manager, install ncdu. it’s much faster for finding large files:
+Install: sudo apt install ncdu
+Run: sudo ncdu /
+
+gdu (The Fast Choice)
+gdu (Go Disk Usage) is very similar to ncdu but is written in Go, making it significantly faster, especially on SSDs. It features a similar interactive console interface.
+Install: sudo apt install gdu
+Run: gdu /
+
+dust (The Modern Look)
+Written in Rust, dust gives you a tree-like view with colored bars to show which folders are consuming the most space at a glance. It’s more visual than a standard list.
+Install: sudo apt install du-dust (or via cargo install du-dust)
+Run: dust
+
+dua (Interactive & Fast)
+dua (Disk Usage Analyzer) is another Rust-based tool. It’s extremely fast and has a great interactive mode that lets you delete files directly from the interface.
+Install: sudo apt install dua-cli
+Run: dua i / (The i stands for interactive)
+
+Vizex (Visual Graphs)
+If you want something that looks less like a table and more like a dashboard, vizex displays your disk usage using horizontal bar graphs directly in the terminal.
+Install: pip install vizex
+Run: vizex
+
+Baobab (The GUI Choice)
+Install: sudo apt install baobab
+If you are using a desktop environment (via VNC or RDP) and want a "Sunburst" chart where you can click through folders visually:
+Run: Search for "Disk Usage Analyzer" in your apps.
+Recommendation: If you like ncdu but want more speed, go with gdu. If you want a more modern, readable layout, try dust.
