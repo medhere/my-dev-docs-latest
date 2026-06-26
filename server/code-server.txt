@@ -20,8 +20,13 @@ password: "password"
 cert: false
 app-name: "Medhere IDE"
 proxy-domain: "vscode.rds.medhere.site"
+disable-proxy: false
+# set to true and remove proxy-domain if not proxy needed
 welcome-text: "Welcome to Medhere IDE"
 disable-telemetry: true
+reconnection-grace-time: 61
+idle-timeout-seconds: 61
+
 
 ## 3. Systemd Service Management
 
@@ -50,6 +55,11 @@ CPUSchedulingPolicy=idle
 CPUWeight=20
 # Hard limit maximum CPU utilization across all cores (e.g., 200% = 2 full cores)
 CPUQuota=200%
+
+Or just
+# Select the CPU core it should run on
+CPUAffinity=0
+
 
 ### 3. Apply Changes
 Reload the systemd daemon config tree and cycle the active process instance:
